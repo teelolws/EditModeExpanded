@@ -1,0 +1,4 @@
+## Interface: 100000
+
+LibStub.lua
+EditModeExpanded.lua

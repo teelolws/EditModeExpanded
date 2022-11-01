@@ -7,16 +7,16 @@ local frames = {}
 
 -- Custom version of FrameXML\Mixin.lua where I instead do *not* overwrite existing functions 
 local function Mixin(object, ...)
-	for i = 1, select("#", ...) do
-		local mixin = select(i, ...);
-		for k, v in pairs(mixin) do
-			if not object[k] then
+    for i = 1, select("#", ...) do
+        local mixin = select(i, ...);
+        for k, v in pairs(mixin) do
+            if not object[k] then
                 object[k] = v;
             end
-		end
-	end
+        end
+    end
 
-	return object;
+    return object;
 end
 
 -- MicroButtonAndBagsBar:GetTop gets checked by EditModeManager, setting the scale of the Right Action bars
@@ -32,10 +32,10 @@ local function duplicateMicroButtonAndBagsBar()
     duplicate.QuickKeybindsMicroBagBarGlow:SetPoint("CENTER", duplicate, "CENTER", -30, 30)
     
     hooksecurefunc("MoveMicroButtons", function(anchor, anchorTo, relAnchor, x, y, isStacked)
-    	if anchorTo == MicroButtonAndBagsBar then
+        if anchorTo == MicroButtonAndBagsBar then
             anchorTo = duplicate
             CharacterMicroButton:ClearAllPoints();
-        	CharacterMicroButton:SetPoint(anchor, anchorTo, relAnchor, x, y);
+            CharacterMicroButton:SetPoint(anchor, anchorTo, relAnchor, x, y);
         end
     end)
     
@@ -133,24 +133,24 @@ function lib.RegisterFrame(frame, name, db)
     end
     
     frame.Selection:SetScript("OnDragStop", function(self)
-    	if frame:CanBeMoved() then
-    		frame:StopMovingOrSizing();
-    	end
+        if frame:CanBeMoved() then
+            frame:StopMovingOrSizing();
+        end
         db.x, db.y = self:GetRect()
         print(self:GetRect())
     end)
     
     function frame:ClearHighlight()
-    	if self.isSelected then
-    		self.isSelected = false;
-    	end
+        if self.isSelected then
+            self.isSelected = false;
+        end
     
-    	self.Selection:Hide();
-    	self.isHighlighted = false;
+        self.Selection:Hide();
+        self.isHighlighted = false;
     end
     
     function frame:SetHasActiveChanges(hasActiveChanges)
-    	self.hasActiveChanges = hasActiveChanges;
+        self.hasActiveChanges = hasActiveChanges;
     end
     
     if db.x and db.y then
@@ -163,15 +163,15 @@ end
 
 hooksecurefunc(EditModeManagerFrame, "EnterEditMode", function(self)
     for _, frame in ipairs(frames) do
-	   frame:SetHasActiveChanges(false)
-	   frame:HighlightSystem();
+        frame:SetHasActiveChanges(false)
+        frame:HighlightSystem();
     end
 end)
 
 hooksecurefunc(EditModeManagerFrame, "ExitEditMode", function()
     for _, frame in ipairs(frames) do
         frame:ClearHighlight();
-    	frame:StopMovingOrSizing();
+        frame:StopMovingOrSizing();
     end
 end)
 

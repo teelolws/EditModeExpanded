@@ -65,6 +65,7 @@ f:SetScript("OnEvent", function(__, event, arg1)
         if not EditModeExpandedDB.TotemFrame then EditModeExpandedDB.TotemFrame = {} end
         if not EditModeExpandedDB.PetFrame then EditModeExpandedDB.PetFrame = {} end
         if not EditModeExpandedDB.DurabilityFrame then EditModeExpandedDB.DurabilityFrame = {} end
+        if not EditModeExpandedDB.VehicleSeatIndicator then EditModeExpandedDB.VehicleSeatIndicator = {} end
 
         duplicateMicroButtonAndBagsBar()
         lib:RegisterFrame(MicroButtonAndBagsBarMovable, "Micro Menu", EditModeExpandedDB.MicroButtonAndBagsBar)
@@ -76,6 +77,10 @@ f:SetScript("OnEvent", function(__, event, arg1)
 
         DurabilityFrame:SetParent(UIParent)
         lib:RegisterFrame(DurabilityFrame, "Durability", EditModeExpandedDB.DurabilityFrame)
+        
+        VehicleSeatIndicator:SetParent(UIParent)
+        VehicleSeatIndicator:SetPoint("TOPLEFT", DurabilityFrame, "TOPLEFT")
+        lib:RegisterFrame(VehicleSeatIndicator, "Vehicle Seats", EditModeExpandedDB.VehicleSeatIndicator)
     elseif (event == "UNIT_PET") and (not petFrameLoaded) then
         petFrameLoaded = true
         lib:RegisterFrame(PetFrame, "Pet", EditModeExpandedDB.PetFrame)

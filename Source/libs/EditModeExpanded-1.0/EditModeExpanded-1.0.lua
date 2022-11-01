@@ -93,21 +93,11 @@ function lib:RegisterFrame(frame, name, db)
     
      
     table.insert(frames, frame)
-    --table.insert(coordinateDB, db)
     
     Mixin(frame, EditModeSystemMixin)
     
     frame.system = index
     index = index + 1
-
-    --frame.SetScaleBase = frame.SetScale;
-	--frame.SetScale = frame.SetScaleOverride;
-
-	--frame.SetPointBase = frame.SetPoint;
-	--frame.SetPoint = frame.SetPointOverride;
-
-	--frame.ClearAllPointsBase = frame.ClearAllPoints;
-	--frame.ClearAllPoints = frame.ClearAllPointsOverride;
 
 	frame.Selection = CreateFrame("Frame", nil, frame, "EditModeSystemSelectionTemplate")
     frame.Selection:SetAllPoints(frame)

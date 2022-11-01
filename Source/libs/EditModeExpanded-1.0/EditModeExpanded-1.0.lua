@@ -137,7 +137,6 @@ function lib.RegisterFrame(frame, name, db)
             frame:StopMovingOrSizing();
         end
         db.x, db.y = self:GetRect()
-        print(self:GetRect())
     end)
     
     function frame:ClearHighlight()

@@ -32,6 +32,7 @@ function lib:RegisterFrame(frame, name, db)
     assert(type(frame) == "table")
     assert(type(name) == "string")
     assert(type(db) == "table")
+    assert(frame ~= MicroButtonAndBagsBar)
     
     -- IMPORTANT: force update every patch incase of UI changes that cause problems and/or make this library redundant!
     if not (GetBuildInfo() == "10.0.0") then return end

@@ -1,9 +1,14 @@
-local MAJOR, MINOR = "EditModeExpanded-1.0", 1
+local MAJOR, MINOR = "EditModeExpanded-1.0", 2
 local lib = LibStub:NewLibrary(MAJOR, MINOR)
 
+-- the internal frames provided by Blizzard go up to index 12. They reference an Enum.
 local index = 13
 local frames = {}
---local coordinateDB = {}
+
+-- some caching tables, save the state of frames just before entering Edit Mode
+local wasVisible = {}
+local originalSize = {}
+local defaultSize = {}
 
 -- Custom version of FrameXML\Mixin.lua where I instead do *not* overwrite existing functions 
 local function Mixin(object, ...)
@@ -77,7 +82,7 @@ end
 -- param1: frame, the Frame to register
 -- param2: name, localized name to appear when the frame is selected during Edit Mode
 -- param3: db, a table in your saved variables to save the frame position in
-function lib.RegisterFrame(frame, name, db)
+function lib:RegisterFrame(frame, name, db)
     -- IMPORTANT: force update every patch incase of UI changes that cause problems and/or make this library redundant!
     if not (GetBuildInfo() == "10.0.0") then return end
 
@@ -162,10 +167,30 @@ function lib.RegisterFrame(frame, name, db)
     end
 end
 
+-- use this if a frame by default doesn't have a size set yet
+function lib:SetDefaultSize(frame, x, y)
+    defaultSize[frame.system] = {["x"] = x, ["y"] = y}
+end
+
 hooksecurefunc(EditModeManagerFrame, "EnterEditMode", function(self)
     for _, frame in ipairs(frames) do
         frame:SetHasActiveChanges(false)
         frame:HighlightSystem();
+        wasVisible[frame.system] = frame:IsShown()
+        frame:Show()
+        local x, y = frame:GetSize()
+        if (x < 40) or (y < 40) then
+            originalSize[frame.system] = {["x"] = x, ["y"] = y}
+            if defaultSize[frame.system] then
+                frame:SetSize(defaultSize[frame.system].x, defaultSize[frame.system].y)
+            elseif (x < 40) and (y > 0) then
+                frame:SetSize(40, y)
+            elseif (x > 0) and (y < 40) then
+                frame:SetSize(x, 40)
+            else
+                frame:SetSize(40, 40)
+            end
+        end
     end
 end)
 
@@ -173,7 +198,12 @@ hooksecurefunc(EditModeManagerFrame, "ExitEditMode", function()
     for _, frame in ipairs(frames) do
         frame:ClearHighlight();
         frame:StopMovingOrSizing();
+        frame:SetShown(wasVisible[frame.system])
+        if originalSize[frame.system] then
+            frame:SetSize(originalSize[frame.system].x, originalSize[frame.system].y)
+        end
     end
+    wipe(wasVisible)
 end)
 
 hooksecurefunc(EditModeManagerFrame, "SelectSystem", function(self, systemFrame)

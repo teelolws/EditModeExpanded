@@ -1,0 +1,5 @@
+package-as: EditModeExpanded
+
+ignore:
+ - LICENCE.md
+ - README.md

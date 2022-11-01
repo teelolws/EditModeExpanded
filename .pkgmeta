@@ -1,5 +1,8 @@
 package-as: EditModeExpanded
 
+move-folders:
+ EditModeExpanded/Source: EditModeExpanded
+
 ignore:
  - LICENCE.md
  - README.md

@@ -64,6 +64,7 @@ f:SetScript("OnEvent", function(__, event, arg1)
         if not EditModeExpandedDB.QueueStatusButton then EditModeExpandedDB.QueueStatusButton = {} end
         if not EditModeExpandedDB.TotemFrame then EditModeExpandedDB.TotemFrame = {} end
         if not EditModeExpandedDB.PetFrame then EditModeExpandedDB.PetFrame = {} end
+        if not EditModeExpandedDB.DurabilityFrame then EditModeExpandedDB.DurabilityFrame = {} end
 
         duplicateMicroButtonAndBagsBar()
         lib:RegisterFrame(MicroButtonAndBagsBarMovable, "Micro Menu", EditModeExpandedDB.MicroButtonAndBagsBar)
@@ -72,6 +73,9 @@ f:SetScript("OnEvent", function(__, event, arg1)
         
         lib:RegisterFrame(TotemFrame, "Totem", EditModeExpandedDB.TotemFrame)
         lib:SetDefaultSize(TotemFrame, 100, 40)
+
+        DurabilityFrame:SetParent(UIParent)
+        lib:RegisterFrame(DurabilityFrame, "Durability", EditModeExpandedDB.DurabilityFrame)
     elseif (event == "UNIT_PET") and (not petFrameLoaded) then
         petFrameLoaded = true
         lib:RegisterFrame(PetFrame, "Pet", EditModeExpandedDB.PetFrame)

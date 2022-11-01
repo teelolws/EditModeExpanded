@@ -54,6 +54,7 @@ local function duplicateMicroButtonAndBagsBar()
     return duplicate
 end
 
+local petFrameLoaded
 local f = CreateFrame("Frame")
 f:SetScript("OnEvent", function(__, event, arg1)
     if (event == "ADDON_LOADED" and arg1 == "EditModeExpanded") then
@@ -71,12 +72,11 @@ f:SetScript("OnEvent", function(__, event, arg1)
         
         lib:RegisterFrame(TotemFrame, "Totem", EditModeExpandedDB.TotemFrame)
         lib:SetDefaultSize(TotemFrame, 100, 40)
-        
-        -- For some reason, PetFrame doesn't load during login. TODO: Find the actual event it loads in
-        C_Timer.After(5, function()
-            lib:RegisterFrame(PetFrame, "Pet", EditModeExpandedDB.PetFrame)
-        end)
+    elseif (event == "UNIT_PET") and (not petFrameLoaded) then
+        petFrameLoaded = true
+        lib:RegisterFrame(PetFrame, "Pet", EditModeExpandedDB.PetFrame)
     end
 end)
 
 f:RegisterEvent("ADDON_LOADED")
+f:RegisterEvent("UNIT_PET")

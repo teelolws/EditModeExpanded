@@ -3,7 +3,7 @@ local lib = LibStub:NewLibrary(MAJOR, MINOR)
 
 local index = 13
 local frames = {}
-local coordinateDB = {}
+--local coordinateDB = {}
 
 -- Custom version of FrameXML\Mixin.lua where I instead do *not* overwrite existing functions 
 local function Mixin(object, ...)
@@ -76,27 +76,31 @@ end
 -- param2: name, localized name to appear when the frame is selected during Edit Mode
 -- param3: db, a table in your saved variables to save the frame position in
 function lib.RegisterFrame(frame, name, db)
+    -- IMPORTANT: force update every patch incase of UI changes that cause problems and/or make this library redundant!
+    if not (GetBuildInfo() == "10.0.0") then return end
+
     if frame == MicroButtonAndBagsBar then
+        if MicroButtonAndBagsBarMovable then return end
         frame = duplicateMicroButtonAndBagsBar()
     end
     
      
     table.insert(frames, frame)
-    table.insert(coordinateDB, db)
+    --table.insert(coordinateDB, db)
     
     Mixin(frame, EditModeSystemMixin)
     
     frame.system = index
     index = index + 1
 
-    frame.SetScaleBase = frame.SetScale;
-	frame.SetScale = frame.SetScaleOverride;
+    --frame.SetScaleBase = frame.SetScale;
+	--frame.SetScale = frame.SetScaleOverride;
 
-	frame.SetPointBase = frame.SetPoint;
-	frame.SetPoint = frame.SetPointOverride;
+	--frame.SetPointBase = frame.SetPoint;
+	--frame.SetPoint = frame.SetPointOverride;
 
-	frame.ClearAllPointsBase = frame.ClearAllPoints;
-	frame.ClearAllPoints = frame.ClearAllPointsOverride;
+	--frame.ClearAllPointsBase = frame.ClearAllPoints;
+	--frame.ClearAllPoints = frame.ClearAllPointsOverride;
 
 	frame.Selection = CreateFrame("Frame", nil, frame, "EditModeSystemSelectionTemplate")
     frame.Selection:SetAllPoints(frame)
@@ -128,10 +132,12 @@ function lib.RegisterFrame(frame, name, db)
         end
     end
     
-    frame:SetScript("OnDragStop", function(self)
-    	if self:CanBeMoved() then
-    		self:StopMovingOrSizing();
+    frame.Selection:SetScript("OnDragStop", function(self)
+    	if frame:CanBeMoved() then
+    		frame:StopMovingOrSizing();
     	end
+        db.x, db.y = self:GetRect()
+        print(self:GetRect())
     end)
     
     function frame:ClearHighlight()
@@ -145,6 +151,13 @@ function lib.RegisterFrame(frame, name, db)
     
     function frame:SetHasActiveChanges(hasActiveChanges)
     	self.hasActiveChanges = hasActiveChanges;
+    end
+    
+    if db.x and db.y then
+        frame:ClearAllPoints()
+        frame:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", db.x, db.y)
+    else
+        db.x, db.y = frame:GetRect()
     end
 end
 

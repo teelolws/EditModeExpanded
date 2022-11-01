@@ -1,4 +1,10 @@
 ## Interface: 100000
+## Title: Edit Mode Expanded
+## Version: 10.0-001
+## Notes: Expands Edit Mode to apply to other frames
+## Author: Teelo
+## SavedVariablesPerCharacter: EditModeExpandedDB
+## X-Curse-Project-ID: 0
 
 libs\LibStub.lua
 libs\EditModeExpanded-1.0\EditModeExpanded-1.0.lua

@@ -7,10 +7,12 @@ f:SetScript("OnEvent", function(__, event, arg1)
         if not EditModeExpandedDB.MicroButtonAndBagsBar then EditModeExpandedDB.MicroButtonAndBagsBar = {} end
         if not EditModeExpandedDB.StatusTrackingBarManager then EditModeExpandedDB.StatusTrackingBarManager = {} end
         if not EditModeExpandedDB.QueueStatusButton then EditModeExpandedDB.QueueStatusButton = {} end
+        if not EditModeExpandedDB.TotemFrame then EditModeExpandedDB.TotemFrame = {} end
 
         lib.RegisterFrame(MicroButtonAndBagsBar, "Micro Menu", EditModeExpandedDB.MicroButtonAndBagsBar)
         lib.RegisterFrame(StatusTrackingBarManager, "Experience Bar", EditModeExpandedDB.StatusTrackingBarManager)
         lib.RegisterFrame(QueueStatusButton, "LFG", EditModeExpandedDB.QueueStatusButton)
+        lib.RegisterFrame(TotemFrame, "Spell Timers", EditModeExpandedDB.TotemFrame)
     end
 end)
 

@@ -68,6 +68,8 @@ local function duplicateMicroButtonAndBagsBar()
     CharacterBag3Slot:SetParent(duplicate)
     CharacterReagentBag0Slot:SetParent(duplicate)
     
+    QueueStatusButton:SetParent(duplicate)
+    
     return duplicate
 end
 

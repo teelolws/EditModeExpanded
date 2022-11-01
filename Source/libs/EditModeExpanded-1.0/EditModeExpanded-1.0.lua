@@ -105,12 +105,12 @@ function lib:RegisterFrame(frame, name, db)
     end
     
     EditModeManagerExpandedFrame.AccountSettings.Settings[frame.system] = CreateFrame("Frame", nil, EditModeManagerExpandedFrame.AccountSettings, "EditModeCheckButtonTemplate")
-    EditModeManagerExpandedFrame.AccountSettings.Settings[frame.system].Label:SetText(name)
+    EditModeManagerExpandedFrame.AccountSettings.Settings[frame.system]:SetLabelText(name)
     EditModeManagerExpandedFrame.AccountSettings.Settings[frame.system].index = frame.system
     if frame.system == 13 then
         EditModeManagerExpandedFrame.AccountSettings.Settings[frame.system]:SetPoint("TOPLEFT")
     else
-        EditModeManagerExpandedFrame.AccountSettings.Settings[frame.system]:SetPoint("TOPLEFT", EditModeManagerExpandedFrame.AccountSettings[(frame.system - 1)], "BOTTOMLEFT")
+        EditModeManagerExpandedFrame.AccountSettings.Settings[frame.system]:SetPoint("TOPLEFT", EditModeManagerExpandedFrame.AccountSettings.Settings[(frame.system - 1)], "BOTTOMLEFT")
     end
     EditModeManagerExpandedFrame:Layout()
 end
@@ -127,7 +127,7 @@ EditModeManagerExpandedFrame.Title:SetText("Expanded")
 EditModeManagerExpandedFrame.Border = CreateFrame("Frame", nil, EditModeManagerExpandedFrame, "DialogBorderTranslucentTemplate")
 EditModeManagerExpandedFrame.Border.ignoreInLayout = true
 EditModeManagerExpandedFrame.AccountSettings = CreateFrame("Frame", nil, EditModeManagerExpandedFrame, "VerticalLayoutFrame")
-EditModeManagerExpandedFrame.AccountSettings:SetPoint("TOP", 0, -135)
+EditModeManagerExpandedFrame.AccountSettings:SetPoint("TOP", 0, -55)
 EditModeManagerExpandedFrame.AccountSettings.Settings = CreateFrame("Frame", nil, EditModeManagerExpandedFrame.AccountSettings, "ResizeLayoutFrame")
 EditModeManagerExpandedFrame.AccountSettings.Settings.layoutIndex = 1
 EditModeManagerExpandedFrame.AccountSettings.Settings.fixedWidth = 200

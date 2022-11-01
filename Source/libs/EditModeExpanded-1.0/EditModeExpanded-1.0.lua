@@ -29,6 +29,10 @@ end
 -- param2: name, localized name to appear when the frame is selected during Edit Mode
 -- param3: db, a table in your saved variables to save the frame position in
 function lib:RegisterFrame(frame, name, db)
+    assert(type(frame) == "table")
+    assert(type(name) == "string")
+    assert(type(db) == "table")
+    
     -- IMPORTANT: force update every patch incase of UI changes that cause problems and/or make this library redundant!
     if not (GetBuildInfo() == "10.0.0") then return end
      
@@ -99,6 +103,10 @@ end
 
 -- use this if a frame by default doesn't have a size set yet
 function lib:SetDefaultSize(frame, x, y)
+    assert(type(frame) == "table")
+    assert(type(x) == "number")
+    assert(type(y) == "number")
+    
     defaultSize[frame.system] = {["x"] = x, ["y"] = y}
 end
 

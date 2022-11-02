@@ -5,7 +5,7 @@ local lib = LibStub:GetLibrary("EditModeExpanded-1.0")
 local function duplicateMicroButtonAndBagsBar()
     MicroButtonAndBagsBar:Hide()
     local duplicate = CreateFrame("Frame", "MicroButtonAndBagsBarMovable", UIParent)
-    duplicate:SetSize(232, 80)
+    duplicate:SetSize(232, 40)
     duplicate:SetPoint("BOTTOMRIGHT")
     duplicate.QuickKeybindsMicroBagBarGlow = duplicate:CreateTexture(nil, "BACKGROUND")
     duplicate.QuickKeybindsMicroBagBarGlow:SetAtlas("QuickKeybind_BagMicro_Glow", true)
@@ -51,39 +51,57 @@ local function duplicateMicroButtonAndBagsBar()
     
     QueueStatusButton:SetParent(duplicate)
     
-    return duplicate
+    -- Now split the Backpack section into its own bar
+    local backpackBar = CreateFrame("Frame", "EditModeExpandedBackpackBar", UIParent)
+    backpackBar:SetSize(232, 40)
+    backpackBar:SetPoint("BOTTOMRIGHT", duplicate, "TOPRIGHT")
+    MainMenuBarBackpackButton:ClearAllPoints()
+    MainMenuBarBackpackButton:SetPoint("BOTTOMRIGHT", backpackBar, "BOTTOMRIGHT")
+    MainMenuBarBackpackButton:SetParent(backpackBar)
 end
 
+local defaults = {
+    profile = {
+        MicroButtonAndBagsBar = {},
+        BackpackBar = {},
+        StatusTrackingBarManager = {},
+        QueueStatusButton = {},
+        TotemFrame = {},
+        PetFrame = {},
+        DurabilityFrame = {},
+        VehicleSeatIndicator = {},
+    }
+}
+
 local petFrameLoaded
+local addonLoaded
 local f = CreateFrame("Frame")
 f:SetScript("OnEvent", function(__, event, arg1)
-    if (event == "ADDON_LOADED" and arg1 == "EditModeExpanded") then
-        if not EditModeExpandedDB then EditModeExpandedDB = {} end
-        if not EditModeExpandedDB.MicroButtonAndBagsBar then EditModeExpandedDB.MicroButtonAndBagsBar = {} end
-        if not EditModeExpandedDB.StatusTrackingBarManager then EditModeExpandedDB.StatusTrackingBarManager = {} end
-        if not EditModeExpandedDB.QueueStatusButton then EditModeExpandedDB.QueueStatusButton = {} end
-        if not EditModeExpandedDB.TotemFrame then EditModeExpandedDB.TotemFrame = {} end
-        if not EditModeExpandedDB.PetFrame then EditModeExpandedDB.PetFrame = {} end
-        if not EditModeExpandedDB.DurabilityFrame then EditModeExpandedDB.DurabilityFrame = {} end
-        if not EditModeExpandedDB.VehicleSeatIndicator then EditModeExpandedDB.VehicleSeatIndicator = {} end
+    if (event == "ADDON_LOADED") and (arg1 == "EditModeExpanded") and (not addonLoaded) then
+        addonLoaded = true
+        f.db = LibStub("AceDB-3.0"):New("EditModeExpandedDB", defaults)
+        
+        local db = f.db.profile
 
         duplicateMicroButtonAndBagsBar()
-        lib:RegisterFrame(MicroButtonAndBagsBarMovable, "Micro Menu", EditModeExpandedDB.MicroButtonAndBagsBar)
-        lib:RegisterFrame(StatusTrackingBarManager, "Experience Bar", EditModeExpandedDB.StatusTrackingBarManager)
-        lib:RegisterFrame(QueueStatusButton, "LFG", EditModeExpandedDB.QueueStatusButton)
+        lib:RegisterFrame(MicroButtonAndBagsBarMovable, "Micro Menu", db.MicroButtonAndBagsBar)
+        lib:RegisterFrame(EditModeExpandedBackpackBar, "Backpack", db.BackpackBar)
         
-        lib:RegisterFrame(TotemFrame, "Totem", EditModeExpandedDB.TotemFrame)
+        lib:RegisterFrame(StatusTrackingBarManager, "Experience Bar", db.StatusTrackingBarManager)
+        lib:RegisterFrame(QueueStatusButton, "LFG", db.QueueStatusButton)
+        
+        lib:RegisterFrame(TotemFrame, "Totem", db.TotemFrame)
         lib:SetDefaultSize(TotemFrame, 100, 40)
 
         DurabilityFrame:SetParent(UIParent)
-        lib:RegisterFrame(DurabilityFrame, "Durability", EditModeExpandedDB.DurabilityFrame)
+        lib:RegisterFrame(DurabilityFrame, "Durability", db.DurabilityFrame)
         
         VehicleSeatIndicator:SetParent(UIParent)
         VehicleSeatIndicator:SetPoint("TOPLEFT", DurabilityFrame, "TOPLEFT")
-        lib:RegisterFrame(VehicleSeatIndicator, "Vehicle Seats", EditModeExpandedDB.VehicleSeatIndicator)
-    elseif (event == "UNIT_PET") and (not petFrameLoaded) then
+        lib:RegisterFrame(VehicleSeatIndicator, "Vehicle Seats", db.VehicleSeatIndicator)
+    elseif (event == "UNIT_PET") and (not petFrameLoaded) and (addonLoaded) then
         petFrameLoaded = true
-        lib:RegisterFrame(PetFrame, "Pet", EditModeExpandedDB.PetFrame)
+        lib:RegisterFrame(PetFrame, "Pet", f.db.profile.PetFrame)
     end
 end)
 

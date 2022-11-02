@@ -1,6 +1,7 @@
 local CURRENT_BUILD = "10.0.0"
 local MAJOR, MINOR = "EditModeExpanded-1.0", 2
 local lib = LibStub:NewLibrary(MAJOR, MINOR)
+if not lib then return end
 
 -- the internal frames provided by Blizzard go up to index 12. They reference an Enum.
 local index = 13
@@ -52,7 +53,7 @@ function lib:RegisterFrame(frame, name, db)
     frame.defaultHideSelection = true
     frame.Selection:Hide()
     
-    frame.systemNameString = name or "Unnamed Frame"
+    frame.systemNameString = name
     frame.systemName = frame.systemNameString;
 	frame.Selection:SetLabelText(frame.systemName);
 	frame:SetupSettingsDialogAnchor();
@@ -113,6 +114,14 @@ function lib:RegisterFrame(frame, name, db)
         EditModeManagerExpandedFrame.AccountSettings.Settings[frame.system]:SetPoint("TOPLEFT", EditModeManagerExpandedFrame.AccountSettings.Settings[(frame.system - 1)], "BOTTOMLEFT")
     end
     EditModeManagerExpandedFrame:Layout()
+    
+    if db.enabled == nil then db.enabled = true end
+    EditModeManagerExpandedFrame.AccountSettings.Settings[frame.system]:SetControlChecked(db.enabled)
+    EditModeManagerExpandedFrame.AccountSettings.Settings[frame.system].OnCheckButtonClick = function(self)
+        local isChecked = self:IsControlChecked()
+        db.enabled = isChecked
+        frame:SetShown(isChecked)
+    end
 end
 
 if not (GetBuildInfo() == CURRENT_BUILD) then return end
@@ -121,13 +130,14 @@ local EditModeManagerExpandedFrame = CreateFrame("Frame", "EditModeManagerExpand
 EditModeManagerExpandedFrame:Hide()
 EditModeManagerExpandedFrame:SetPoint("TOPLEFT", EditModeManagerFrame, "TOPRIGHT", 2, 0)
 EditModeManagerExpandedFrame:SetPoint("BOTTOMLEFT", EditModeManagerFrame, "BOTTOMRIGHT", 2, 0)
-EditModeManagerExpandedFrame.Title = EditModeManagerExpandedFrame:CreateFontString(nil, "ARTWORK", "GameFontHighlightLarge")
+EditModeManagerExpandedFrame.Title = EditModeManagerExpandedFrame:CreateFontString(nil, "ARTWORK", "GameFontHighlightMedium")
 EditModeManagerExpandedFrame.Title:SetPoint("TOP", 0, -15)
 EditModeManagerExpandedFrame.Title:SetText("Expanded")
 EditModeManagerExpandedFrame.Border = CreateFrame("Frame", nil, EditModeManagerExpandedFrame, "DialogBorderTranslucentTemplate")
 EditModeManagerExpandedFrame.Border.ignoreInLayout = true
 EditModeManagerExpandedFrame.AccountSettings = CreateFrame("Frame", nil, EditModeManagerExpandedFrame, "VerticalLayoutFrame")
-EditModeManagerExpandedFrame.AccountSettings:SetPoint("TOP", 0, -55)
+EditModeManagerExpandedFrame.AccountSettings.fixedWidth = 200
+EditModeManagerExpandedFrame.AccountSettings:SetPoint("TOP", 10, -55)
 EditModeManagerExpandedFrame.AccountSettings.Settings = CreateFrame("Frame", nil, EditModeManagerExpandedFrame.AccountSettings, "ResizeLayoutFrame")
 EditModeManagerExpandedFrame.AccountSettings.Settings.layoutIndex = 1
 EditModeManagerExpandedFrame.AccountSettings.Settings.fixedWidth = 200
@@ -156,7 +166,7 @@ hooksecurefunc(EditModeManagerFrame, "EnterEditMode", function(self)
         frame:SetHasActiveChanges(false)
         frame:HighlightSystem();
         wasVisible[frame.system] = frame:IsShown()
-        frame:Show()
+        frame:SetShown(framesDB[frame.system].enabled)
         local x, y = frame:GetSize()
         if (x < 40) or (y < 40) then
             originalSize[frame.system] = {["x"] = x, ["y"] = y}

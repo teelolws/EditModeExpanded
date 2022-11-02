@@ -70,6 +70,7 @@ local defaults = {
         PetFrame = {},
         DurabilityFrame = {},
         VehicleSeatIndicator = {},
+        HolyPower = {},
     }
 }
 
@@ -99,6 +100,11 @@ f:SetScript("OnEvent", function(__, event, arg1)
         VehicleSeatIndicator:SetParent(UIParent)
         VehicleSeatIndicator:SetPoint("TOPLEFT", DurabilityFrame, "TOPLEFT")
         lib:RegisterFrame(VehicleSeatIndicator, "Vehicle Seats", db.VehicleSeatIndicator)
+        
+        local _, class = UnitClass("player")
+        if class == "PALADIN" then
+            lib:RegisterFrame(PaladinPowerBarFrame, "Holy Power", db.HolyPower)
+        end
     elseif (event == "UNIT_PET") and (not petFrameLoaded) and (addonLoaded) then
         petFrameLoaded = true
         lib:RegisterFrame(PetFrame, "Pet", f.db.profile.PetFrame)

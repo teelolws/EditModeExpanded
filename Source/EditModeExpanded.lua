@@ -42,12 +42,6 @@ local function duplicateMicroButtonAndBagsBar()
     
     MainMenuBarBackpackButton:SetPoint("TOPRIGHT", duplicate, -4, 2)
     MainMenuBarBackpackButton:SetParent(duplicate)
-    BagBarExpandToggle:SetParent(duplicate)
-    CharacterBag0Slot:SetParent(duplicate)
-    CharacterBag1Slot:SetParent(duplicate)
-    CharacterBag2Slot:SetParent(duplicate)
-    CharacterBag3Slot:SetParent(duplicate)
-    CharacterReagentBag0Slot:SetParent(duplicate)
     
     QueueStatusButton:SetParent(duplicate)
     
@@ -58,6 +52,12 @@ local function duplicateMicroButtonAndBagsBar()
     MainMenuBarBackpackButton:ClearAllPoints()
     MainMenuBarBackpackButton:SetPoint("BOTTOMRIGHT", backpackBar, "BOTTOMRIGHT")
     MainMenuBarBackpackButton:SetParent(backpackBar)
+    BagBarExpandToggle:SetParent(backpackBar)
+    CharacterBag0Slot:SetParent(backpackBar)
+    CharacterBag1Slot:SetParent(backpackBar)
+    CharacterBag2Slot:SetParent(backpackBar)
+    CharacterBag3Slot:SetParent(backpackBar)
+    CharacterReagentBag0Slot:SetParent(backpackBar)
 end
 
 local defaults = {

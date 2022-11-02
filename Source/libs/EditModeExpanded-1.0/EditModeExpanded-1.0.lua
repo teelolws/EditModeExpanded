@@ -104,44 +104,48 @@ function lib:RegisterFrame(frame, name, db)
     else
         db.x, db.y = frame:GetRect()
     end
+
+    EditModeManagerExpandedFrame.AccountSettings[frame.system] = CreateFrame("CheckButton", nil, EditModeManagerExpandedFrame.AccountSettings, "UICheckButtonTemplate")
+    local checkButtonFrame = EditModeManagerExpandedFrame.AccountSettings[frame.system]
     
-    EditModeManagerExpandedFrame.AccountSettings.Settings[frame.system] = CreateFrame("Frame", nil, EditModeManagerExpandedFrame.AccountSettings, "EditModeCheckButtonTemplate")
-    EditModeManagerExpandedFrame.AccountSettings.Settings[frame.system]:SetLabelText(name)
-    EditModeManagerExpandedFrame.AccountSettings.Settings[frame.system].index = frame.system
-    if frame.system == 13 then
-        EditModeManagerExpandedFrame.AccountSettings.Settings[frame.system]:SetPoint("TOPLEFT")
-    else
-        EditModeManagerExpandedFrame.AccountSettings.Settings[frame.system]:SetPoint("TOPLEFT", EditModeManagerExpandedFrame.AccountSettings.Settings[(frame.system - 1)], "BOTTOMLEFT")
-    end
-    EditModeManagerExpandedFrame:Layout()
-    
-    if db.enabled == nil then db.enabled = true end
-    EditModeManagerExpandedFrame.AccountSettings.Settings[frame.system]:SetControlChecked(db.enabled)
-    EditModeManagerExpandedFrame.AccountSettings.Settings[frame.system].OnCheckButtonClick = function(self)
-        local isChecked = self:IsControlChecked()
+    checkButtonFrame:SetScript("OnClick", function(self)
+        local isChecked = self:GetChecked()
         db.enabled = isChecked
         frame:SetShown(isChecked)
+    end)
+    
+    checkButtonFrame.Text:SetText(name)
+    checkButtonFrame.Text:SetFontObject(GameFontHighlightSmall)
+    
+    checkButtonFrame.index = frame.system
+    if frame.system == 13 then
+        checkButtonFrame:SetPoint("TOPLEFT", EditModeManagerExpandedFrame.AccountSettings, "TOPLEFT", 20, 0)
+        checkButtonFrame:SetSize(32, 32)
+    else
+        checkButtonFrame:SetPoint("TOPLEFT", EditModeManagerExpandedFrame.AccountSettings[frame.system - 1], "BOTTOMLEFT", 0, 10)
+        checkButtonFrame:SetSize(32, 32)
     end
+    
+    if db.enabled == nil then db.enabled = true end
+    checkButtonFrame:SetChecked(db.enabled)
+
 end
 
 if not (GetBuildInfo() == CURRENT_BUILD) then return end
 
-local EditModeManagerExpandedFrame = CreateFrame("Frame", "EditModeManagerExpandedFrame", nil, "ResizeLayoutFrame")
+local EditModeManagerExpandedFrame = CreateFrame("Frame", "EditModeManagerExpandedFrame", nil)
 EditModeManagerExpandedFrame:Hide()
 EditModeManagerExpandedFrame:SetPoint("TOPLEFT", EditModeManagerFrame, "TOPRIGHT", 2, 0)
 EditModeManagerExpandedFrame:SetPoint("BOTTOMLEFT", EditModeManagerFrame, "BOTTOMRIGHT", 2, 0)
+EditModeManagerExpandedFrame:SetWidth(250)
 EditModeManagerExpandedFrame.Title = EditModeManagerExpandedFrame:CreateFontString(nil, "ARTWORK", "GameFontHighlightMedium")
 EditModeManagerExpandedFrame.Title:SetPoint("TOP", 0, -15)
 EditModeManagerExpandedFrame.Title:SetText("Expanded")
 EditModeManagerExpandedFrame.Border = CreateFrame("Frame", nil, EditModeManagerExpandedFrame, "DialogBorderTranslucentTemplate")
-EditModeManagerExpandedFrame.Border.ignoreInLayout = true
-EditModeManagerExpandedFrame.AccountSettings = CreateFrame("Frame", nil, EditModeManagerExpandedFrame, "VerticalLayoutFrame")
-EditModeManagerExpandedFrame.AccountSettings.fixedWidth = 200
-EditModeManagerExpandedFrame.AccountSettings:SetPoint("TOP", 10, -55)
-EditModeManagerExpandedFrame.AccountSettings.Settings = CreateFrame("Frame", nil, EditModeManagerExpandedFrame.AccountSettings, "ResizeLayoutFrame")
-EditModeManagerExpandedFrame.AccountSettings.Settings.layoutIndex = 1
-EditModeManagerExpandedFrame.AccountSettings.Settings.fixedWidth = 200
-EditModeManagerExpandedFrame.AccountSettings.Settings:Layout()
+EditModeManagerExpandedFrame.AccountSettings = CreateFrame("Frame", nil, EditModeManagerExpandedFrame)
+EditModeManagerExpandedFrame.AccountSettings:SetPoint("TOPLEFT", 0, -35)
+EditModeManagerExpandedFrame.AccountSettings:SetPoint("BOTTOMLEFT", 10, 10)
+EditModeManagerExpandedFrame.AccountSettings:SetWidth(200)
 
 EditModeManagerFrame:HookScript("OnShow", function()
     EditModeManagerExpandedFrame:Show()

@@ -27,6 +27,70 @@ local function Mixin(object, ...)
     return object;
 end
 
+-- MicroButtonAndBagsBar:GetTop gets checked by EditModeManager, setting the scale of the Right Action bars
+-- to allow it to be moved, we need to duplicate the frame, hide the original, and make the duplicate the one being moved instead
+local function duplicateMicroButtonAndBagsBar(db)
+    MicroButtonAndBagsBar:Hide()
+    local duplicate = CreateFrame("Frame", "MicroButtonAndBagsBarMovable", UIParent)
+    duplicate:SetSize(232, 40)
+    duplicate:SetPoint("BOTTOMRIGHT")
+    duplicate.QuickKeybindsMicroBagBarGlow = duplicate:CreateTexture(nil, "BACKGROUND")
+    duplicate.QuickKeybindsMicroBagBarGlow:SetAtlas("QuickKeybind_BagMicro_Glow", true)
+    duplicate.QuickKeybindsMicroBagBarGlow:Hide()
+    duplicate.QuickKeybindsMicroBagBarGlow:SetPoint("CENTER", duplicate, "CENTER", -30, 30)
+    
+    hooksecurefunc("MoveMicroButtons", function(anchor, anchorTo, relAnchor, x, y, isStacked)
+        if anchorTo == MicroButtonAndBagsBar then
+            anchorTo = duplicate
+            CharacterMicroButton:ClearAllPoints();
+            CharacterMicroButton:SetPoint(anchor, anchorTo, relAnchor, x, y);
+        end
+    end)
+    
+    hooksecurefunc(MicroButtonAndBagsBar.QuickKeybindsMicroBagBarGlow, "SetShown", function(self, showEffects)
+        duplicate.QuickKeybindsMicroBagBarGlow:SetShown(showEffects)
+    end)
+    
+    duplicate:Show()
+    CharacterMicroButton:ClearAllPoints();
+    CharacterMicroButton:SetPoint("BOTTOMLEFT", duplicate, "BOTTOMLEFT", 7, 6)
+    CharacterMicroButton:SetParent(duplicate)
+    SpellbookMicroButton:SetParent(duplicate)
+    TalentMicroButton:SetParent(duplicate)
+    AchievementMicroButton:SetParent(duplicate)
+    QuestLogMicroButton:SetParent(duplicate)
+    GuildMicroButton:SetParent(duplicate)
+    LFDMicroButton:SetParent(duplicate)
+    CollectionsMicroButton:SetParent(duplicate)
+    EJMicroButton:SetParent(duplicate)
+    StoreMicroButton:SetParent(duplicate)
+    MainMenuMicroButton:SetParent(duplicate)
+    HelpMicroButton:SetParent(duplicate)
+    
+    MainMenuBarBackpackButton:SetPoint("TOPRIGHT", duplicate, -4, 2)
+    MainMenuBarBackpackButton:SetParent(duplicate)
+    
+    QueueStatusButton:SetParent(duplicate)
+    
+    -- Now split the Backpack section into its own bar
+    local backpackBar = CreateFrame("Frame", "EditModeExpandedBackpackBar", UIParent)
+    backpackBar:SetSize(232, 40)
+    backpackBar:SetPoint("BOTTOMRIGHT", duplicate, "TOPRIGHT")
+    MainMenuBarBackpackButton:ClearAllPoints()
+    MainMenuBarBackpackButton:SetPoint("BOTTOMRIGHT", backpackBar, "BOTTOMRIGHT")
+    MainMenuBarBackpackButton:SetParent(backpackBar)
+    BagBarExpandToggle:SetParent(backpackBar)
+    CharacterBag0Slot:SetParent(backpackBar)
+    CharacterBag1Slot:SetParent(backpackBar)
+    CharacterBag2Slot:SetParent(backpackBar)
+    CharacterBag3Slot:SetParent(backpackBar)
+    CharacterReagentBag0Slot:SetParent(backpackBar)
+    
+    if not db.BackpackBar then db.BackpackBar = {} end
+    lib:RegisterFrame(EditModeExpandedBackpackBar, "Backpack", db.BackpackBar)
+    return duplicate
+end
+
 -- Call this on a frame to register it for capture during Edit Mode
 -- param1: frame, the Frame to register
 -- param2: name, localized name to appear when the frame is selected during Edit Mode
@@ -35,10 +99,28 @@ function lib:RegisterFrame(frame, name, db)
     assert(type(frame) == "table")
     assert(type(name) == "string")
     assert(type(db) == "table")
-    assert(frame ~= MicroButtonAndBagsBar)
     
     -- IMPORTANT: force update every patch incase of UI changes that cause problems and/or make this library redundant!
     if not (GetBuildInfo() == CURRENT_BUILD) then return end
+    
+    -- If the frame was already registered (perhaps by another addon that uses this library), don't register it again
+    for _, f in ipairs(frames) do
+        if frame == f then
+            if (not framesDB[f.system].x) and (not framesDB[f.system].y) then
+                -- import new db settings if there are none saved in the existing db
+                framesDB[f.system].x = db.x
+                framesDB[f.system].y = db.y
+                f:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", db.x, db.y)
+            end
+            return
+        end
+    end
+    
+    if frame == MicroButtonAndBagsBar then
+        frame = duplicateMicroButtonAndBagsBar(db)
+        if not db.MenuBar then db.MenuBar = {} end
+        db = db.MenuBar
+    end
      
     table.insert(frames, frame)
     
@@ -128,7 +210,6 @@ function lib:RegisterFrame(frame, name, db)
     
     if db.enabled == nil then db.enabled = true end
     checkButtonFrame:SetChecked(db.enabled)
-
 end
 
 if not (GetBuildInfo() == CURRENT_BUILD) then return end

@@ -1,0 +1,77 @@
+<Ui>
+	<Include file="EditModeExpanded-1.0.lua"/>
+    <Frame name="EditModeExpandedSystemSettingsDialog" inherits="ResizeLayoutFrame" parent="UIParent" movable="true" clampedToScreen="true" registerForDrag="LeftButton" dontSavePosition="true" frameStrata="DIALOG"  frameLevel="200" mixin="EditModeSystemSettingsDialogMixin" hidden="true">
+		<Size x="300" y="350"/>
+		<Anchors>
+			<Anchor point="TOPLEFT"/>
+		</Anchors>
+		<KeyValues>
+			<KeyValue key="widthPadding" value="40" type="number"/>
+			<KeyValue key="heightPadding" value="40" type="number"/>
+		</KeyValues>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Title" inherits="GameFontHighlightLarge">
+					<Anchors>
+						<Anchor point="TOP" y="-15"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="Border" inherits="DialogBorderTranslucentTemplate">
+				<KeyValues>
+					<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+				</KeyValues>
+			</Frame>
+			<Button parentKey="CloseButton" inherits="UIPanelCloseButton">
+				<KeyValues>
+					<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOPRIGHT"/>
+				</Anchors>
+			</Button>
+			<Frame parentKey="Settings" inherits="VerticalLayoutFrame">
+				<Size x="1" y="1"/>
+				<KeyValues>
+					<KeyValue key="spacing" value="2" type="number"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" y="-12"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="Buttons" inherits="VerticalLayoutFrame">
+				<KeyValues>
+					<KeyValue key="spacing" value="2" type="number"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Settings" relativePoint="BOTTOMLEFT" y="-12"/>
+				</Anchors>
+				<Frames>
+					<Button parentKey="RevertChangesButton" inherits="EditModeSystemSettingsDialogButtonTemplate" text="HUD_EDIT_MODE_REVERT_CHANGES">
+						<KeyValues>
+							<KeyValue key="layoutIndex" value="1" type="number"/>
+						</KeyValues>
+					</Button>
+				</Frames>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Divider" file="Interface\FriendsFrame\UI-FriendsFrame-OnlineDivider" hidden="true">
+							<Size x="330" y="16"/>
+							<KeyValues>
+								<KeyValue key="layoutIndex" value="2" type="number"/>
+							</KeyValues>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnHide method="OnHide"/>
+			<OnDragStart method="OnDragStart"/>
+			<OnDragStop method="OnDragStop"/>
+		</Scripts>
+	</Frame>
+</Ui>

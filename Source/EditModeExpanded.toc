@@ -8,5 +8,5 @@
 
 libs\LibStub.lua
 libs\AceDB-3.0\AceDB-3.0.xml
-libs\EditModeExpanded-1.0\EditModeExpanded-1.0.lua
+libs\EditModeExpanded-1.0\EditModeExpanded-1.0.xml
 EditModeExpanded.lua

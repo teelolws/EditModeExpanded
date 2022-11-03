@@ -13,6 +13,21 @@ local wasVisible = {}
 local originalSize = {}
 local defaultSize = {}
 
+local MICRO_BUTTONS = {
+	"CharacterMicroButton",
+	"SpellbookMicroButton",
+	"TalentMicroButton",
+	"AchievementMicroButton",
+	"QuestLogMicroButton",
+	"GuildMicroButton",
+	"LFDMicroButton",
+	"EJMicroButton",
+	"CollectionsMicroButton",
+	"MainMenuMicroButton",
+	"HelpMicroButton",
+	"StoreMicroButton",
+	}
+
 -- Custom version of FrameXML\Mixin.lua where I instead do *not* overwrite existing functions 
 local function Mixin(object, ...)
     for i = 1, select("#", ...) do
@@ -52,20 +67,16 @@ local function duplicateMicroButtonAndBagsBar(db)
     end)
     
     duplicate:Show()
+    
     CharacterMicroButton:ClearAllPoints();
     CharacterMicroButton:SetPoint("BOTTOMLEFT", duplicate, "BOTTOMLEFT", 7, 6)
-    CharacterMicroButton:SetParent(duplicate)
-    SpellbookMicroButton:SetParent(duplicate)
-    TalentMicroButton:SetParent(duplicate)
-    AchievementMicroButton:SetParent(duplicate)
-    QuestLogMicroButton:SetParent(duplicate)
-    GuildMicroButton:SetParent(duplicate)
-    LFDMicroButton:SetParent(duplicate)
-    CollectionsMicroButton:SetParent(duplicate)
-    EJMicroButton:SetParent(duplicate)
-    StoreMicroButton:SetParent(duplicate)
-    MainMenuMicroButton:SetParent(duplicate)
-    HelpMicroButton:SetParent(duplicate)
+    
+    UpdateMicroButtonsParent(duplicate)
+    hooksecurefunc("UpdateMicroButtonsParent", function(parent)
+        for i=1, #MICRO_BUTTONS do
+            _G[MICRO_BUTTONS[i]]:SetParent(duplicate)
+        end
+    end)
     
     MainMenuBarBackpackButton:SetPoint("TOPRIGHT", duplicate, -4, 2)
     MainMenuBarBackpackButton:SetParent(duplicate)
@@ -105,7 +116,7 @@ function lib:RegisterFrame(frame, name, db)
     
     -- If the frame was already registered (perhaps by another addon that uses this library), don't register it again
     for _, f in ipairs(frames) do
-        if frame == f then
+        if (frame == f) or ((frame == MicroButtonAndBagsBar) and (f == MicroButtonAndBagsBarMovable)) then
             if (not framesDB[f.system].x) and (not framesDB[f.system].y) then
                 -- import new db settings if there are none saved in the existing db
                 framesDB[f.system].x = db.x
@@ -278,6 +289,7 @@ hooksecurefunc(EditModeManagerFrame, "ExitEditMode", function()
         end
     end
     wipe(wasVisible)
+    wipe(originalSize)
 end)
 
 hooksecurefunc(EditModeManagerFrame, "SelectSystem", function(self, systemFrame)

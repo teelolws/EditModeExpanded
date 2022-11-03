@@ -1,7 +1,5 @@
 local lib = LibStub:GetLibrary("EditModeExpanded-1.0")
 
-
-
 local defaults = {
     profile = {
         MicroButtonAndBagsBar = {},
@@ -27,6 +25,7 @@ f:SetScript("OnEvent", function(__, event, arg1)
         local db = f.db.profile
 
         lib:RegisterFrame(MicroButtonAndBagsBar, "Micro Menu", db.MicroButtonAndBagsBar)
+        lib:RegisterResizable(MicroButtonAndBagsBarMovable)
         
         lib:RegisterFrame(StatusTrackingBarManager, "Experience Bar", db.StatusTrackingBarManager)
         lib:RegisterFrame(QueueStatusButton, "LFG", db.QueueStatusButton)

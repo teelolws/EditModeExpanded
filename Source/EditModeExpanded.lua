@@ -35,6 +35,7 @@ f:SetScript("OnEvent", function(__, event, arg1)
         lib:RegisterFrame(QueueStatusButton, "LFG", db.QueueStatusButton)
         lib:RegisterResizable(QueueStatusButton)
         
+        TotemFrame:SetParent(UIParent)
         lib:RegisterFrame(TotemFrame, "Totem", db.TotemFrame)
         lib:SetDefaultSize(TotemFrame, 100, 40)
 
@@ -52,7 +53,8 @@ f:SetScript("OnEvent", function(__, event, arg1)
         end
     elseif (event == "UNIT_PET") and (not petFrameLoaded) and (addonLoaded) then
         petFrameLoaded = true
-        lib:RegisterFrame(PetFrame, "Pet", f.db.profile.PetFrame)
+        --PetFrame:SetParent(UIParent)
+        --lib:RegisterFrame(PetFrame, "Pet", f.db.profile.PetFrame)
     end
 end)
 

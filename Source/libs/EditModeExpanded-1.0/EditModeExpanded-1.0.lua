@@ -189,7 +189,10 @@ function lib:RegisterFrame(frame, name, db)
         if frame:CanBeMoved() then
             frame:StopMovingOrSizing();
         end
+        local scale = frame:GetScale()
+        frame:SetScaleOverride(1)
         db.x, db.y = self:GetRect()
+        frame:SetScaleOverride(scale)
     end)
     
     function frame:ClearHighlight()
@@ -242,6 +245,36 @@ function lib:RegisterFrame(frame, name, db)
     	end
     	return db.settings[setting]
     end
+    
+    function frame:SetScaleOverride(newScale)
+    	local oldScale = self:GetScale();
+    
+    	self:SetScale(newScale);
+    
+    	if oldScale == newScale then
+    		return;
+    	end
+    
+    	-- Update position to try and keep the system frame in the same position since scale changes how offsets work
+    	local numPoints = self:GetNumPoints();
+    	for i = 1, numPoints do
+    		local point, relativeTo, relativePoint, offsetX, offsetY = self:GetPoint(i);
+    
+    		-- Undo old scale adjustment so we're working with 1.0 scale offsets
+    		-- Then apply the newScale adjustment
+    		offsetX = offsetX * oldScale / newScale;
+    		offsetY = offsetY * oldScale / newScale;
+    		self:SetPoint(point, relativeTo, relativePoint, offsetX, offsetY);
+    	end
+    
+    	--if (self.isBottomManagedFrame or self.isRightManagedFrame) and self:IsInDefaultPosition() then
+    	--	UIParent_ManageFramePositions();
+    	--end
+    end
+    
+    if db.settings and db.settings[Enum.EditModeUnitFrameSetting.FrameSize] then
+        frame:SetScaleOverride(db.settings[Enum.EditModeUnitFrameSetting.FrameSize]/100)
+    end
 end
 
 if not (GetBuildInfo() == CURRENT_BUILD) then return end
@@ -273,6 +306,10 @@ hooksecurefunc(f, "OnLoad", function()
     EditModeManagerFrame:HookScript("OnHide", function()
         EditModeManagerExpandedFrame:Hide()
     end)
+    
+    function EditModeManagerExpandedFrame:ClearSelectedSystem()
+    	EditModeExpandedSystemSettingsDialog:Hide();
+    end
 end)
 
 -- use this if a frame by default doesn't have a size set yet
@@ -356,7 +393,9 @@ local function ConvertValueDefault(self, value, forDisplay)
 end
 
 hooksecurefunc(f, "OnLoad", function()
-    EditModeExpandedSystemSettingsDialog.onCloseCallback = nop
+    EditModeExpandedSystemSettingsDialog.CloseButton:SetScript("OnClick", function()                                                                 
+		EditModeManagerExpandedFrame:ClearSelectedSystem();
+	end)
     
     function EditModeExpandedSystemSettingsDialog:UpdateSettings(systemFrame)
     	if systemFrame == self.attachedToSystem then
@@ -366,7 +405,7 @@ hooksecurefunc(f, "OnLoad", function()
     		local settingsToSetup = {};
     
     		local systemSettingDisplayInfo = GetSystemSettingDisplayInfo(framesDialogs[self.attachedToSystem.system]);
-    		for index, displayInfo in ipairs(systemSettingDisplayInfo) do 
+    		for index, displayInfo in ipairs(systemSettingDisplayInfo) do
   				local settingPool = self:GetSettingPool(displayInfo.type);
   				if settingPool then
   					local settingFrame;
@@ -382,7 +421,8 @@ hooksecurefunc(f, "OnLoad", function()
   					settingFrame.layoutIndex = index;
   					local settingName = (self.attachedToSystem:UseSettingAltName(displayInfo.setting) and displayInfo.altName) and displayInfo.altName or displayInfo.name;
   					local updatedDisplayInfo = self.attachedToSystem:UpdateDisplayInfoOptions(displayInfo);
-  					settingsToSetup[settingFrame] = { displayInfo = updatedDisplayInfo, currentValue = self.attachedToSystem:GetSettingValue(updatedDisplayInfo.setting), settingName = settingName },
+                    if not framesDB[self.attachedToSystem.system].settings then framesDB[self.attachedToSystem.system].settings = {} end
+  					settingsToSetup[settingFrame] = { displayInfo = updatedDisplayInfo, currentValue = (framesDB[self.attachedToSystem.system].settings[updatedDisplayInfo.setting] or 100), settingName = settingName },
   					settingFrame:Show();
   				end
     		end
@@ -433,12 +473,15 @@ hooksecurefunc(f, "OnLoad", function()
             local db = framesDB[attachedToSystem.system]
             if not db.settings then db.settings = {} end
             db.settings[setting] = value
+            if setting == Enum.EditModeUnitFrameSetting.FrameSize then
+                attachedToSystem:SetScaleOverride(value/100)
+            end
     	end
     end
     
     function EditModeExpandedSystemSettingsDialog:OnLoad()
     	local function onCloseCallback()
-    		EditModeManagerFrame:ClearSelectedSystem();
+    		EditModeExpandedManagerFrame:ClearSelectedSystem();
     	end
     
     	self.Buttons.RevertChangesButton:SetOnClickHandler(GenerateClosure(self.RevertChanges, self));
@@ -456,6 +499,7 @@ hooksecurefunc(f, "OnLoad", function()
     	end
     	self.pools:CreatePool("BUTTON", self.Buttons, "EditModeSystemSettingsDialogExtraButtonTemplate", resetExtraButton);
     end
+    EditModeExpandedSystemSettingsDialog:OnLoad()
     
     function EditModeExpandedSystemSettingsDialog:GetSettingPool(settingType)
     	if settingType == Enum.EditModeSettingDisplayType.Dropdown then

@@ -26,19 +26,26 @@ f:SetScript("OnEvent", function(__, event, arg1)
 
         lib:RegisterFrame(MicroButtonAndBagsBar, "Micro Menu", db.MicroButtonAndBagsBar)
         lib:RegisterResizable(MicroButtonAndBagsBarMovable)
+        lib:RegisterResizable(EditModeExpandedBackpackBar)
         
         lib:RegisterFrame(StatusTrackingBarManager, "Experience Bar", db.StatusTrackingBarManager)
+        lib:RegisterResizable(StatusTrackingBarManager)
+        
+        QueueStatusButton:SetParent(UIParent)
         lib:RegisterFrame(QueueStatusButton, "LFG", db.QueueStatusButton)
+        lib:RegisterResizable(QueueStatusButton)
         
         lib:RegisterFrame(TotemFrame, "Totem", db.TotemFrame)
         lib:SetDefaultSize(TotemFrame, 100, 40)
 
         DurabilityFrame:SetParent(UIParent)
         lib:RegisterFrame(DurabilityFrame, "Durability", db.DurabilityFrame)
+        lib:RegisterResizable(DurabilityFrame)
         
         VehicleSeatIndicator:SetParent(UIParent)
         VehicleSeatIndicator:SetPoint("TOPLEFT", DurabilityFrame, "TOPLEFT")
         lib:RegisterFrame(VehicleSeatIndicator, "Vehicle Seats", db.VehicleSeatIndicator)
+        lib:RegisterResizable(VehicleSeatIndicator)
         
         if UnitClassBase("player") == "PALADIN" then
             lib:RegisterFrame(PaladinPowerBarFrame, "Holy Power", db.HolyPower)

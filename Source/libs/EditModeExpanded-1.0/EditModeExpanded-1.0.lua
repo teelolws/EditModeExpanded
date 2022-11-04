@@ -158,12 +158,44 @@ function lib:RegisterFrame(frame, name, db)
 	frame.Selection:SetLabelText(frame.systemName);
 	frame:SetupSettingsDialogAnchor();
 	frame.snappedFrames = {};
-
+    frame.Selection:EnableKeyboard();
+    frame.Selection:SetPropagateKeyboardInput(true);
+    
     function frame.UpdateMagnetismRegistration() end
 
     frame.Selection:SetScript("OnMouseDown", function()
     	frame:SelectSystem()
     end)
+
+    frame.Selection:SetScript("OnKeyDown", function(self, key)
+        frame:MoveWithArrowKey(key);
+    end)
+
+    function frame:MoveWithArrowKey(key)
+        if self.isSelected then
+            x, y = self:GetRect();
+
+            local new_x = x;
+            local new_y = y;
+
+            if key == "RIGHT" then      new_x = new_x + 1;
+            elseif key == "LEFT" then   new_x = new_x - 1;
+            elseif key == "UP" then     new_y = new_y + 1;
+            elseif key == "DOWN" then   new_y = new_y - 1;
+            end
+            
+            if new_x ~= x or new_y ~= y then
+                -- consume the key used to prevent movement / cam turning
+                self.Selection:SetPropagateKeyboardInput(false);
+                db.x, db.y = new_x, new_y;
+                self:ClearAllPoints();
+                self:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", db.x, db.y);
+                return
+            end
+        end
+
+        self.Selection:SetPropagateKeyboardInput(true);
+    end
     
     function frame:SelectSystem()
         if not self.isSelected then

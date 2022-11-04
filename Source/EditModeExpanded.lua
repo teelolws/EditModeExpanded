@@ -27,6 +27,8 @@ f:SetScript("OnEvent", function(__, event, arg1)
         lib:RegisterFrame(MicroButtonAndBagsBar, "Micro Menu", db.MicroButtonAndBagsBar)
         lib:RegisterResizable(MicroButtonAndBagsBarMovable)
         lib:RegisterResizable(EditModeExpandedBackpackBar)
+        lib:RegisterHideable(MicroButtonAndBagsBarMovable)
+        lib:RegisterHideable(EditModeExpandedBackpackBar)
         
         lib:RegisterFrame(StatusTrackingBarManager, "Experience Bar", db.StatusTrackingBarManager)
         lib:RegisterResizable(StatusTrackingBarManager)

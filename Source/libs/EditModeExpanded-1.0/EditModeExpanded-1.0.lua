@@ -1,5 +1,5 @@
 local CURRENT_BUILD = "10.0.0"
-local MAJOR, MINOR = "EditModeExpanded-1.0", 6
+local MAJOR, MINOR = "EditModeExpanded-1.0", 7
 local lib = LibStub:NewLibrary(MAJOR, MINOR)
 if not lib then return end
 
@@ -8,6 +8,7 @@ local index = 13
 local frames = {}
 local framesDB = {}
 local framesDialogs = {}
+local framesDialogsKeys = {}
 
 -- run OnLoad the first time RegisterFrame is called by an addon
 local f = {}
@@ -266,6 +267,10 @@ function lib:RegisterFrame(frame, name, db)
     else
         db.x, db.y = frame:GetRect()
     end
+    
+    if db.settings and (db.settings[Enum.EditModeActionBarSetting.Hideable] ~= nil) then
+        frame:SetShown(framesDB[frame.system].settings[Enum.EditModeActionBarSetting.Hideable] ~= 1)
+    end
 end
 
 if not (GetBuildInfo() == CURRENT_BUILD) then return end
@@ -339,7 +344,12 @@ hooksecurefunc(EditModeManagerFrame, "ExitEditMode", function()
     for _, frame in ipairs(frames) do
         frame:ClearHighlight();
         frame:StopMovingOrSizing();
+        
         frame:SetShown(wasVisible[frame.system])
+        if framesDB[frame.system] and framesDB[frame.system].settings and (framesDB[frame.system].settings[Enum.EditModeActionBarSetting.Hideable] ~= nil) then
+            frame:SetShown(framesDB[frame.system].settings[Enum.EditModeActionBarSetting.Hideable] ~= 1)
+        end
+        
         if originalSize[frame.system] then
             frame:SetSize(originalSize[frame.system].x, originalSize[frame.system].y)
         end
@@ -476,7 +486,14 @@ hooksecurefunc(f, "OnLoad", function()
 					settingFrame:SetPoint("TOPLEFT");
   					settingFrame.layoutIndex = index;
                     
+                    local settingName = (self.attachedToSystem:UseSettingAltName(displayInfo.setting) and displayInfo.altName) and displayInfo.altName or displayInfo.name;
+  					local updatedDisplayInfo = self.attachedToSystem:UpdateDisplayInfoOptions(displayInfo);
+                    if not framesDB[self.attachedToSystem.system].settings then framesDB[self.attachedToSystem.system].settings = {} end
+  					
+                    local savedValue = framesDB[self.attachedToSystem.system].settings[updatedDisplayInfo.setting]
+                    
                     if displayInfo.setting == Enum.EditModeUnitFrameSetting.FrameSize then
+                        savedValue = savedValue or 100
                         settingFrame:OnLoad()
                         
                         CallbackRegistryMixin.OnLoad(settingFrame);
@@ -489,14 +506,24 @@ hooksecurefunc(f, "OnLoad", function()
                         
                         settingFrame.cbrHandles = EventUtil.CreateCallbackHandleContainer();
                     	settingFrame.cbrHandles:RegisterCallback(settingFrame.Slider, MinimalSliderWithSteppersMixin.Event.OnValueChanged, OnValueChanged, settingFrame);
-                    else
-                        print(displayInfo.setting)
                     end
                     
-  					local settingName = (self.attachedToSystem:UseSettingAltName(displayInfo.setting) and displayInfo.altName) and displayInfo.altName or displayInfo.name;
-  					local updatedDisplayInfo = self.attachedToSystem:UpdateDisplayInfoOptions(displayInfo);
-                    if not framesDB[self.attachedToSystem.system].settings then framesDB[self.attachedToSystem.system].settings = {} end
-  					settingsToSetup[settingFrame] = { displayInfo = updatedDisplayInfo, currentValue = (framesDB[self.attachedToSystem.system].settings[updatedDisplayInfo.setting] or 100), settingName = settingName },
+                    if displayInfo.setting == Enum.EditModeActionBarSetting.Hideable then
+                        savedValue = framesDB[EditModeExpandedSystemSettingsDialog.attachedToSystem.system].settings[displayInfo.setting]
+                        if savedValue == nil then savedValue = 0 end
+                        settingFrame.Button:SetChecked(savedValue)
+                        settingFrame.Button:HookScript("OnClick", function()
+                            if settingFrame.Button:GetChecked() then
+                                framesDB[EditModeExpandedSystemSettingsDialog.attachedToSystem.system].settings[displayInfo.setting] = 1
+                                EditModeExpandedSystemSettingsDialog.attachedToSystem:Hide()
+                            else
+                                framesDB[EditModeExpandedSystemSettingsDialog.attachedToSystem.system].settings[displayInfo.setting] = 0
+                                EditModeExpandedSystemSettingsDialog.attachedToSystem:Show()
+                            end
+                        end)
+                    end
+                    
+  					settingsToSetup[settingFrame] = { displayInfo = updatedDisplayInfo, currentValue = savedValue, settingName = settingName },
   					settingFrame:Show();
   				end
     		end
@@ -521,6 +548,9 @@ end)
 -- param1: custom system frame
 function lib:RegisterResizable(frame)
     if not framesDialogs[frame.system] then framesDialogs[frame.system] = {} end
+    if framesDialogsKeys[frame.system] and framesDialogsKeys[frame.system][Enum.EditModeUnitFrameSetting.FrameSize] then return end
+    if not framesDialogsKeys[frame.system] then framesDialogsKeys[frame.system] = {} end
+    framesDialogsKeys[frame.system][Enum.EditModeUnitFrameSetting.FrameSize] = true
     table.insert(framesDialogs[frame.system],
 		{
 			setting = Enum.EditModeUnitFrameSetting.FrameSize,
@@ -534,6 +564,19 @@ function lib:RegisterResizable(frame)
 		})
 end
 
+Enum.EditModeActionBarSetting.Hideable = 10 
+function lib:RegisterHideable(frame)
+    if not framesDialogs[frame.system] then framesDialogs[frame.system] = {} end
+    if framesDialogsKeys[frame.system] and framesDialogsKeys[frame.system][Enum.EditModeActionBarSetting.Hideable] then return end
+    if not framesDialogsKeys[frame.system] then framesDialogsKeys[frame.system] = {} end
+    framesDialogsKeys[frame.system][Enum.EditModeActionBarSetting.Hideable] = true
+    table.insert(framesDialogs[frame.system],
+        {
+            setting = Enum.EditModeActionBarSetting.Hideable,
+            name = "Hide",
+            type = Enum.EditModeSettingDisplayType.Checkbox,
+    })
+end
 
 
 hooksecurefunc(f, "OnLoad", function()

@@ -11,6 +11,7 @@ local defaults = {
         DurabilityFrame = {},
         VehicleSeatIndicator = {},
         HolyPower = {},
+        Achievements = {},
     }
 }
 
@@ -53,6 +54,12 @@ f:SetScript("OnEvent", function(__, event, arg1)
         if UnitClassBase("player") == "PALADIN" then
             lib:RegisterFrame(PaladinPowerBarFrame, "Holy Power", db.HolyPower)
         end
+        
+        if ( not AchievementFrame ) then
+			AchievementFrame_LoadUI()
+        end
+        lib:RegisterFrame(AchievementAlertSystem.alertContainer, "Achievements", db.Achievements)
+        lib:SetDefaultSize(AchievementAlertSystem.alertContainer, 300, 80)
     elseif (event == "UNIT_PET") and (not petFrameLoaded) and (addonLoaded) then
         petFrameLoaded = true
         --PetFrame:SetParent(UIParent)

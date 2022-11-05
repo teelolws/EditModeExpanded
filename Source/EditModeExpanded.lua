@@ -25,11 +25,13 @@ f:SetScript("OnEvent", function(__, event, arg1)
         
         local db = f.db.profile
 
-        lib:RegisterFrame(MicroButtonAndBagsBar, "Micro Menu", db.MicroButtonAndBagsBar)
-        lib:RegisterResizable(MicroButtonAndBagsBarMovable)
-        lib:RegisterResizable(EditModeExpandedBackpackBar)
-        lib:RegisterHideable(MicroButtonAndBagsBarMovable)
-        lib:RegisterHideable(EditModeExpandedBackpackBar)
+        if not IsAddOnLoaded("Bartender4") then -- moving/resizing found to be incompatible
+            lib:RegisterFrame(MicroButtonAndBagsBar, "Micro Menu", db.MicroButtonAndBagsBar)
+            lib:RegisterResizable(MicroButtonAndBagsBarMovable)
+            lib:RegisterResizable(EditModeExpandedBackpackBar)
+            lib:RegisterHideable(MicroButtonAndBagsBarMovable)
+            lib:RegisterHideable(EditModeExpandedBackpackBar)
+        end
         
         lib:RegisterFrame(StatusTrackingBarManager, "Experience Bar", db.StatusTrackingBarManager)
         lib:RegisterResizable(StatusTrackingBarManager)

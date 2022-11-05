@@ -206,6 +206,16 @@ function lib:RegisterFrame(frame, name, db)
 
     EditModeManagerExpandedFrame.AccountSettings[frame.system] = CreateFrame("CheckButton", nil, EditModeManagerExpandedFrame.AccountSettings, "UICheckButtonTemplate")
     local checkButtonFrame = EditModeManagerExpandedFrame.AccountSettings[frame.system]
+    local resetButton = CreateFrame("Button", nil, EditModeManagerFrame, "UIPanelButtonTemplate")
+    resetButton:SetText(RESET)
+    resetButton:SetPoint("TOPLEFT", checkButtonFrame.Text, "TOPRIGHT", 5, 1)
+    resetButton:SetScript("OnClick", function()
+        frame:SetScale(1)
+        frame:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", db.defaultX, db.defaultY)
+        db.x = db.defaultX
+        db.y = db.defaultY
+        db.settings[Enum.EditModeUnitFrameSetting.FrameSize] = 100
+    end)
     
     checkButtonFrame:SetScript("OnClick", function(self)
         local isChecked = self:GetChecked()
@@ -256,6 +266,9 @@ function lib:RegisterFrame(frame, name, db)
     		self:SetPoint(point, relativeTo, relativePoint, offsetX, offsetY);
     	end
     end
+    
+    db.defaultScale = frame:GetScale()
+    db.defaultX, db.defaultY = frame:GetRect()
     
     if db.settings and db.settings[Enum.EditModeUnitFrameSetting.FrameSize] then
         frame:SetScaleOverride(db.settings[Enum.EditModeUnitFrameSetting.FrameSize]/100)

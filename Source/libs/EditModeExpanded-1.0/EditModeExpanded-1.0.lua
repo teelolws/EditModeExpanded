@@ -248,6 +248,7 @@ function lib:RegisterFrame(frame, name, db)
         frame:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", db.defaultX, db.defaultY)
         db.x = db.defaultX
         db.y = db.defaultY
+        if not db.settings then db.settings = {} end
         db.settings[Enum.EditModeUnitFrameSetting.FrameSize] = 100
     end)
     

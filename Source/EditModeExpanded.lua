@@ -61,7 +61,7 @@ f:SetScript("OnEvent", function(__, event, arg1)
 			AchievementFrame_LoadUI()
         end
         lib:RegisterFrame(AchievementAlertSystem.alertContainer, "Achievements", db.Achievements)
-        lib:SetDefaultSize(AchievementAlertSystem.alertContainer, 300, 80)
+        lib:SetDefaultSize(AchievementAlertSystem.alertContainer, 20, 20)
     elseif (event == "UNIT_PET") and (not petFrameLoaded) and (addonLoaded) then
         petFrameLoaded = true
         --PetFrame:SetParent(UIParent)

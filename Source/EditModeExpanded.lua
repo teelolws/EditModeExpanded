@@ -12,6 +12,7 @@ local defaults = {
         VehicleSeatIndicator = {},
         HolyPower = {},
         Achievements = {},
+        SoulShards = {},
     }
 }
 
@@ -39,10 +40,6 @@ f:SetScript("OnEvent", function(__, event, arg1)
         QueueStatusButton:SetParent(UIParent)
         lib:RegisterFrame(QueueStatusButton, "LFG", db.QueueStatusButton)
         lib:RegisterResizable(QueueStatusButton)
-        
-        TotemFrame:SetParent(UIParent)
-        lib:RegisterFrame(TotemFrame, "Totem", db.TotemFrame)
-        lib:SetDefaultSize(TotemFrame, 100, 40)
 
         DurabilityFrame:SetParent(UIParent)
         lib:RegisterFrame(DurabilityFrame, "Durability", db.DurabilityFrame)
@@ -53,8 +50,26 @@ f:SetScript("OnEvent", function(__, event, arg1)
         lib:RegisterFrame(VehicleSeatIndicator, "Vehicle Seats", db.VehicleSeatIndicator)
         lib:RegisterResizable(VehicleSeatIndicator)
         
-        if UnitClassBase("player") == "PALADIN" then
+        local class = UnitClassBase("player")
+        
+        if class == "PALADIN" then
             lib:RegisterFrame(PaladinPowerBarFrame, "Holy Power", db.HolyPower)
+            C_Timer.After(4, function() lib:RepositionFrame(PaladinPowerBarFrame) end)
+            lib:RegisterHideable(PaladinPowerBarFrame)
+            
+            -- Totem Frame is used for Consecration
+            TotemFrame:SetParent(UIParent)
+            lib:RegisterFrame(TotemFrame, "Totem", db.TotemFrame)
+            lib:SetDefaultSize(TotemFrame, 100, 40)
+            lib:RegisterHideable(TotemFrame)
+        elseif class == "WARLOCK" then
+            lib:RegisterFrame(WarlockPowerFrame, "Soul Shards", db.SoulShards)
+            lib:RegisterHideable(WarlockPowerFrame)
+        elseif class == "SHAMAN" then
+            TotemFrame:SetParent(UIParent)
+            lib:RegisterFrame(TotemFrame, "Totem", db.TotemFrame)
+            lib:SetDefaultSize(TotemFrame, 100, 40)
+            lib:RegisterHideable(TotemFrame)
         end
         
         if ( not AchievementFrame ) then
@@ -64,8 +79,8 @@ f:SetScript("OnEvent", function(__, event, arg1)
         lib:SetDefaultSize(AchievementAlertSystem.alertContainer, 20, 20)
     elseif (event == "UNIT_PET") and (not petFrameLoaded) and (addonLoaded) then
         petFrameLoaded = true
-        --PetFrame:SetParent(UIParent)
-        --lib:RegisterFrame(PetFrame, "Pet", f.db.profile.PetFrame)
+        PetFrame:SetParent(UIParent)
+        lib:RegisterFrame(PetFrame, "Pet", f.db.profile.PetFrame)
     end
 end)
 

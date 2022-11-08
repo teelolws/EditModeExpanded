@@ -485,6 +485,12 @@ hooksecurefunc(f, "OnLoad", function()
     frame:SetScript("OnDragStart", frame.OnDragStart)
     frame:SetScript("OnDragStop", frame.OnDragStop)
     frame:OnLoad()
+    function frame:UpdateSizeAndAnchors(systemFrame)
+    	if systemFrame == self.attachedToSystem then
+            frame:SetPoint("TOPLEFT", UIParent, "BOTTOMLEFT", 400, 500);
+    		self:Layout();
+    	end
+    end
     
     CreateFrame("Frame", "EditModeExpandedSettingSlider", frame)
     Mixin(EditModeExpandedSettingSlider, EditModeSettingSliderMixin)

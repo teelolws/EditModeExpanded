@@ -329,6 +329,12 @@ function lib:RegisterFrame(frame, name, db)
     if db.settings and (db.settings[ENUM_EDITMODEACTIONBARSETTING_HIDEABLE] ~= nil) then
         frame:SetShown(framesDB[frame.system].settings[ENUM_EDITMODEACTIONBARSETTING_HIDEABLE] ~= 1)
     end
+    
+    hooksecurefunc(frame, "AddExtraButtons", function(self)
+        self.resetToDefaultPositionButton:SetOnClickHandler(function()
+            resetButton:Click()
+        end)
+    end)
 end
 
 if not (GetBuildInfo() == CURRENT_BUILD) then return end

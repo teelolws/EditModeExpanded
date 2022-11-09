@@ -77,6 +77,9 @@ f:SetScript("OnEvent", function(__, event, arg1)
         end
         lib:RegisterFrame(AchievementAlertSystem.alertContainer, "Achievements", db.Achievements)
         lib:SetDefaultSize(AchievementAlertSystem.alertContainer, 20, 20)
+        AchievementAlertSystem.alertContainer.Selection:HookScript("OnMouseDown", function()
+            AchievementAlertSystem:AddAlert(6)
+        end)
     elseif (event == "UNIT_PET") and (not petFrameLoaded) and (addonLoaded) then
         petFrameLoaded = true
         PetFrame:SetParent(UIParent)

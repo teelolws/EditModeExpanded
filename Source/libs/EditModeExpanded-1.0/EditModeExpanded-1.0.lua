@@ -10,7 +10,8 @@ if not lib then return end
 -- the internal frames provided by Blizzard go up to index 12. They reference an Enum.
 local index = 13
 local frames = {}
-local framesDB = {}
+local baseFramesDB = {} -- the base db that includes all profiles inside
+local framesDB = {} -- the currently selected db inside the profile
 local framesDialogs = {}
 local framesDialogsKeys = {}
 
@@ -163,6 +164,7 @@ function lib:RegisterFrame(frame, name, db)
     
     frame.system = index
     index = index + 1
+    baseFramesDB[frame.system] = db 
     framesDB[frame.system] = db
 
 	frame.Selection = CreateFrame("Frame", nil, frame, "EditModeSystemSelectionTemplate")
@@ -204,6 +206,7 @@ function lib:RegisterFrame(frame, name, db)
             if new_x ~= x or new_y ~= y then
                 -- consume the key used to prevent movement / cam turning
                 self.Selection:SetPropagateKeyboardInput(false);
+                local db = framesDB[frame.system]
                 db.x, db.y = new_x, new_y;
                 self:ClearAllPoints();
                 self:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", db.x, db.y);
@@ -236,6 +239,7 @@ function lib:RegisterFrame(frame, name, db)
         if frame:CanBeMoved() then
             frame:StopMovingOrSizing();
         end
+        local db = framesDB[frame.system]
         db.x, db.y = self:GetRect()
     end)
     
@@ -254,6 +258,7 @@ function lib:RegisterFrame(frame, name, db)
 
     EditModeManagerExpandedFrame.AccountSettings[frame.system] = CreateFrame("CheckButton", nil, EditModeManagerExpandedFrame.AccountSettings, "UICheckButtonTemplate")
     local checkButtonFrame = EditModeManagerExpandedFrame.AccountSettings[frame.system]
+    frame.EMECheckButtonFrame = checkButtonFrame
     local resetButton = CreateFrame("Button", nil, EditModeManagerFrame, "UIPanelButtonTemplate")
     resetButton:SetText(RESET)
     resetButton:SetPoint("TOPLEFT", checkButtonFrame.Text, "TOPRIGHT", 20, 2)
@@ -263,6 +268,7 @@ function lib:RegisterFrame(frame, name, db)
             -- need a better solution here
             frame:SetPoint("BOTTOMLEFT", nil, "BOTTOMLEFT", db.defaultX, db.defaultY)
         end
+        local db = framesDB[frame.system]
         db.x = db.defaultX
         db.y = db.defaultY
         if not db.settings then db.settings = {} end
@@ -279,6 +285,7 @@ function lib:RegisterFrame(frame, name, db)
     
     checkButtonFrame:SetScript("OnClick", function(self)
         local isChecked = self:GetChecked()
+        local db = framesDB[frame.system]
         db.enabled = isChecked
         frame:SetShown(isChecked)
     end)
@@ -299,6 +306,7 @@ function lib:RegisterFrame(frame, name, db)
     checkButtonFrame:SetChecked(db.enabled)
     
     function frame:GetSettingValue(setting, useRawValue)
+        local db = framesDB[frame.system]
     	if (not self:IsInitialized()) or (not db.settings) or (not db.settings[settings]) then
     		return 0;
     	end
@@ -723,3 +731,57 @@ hooksecurefunc(f, "OnLoad", function()
     end
     EditModeExpandedSystemSettingsDialog:OnLoad()
 end)
+
+--
+-- Profile handling
+--
+do
+    local f = CreateFrame("Frame")
+    f:RegisterEvent("EDIT_MODE_LAYOUTS_UPDATED")
+    f:SetScript("OnEvent", function()
+        for _, frame in pairs(frames) do
+            local db = baseFramesDB[frame.system]
+            
+            -- if currently selected Edit Mode profile does not exist in the db, try importing a legacy db instead
+            local layoutInfo = EditModeManagerFrame:GetActiveLayoutInfo()
+            local profileName = layoutInfo.layoutType.."-"..layoutInfo.layoutName
+            
+            if not db.profiles then db.profiles = {} end
+            if not db.profiles[profileName] then
+                db.profiles[profileName] = {}
+                db.profiles[profileName].x = db.x
+                db.profiles[profileName].y = db.y
+                db.profiles[profileName].enabled = db.enabled
+                db.profiles[profileName].settings = db.settings
+                db.profiles[profileName].defaultX = db.defaultX
+                db.profiles[profileName].defaultY = db.defaultY
+                
+                db.x = nil
+                db.y = nil
+                db.enabled = nil
+                db.settings = nil
+            end
+            
+            db = db.profiles[profileName]
+            framesDB[frame.system] = db
+
+            if db.settings and db.settings[Enum.EditModeUnitFrameSetting.FrameSize] then
+                frame:SetScaleOverride(db.settings[Enum.EditModeUnitFrameSetting.FrameSize]/100)
+            end
+            
+            if db.x and db.y then
+                frame:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", db.x, db.y)
+            else
+                if not pcall( function() frame:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", db.defaultX, db.defaultY) end ) then
+                    frame:SetPoint("BOTTOMLEFT", nil, "BOTTOMLEFT", db.defaultX, db.defaultY)
+                end
+            end
+            
+            frame.EMECheckButtonFrame:SetChecked(db.enabled)
+            
+            if db.settings and (db.settings[ENUM_EDITMODEACTIONBARSETTING_HIDEABLE] ~= nil) then
+                frame:SetShown(framesDB[frame.system].settings[ENUM_EDITMODEACTIONBARSETTING_HIDEABLE] ~= 1)
+            end
+        end
+    end)
+end

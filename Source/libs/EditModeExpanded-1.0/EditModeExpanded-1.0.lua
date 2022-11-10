@@ -769,6 +769,7 @@ do
                 frame:SetScaleOverride(db.settings[Enum.EditModeUnitFrameSetting.FrameSize]/100)
             end
             
+            frame:ClearAllPoints()
             if db.x and db.y then
                 frame:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", db.x, db.y)
             else

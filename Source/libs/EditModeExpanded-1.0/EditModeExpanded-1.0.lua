@@ -1,3 +1,7 @@
+--
+-- Internal variables
+--
+
 local CURRENT_BUILD = "10.0.0"
 local MAJOR, MINOR = "EditModeExpanded-1.0", 12
 local lib = LibStub:NewLibrary(MAJOR, MINOR)
@@ -21,6 +25,25 @@ local wasVisible = {}
 local originalSize = {}
 local defaultSize = {}
 
+-- Custom version of FrameXML\Mixin.lua where I instead do *not* overwrite existing functions 
+local function Mixin(object, ...)
+    for i = 1, select("#", ...) do
+        local mixin = select(i, ...);
+        for k, v in pairs(mixin) do
+            if not object[k] then
+                object[k] = v;
+            end
+        end
+    end
+
+    return object;
+end
+
+--
+-- Code to deal with splitting the Main Menu Bar from the Backpack bar
+--
+
+-- from FrameXML\MainMenuBarMicroButtons.lua 
 local MICRO_BUTTONS = {
 	"CharacterMicroButton",
 	"SpellbookMicroButton",
@@ -35,20 +58,6 @@ local MICRO_BUTTONS = {
 	"HelpMicroButton",
 	"StoreMicroButton",
 	}
-
--- Custom version of FrameXML\Mixin.lua where I instead do *not* overwrite existing functions 
-local function Mixin(object, ...)
-    for i = 1, select("#", ...) do
-        local mixin = select(i, ...);
-        for k, v in pairs(mixin) do
-            if not object[k] then
-                object[k] = v;
-            end
-        end
-    end
-
-    return object;
-end
 
 -- MicroButtonAndBagsBar:GetTop gets checked by EditModeManager, setting the scale of the Right Action bars
 -- to allow it to be moved, we need to duplicate the frame, hide the original, and make the duplicate the one being moved instead
@@ -109,6 +118,10 @@ local function duplicateMicroButtonAndBagsBar(db)
     lib:RegisterFrame(EditModeExpandedBackpackBar, "Backpack", db.BackpackBar)
     return duplicate
 end
+
+--
+-- Public API
+--
 
 -- Call this on a frame to register it for capture during Edit Mode
 -- param1: frame, the Frame to register
@@ -345,6 +358,62 @@ function lib:RegisterFrame(frame, name, db)
     end)
 end
 
+-- use this if a frame by default doesn't have a size set yet
+function lib:SetDefaultSize(frame, x, y)
+    assert(type(frame) == "table")
+    assert(type(x) == "number")
+    assert(type(y) == "number")
+    
+    defaultSize[frame.system] = {["x"] = x, ["y"] = y}
+end
+
+-- call this if the frame needs to be moved back into position at some point after ADDON_LOADED
+function lib:RepositionFrame(frame)
+    local db = framesDB[frame.system]
+    if not pcall( function() frame:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", db.x or db.defaultX, db.y or db.defaultY) end ) then
+        frame:SetPoint("BOTTOMLEFT", nil, "BOTTOMLEFT", db.x or db.defaultX, db.y or db.defaultY)
+    end
+end
+
+-- Call this to add a slider to the frames dialog box, allowing is to be resized using frame:SetScale
+-- param1: custom system frame
+function lib:RegisterResizable(frame)
+    if not framesDialogs[frame.system] then framesDialogs[frame.system] = {} end
+    if framesDialogsKeys[frame.system] and framesDialogsKeys[frame.system][Enum.EditModeUnitFrameSetting.FrameSize] then return end
+    if not framesDialogsKeys[frame.system] then framesDialogsKeys[frame.system] = {} end
+    framesDialogsKeys[frame.system][Enum.EditModeUnitFrameSetting.FrameSize] = true
+    table.insert(framesDialogs[frame.system],
+		{
+			setting = Enum.EditModeUnitFrameSetting.FrameSize,
+			name = HUD_EDIT_MODE_SETTING_UNIT_FRAME_FRAME_SIZE,
+			type = Enum.EditModeSettingDisplayType.Slider,
+			minValue = 10,
+			maxValue = 200,
+			stepSize = 5,
+			ConvertValue = ConvertValueDefault,
+			formatter = showAsPercentage,
+		})
+end
+ 
+-- Call this to add a checkbox to the frames dialog box, allowing the frame to be permanently hidden outside of Edit Mode
+-- param1: custom system frame
+function lib:RegisterHideable(frame)
+    if not framesDialogs[frame.system] then framesDialogs[frame.system] = {} end
+    if framesDialogsKeys[frame.system] and framesDialogsKeys[frame.system][ENUM_EDITMODEACTIONBARSETTING_HIDEABLE] then return end
+    if not framesDialogsKeys[frame.system] then framesDialogsKeys[frame.system] = {} end
+    framesDialogsKeys[frame.system][ENUM_EDITMODEACTIONBARSETTING_HIDEABLE] = true
+    table.insert(framesDialogs[frame.system],
+        {
+            setting = ENUM_EDITMODEACTIONBARSETTING_HIDEABLE,
+            name = "Hide",
+            type = Enum.EditModeSettingDisplayType.Checkbox,
+    })
+end
+
+--
+-- Require update on game patch
+--
+
 if not (GetBuildInfo() == CURRENT_BUILD) then return end
 
 --
@@ -382,23 +451,6 @@ hooksecurefunc(f, "OnLoad", function()
     	EditModeExpandedSystemSettingsDialog:Hide();
     end
 end)
-
--- use this if a frame by default doesn't have a size set yet
-function lib:SetDefaultSize(frame, x, y)
-    assert(type(frame) == "table")
-    assert(type(x) == "number")
-    assert(type(y) == "number")
-    
-    defaultSize[frame.system] = {["x"] = x, ["y"] = y}
-end
-
--- call this if the frame needs to be moved back into position at some point after ADDON_LOADED
-function lib:RepositionFrame(frame)
-    local db = framesDB[frame.system]
-    if not pcall( function() frame:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", db.x or db.defaultX, db.y or db.defaultY) end ) then
-        frame:SetPoint("BOTTOMLEFT", nil, "BOTTOMLEFT", db.x or db.defaultX, db.y or db.defaultY)
-    end
-end
 
 hooksecurefunc(EditModeManagerFrame, "EnterEditMode", function(self)
     if #frames <= 0 then EditModeManagerExpandedFrame:Hide() end
@@ -633,39 +685,6 @@ hooksecurefunc(f, "OnLoad", function()
     	end
     end
 end)
-
--- param1: custom system frame
-function lib:RegisterResizable(frame)
-    if not framesDialogs[frame.system] then framesDialogs[frame.system] = {} end
-    if framesDialogsKeys[frame.system] and framesDialogsKeys[frame.system][Enum.EditModeUnitFrameSetting.FrameSize] then return end
-    if not framesDialogsKeys[frame.system] then framesDialogsKeys[frame.system] = {} end
-    framesDialogsKeys[frame.system][Enum.EditModeUnitFrameSetting.FrameSize] = true
-    table.insert(framesDialogs[frame.system],
-		{
-			setting = Enum.EditModeUnitFrameSetting.FrameSize,
-			name = HUD_EDIT_MODE_SETTING_UNIT_FRAME_FRAME_SIZE,
-			type = Enum.EditModeSettingDisplayType.Slider,
-			minValue = 10,
-			maxValue = 200,
-			stepSize = 5,
-			ConvertValue = ConvertValueDefault,
-			formatter = showAsPercentage,
-		})
-end
- 
-function lib:RegisterHideable(frame)
-    if not framesDialogs[frame.system] then framesDialogs[frame.system] = {} end
-    if framesDialogsKeys[frame.system] and framesDialogsKeys[frame.system][ENUM_EDITMODEACTIONBARSETTING_HIDEABLE] then return end
-    if not framesDialogsKeys[frame.system] then framesDialogsKeys[frame.system] = {} end
-    framesDialogsKeys[frame.system][ENUM_EDITMODEACTIONBARSETTING_HIDEABLE] = true
-    table.insert(framesDialogs[frame.system],
-        {
-            setting = ENUM_EDITMODEACTIONBARSETTING_HIDEABLE,
-            name = "Hide",
-            type = Enum.EditModeSettingDisplayType.Checkbox,
-    })
-end
-
 
 hooksecurefunc(f, "OnLoad", function()
     function EditModeExpandedSystemSettingsDialog:OnSettingValueChanged(setting, value)

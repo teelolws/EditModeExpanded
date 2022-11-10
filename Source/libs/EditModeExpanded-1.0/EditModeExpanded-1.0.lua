@@ -133,8 +133,9 @@ function lib:RegisterFrame(frame, name, db)
     assert(type(db) == "table")
     
     -- IMPORTANT: force update every patch incase of UI changes that cause problems and/or make this library redundant!
-    if not (GetBuildInfo() == CURRENT_BUILD) then return end
+    if GetBuildInfo() ~= CURRENT_BUILD then return end
     
+    -- if this is the first frame being registered, load the other parts of this library
     if f.OnLoad then f.OnLoad() end
     
     -- If the frame was already registered (perhaps by another addon that uses this library), don't register it again

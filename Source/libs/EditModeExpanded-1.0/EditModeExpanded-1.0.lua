@@ -1,5 +1,5 @@
 local CURRENT_BUILD = "10.0.0"
-local MAJOR, MINOR = "EditModeExpanded-1.0", 11
+local MAJOR, MINOR = "EditModeExpanded-1.0", 12
 local lib = LibStub:NewLibrary(MAJOR, MINOR)
 if not lib then return end
 
@@ -255,6 +255,14 @@ function lib:RegisterFrame(frame, name, db)
         db.settings[Enum.EditModeUnitFrameSetting.FrameSize] = 100
     end)
     
+    EditModeManagerExpandedFrame:HookScript("OnHide", function()
+        resetButton:Hide()
+    end)
+    
+    EditModeManagerExpandedFrame:HookScript("OnShow", function()
+        resetButton:Show()
+    end)
+    
     checkButtonFrame:SetScript("OnClick", function(self)
         local isChecked = self:GetChecked()
         db.enabled = isChecked
@@ -349,7 +357,7 @@ hooksecurefunc(f, "OnLoad", function()
     EditModeManagerExpandedFrame:Hide()
     EditModeManagerExpandedFrame:SetPoint("TOPLEFT", EditModeManagerFrame, "TOPRIGHT", 2, 0)
     EditModeManagerExpandedFrame:SetPoint("BOTTOMLEFT", EditModeManagerFrame, "BOTTOMRIGHT", 2, 0)
-    EditModeManagerExpandedFrame:SetWidth(250)
+    EditModeManagerExpandedFrame:SetWidth(200)
     EditModeManagerExpandedFrame.Title = EditModeManagerExpandedFrame:CreateFontString(nil, "ARTWORK", "GameFontHighlightMedium")
     EditModeManagerExpandedFrame.Title:SetPoint("TOP", 0, -15)
     EditModeManagerExpandedFrame.Title:SetText("Expanded")
@@ -358,6 +366,8 @@ hooksecurefunc(f, "OnLoad", function()
     EditModeManagerExpandedFrame.AccountSettings:SetPoint("TOPLEFT", 0, -35)
     EditModeManagerExpandedFrame.AccountSettings:SetPoint("BOTTOMLEFT", 10, 10)
     EditModeManagerExpandedFrame.AccountSettings:SetWidth(200)
+    EditModeManagerExpandedFrame.CloseButton = CreateFrame("Button", nil, EditModeManagerExpandedFrame, "UIPanelCloseButton")
+    EditModeManagerExpandedFrame.CloseButton:SetPoint("TOPRIGHT")
     
     EditModeManagerFrame:HookScript("OnShow", function()
         EditModeManagerExpandedFrame:Show()

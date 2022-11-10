@@ -242,7 +242,7 @@ function lib:RegisterFrame(frame, name, db)
     local checkButtonFrame = EditModeManagerExpandedFrame.AccountSettings[frame.system]
     local resetButton = CreateFrame("Button", nil, EditModeManagerFrame, "UIPanelButtonTemplate")
     resetButton:SetText(RESET)
-    resetButton:SetPoint("TOPLEFT", checkButtonFrame.Text, "TOPRIGHT", 5, 1)
+    resetButton:SetPoint("TOPLEFT", checkButtonFrame.Text, "TOPRIGHT", 20, 2)
     resetButton:SetScript("OnClick", function()
         frame:SetScale(1)
         if not pcall( function() frame:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", db.defaultX, db.defaultY) end ) then
@@ -270,7 +270,7 @@ function lib:RegisterFrame(frame, name, db)
     end)
     
     checkButtonFrame.Text:SetText(name)
-    checkButtonFrame.Text:SetFontObject(GameFontHighlightSmall)
+    checkButtonFrame.Text:SetFontObject(GameFontHighlightMedium)
     
     checkButtonFrame.index = frame.system
     if frame.system == 13 then
@@ -353,12 +353,13 @@ if not (GetBuildInfo() == CURRENT_BUILD) then return end
 --
 
 hooksecurefunc(f, "OnLoad", function()
-    CreateFrame("Frame", "EditModeManagerExpandedFrame", nil)
-    EditModeManagerExpandedFrame:Hide()
+    CreateFrame("Frame", "EditModeManagerExpandedFrame", nil, UIParent)
+    EditModeManagerExpandedFrame:Hide();
+    EditModeManagerExpandedFrame:SetScale(UIParent:GetScale());
     EditModeManagerExpandedFrame:SetPoint("TOPLEFT", EditModeManagerFrame, "TOPRIGHT", 2, 0)
     EditModeManagerExpandedFrame:SetPoint("BOTTOMLEFT", EditModeManagerFrame, "BOTTOMRIGHT", 2, 0)
-    EditModeManagerExpandedFrame:SetWidth(200)
-    EditModeManagerExpandedFrame.Title = EditModeManagerExpandedFrame:CreateFontString(nil, "ARTWORK", "GameFontHighlightMedium")
+    EditModeManagerExpandedFrame:SetWidth(300)
+    EditModeManagerExpandedFrame.Title = EditModeManagerExpandedFrame:CreateFontString(nil, "ARTWORK", "GameFontHighlightLarge")
     EditModeManagerExpandedFrame.Title:SetPoint("TOP", 0, -15)
     EditModeManagerExpandedFrame.Title:SetText("Expanded")
     EditModeManagerExpandedFrame.Border = CreateFrame("Frame", nil, EditModeManagerExpandedFrame, "DialogBorderTranslucentTemplate")

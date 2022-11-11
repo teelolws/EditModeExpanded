@@ -16,6 +16,7 @@ local framesDialogs = {}
 local framesDialogsKeys = {}
 
 local ENUM_EDITMODEACTIONBARSETTING_HIDEABLE = 10 -- Enum.EditModeActionBarSetting.Hideable = 10
+local ENUM_EDITMODEACTIONBARSETTING_MINIMAPPINNED = 11
 
 -- run OnLoad the first time RegisterFrame is called by an addon
 local f = {}
@@ -39,6 +40,10 @@ local function Mixin(object, ...)
 
     return object;
 end
+
+-- functions declared further down
+local pinToMinimap
+local unpinFromMinimap
 
 --
 -- Code to deal with splitting the Main Menu Bar from the Backpack bar
@@ -419,6 +424,10 @@ function lib:RegisterHideable(frame)
     })
 end
 
+-- implemented further down the file
+-- param1: custom system frame
+--function lib:RegisterMinimapPinnable(frame)
+
 --
 -- Require update on game patch
 --
@@ -565,6 +574,7 @@ hooksecurefunc(f, "OnLoad", function()
     frame:OnLoad()
     function frame:UpdateSizeAndAnchors(systemFrame)
     	if systemFrame == self.attachedToSystem then
+            frame:ClearAllPoints()
             frame:SetPoint("TOPLEFT", UIParent, "BOTTOMLEFT", 400, 500);
     		self:Layout();
     	end
@@ -669,6 +679,21 @@ hooksecurefunc(f, "OnLoad", function()
                             else
                                 framesDB[EditModeExpandedSystemSettingsDialog.attachedToSystem.system].settings[displayInfo.setting] = 0
                                 EditModeExpandedSystemSettingsDialog.attachedToSystem:Show()
+                            end
+                        end)
+                    end
+                    
+                    if displayInfo.setting == ENUM_EDITMODEACTIONBARSETTING_MINIMAPPINNED then
+                        savedValue = framesDB[EditModeExpandedSystemSettingsDialog.attachedToSystem.system].settings[displayInfo.setting]
+                        if savedValue == nil then savedValue = 0 end
+                        settingFrame.Button:SetChecked(savedValue)
+                        settingFrame.Button:HookScript("OnClick", function()
+                            if settingFrame.Button:GetChecked() then
+                                framesDB[EditModeExpandedSystemSettingsDialog.attachedToSystem.system].settings[displayInfo.setting] = 1
+                                pinToMinimap(EditModeExpandedSystemSettingsDialog.attachedToSystem)
+                            else
+                                framesDB[EditModeExpandedSystemSettingsDialog.attachedToSystem.system].settings[displayInfo.setting] = 0
+                                unpinFromMinimap(EditModeExpandedSystemSettingsDialog.attachedToSystem)
                             end
                         end)
                     end
@@ -785,4 +810,85 @@ do
             end
         end
     end)
+end
+
+--
+-- allow a frame to be pinned to the minimap
+--
+
+-- Prerequsities: LibDataBroker and LibDBIcon
+function lib:RegisterMinimapPinnable(frame)
+    local name = frame:GetName().."LDB"
+    local db = framesDB[frame.system]
+    if not db.minimap then db.minimap = {} end
+    if not db.settings then db.settings = {} end
+    
+    -- requirements to show the minimap icon:
+    -- 1. player has selected option to pin the frame to the minimap
+    -- 2. the frame is actually currently visible
+    db.minimap.hide = not ((db.settings[ENUM_EDITMODEACTIONBARSETTING_MINIMAPPINNED] == 1) and frame:IsShown())
+    
+    local LDB = LibStub("LibDataBroker-1.1"):NewDataObject(name, {
+        type = "data source",
+        text = frame:GetName(),
+        icon = "",
+    })
+    local icon = LibStub("LibDBIcon-1.0")
+    icon:Register(name, LDB, db.minimap)
+    
+    frame:HookScript("OnShow", function()
+        local db = framesDB[frame.system]
+        if not db.minimap then db.minimap = {} end
+        if db.settings[ENUM_EDITMODEACTIONBARSETTING_MINIMAPPINNED] == 1 then
+            db.minimap.hide = nil
+            icon:Show(name)
+        end
+    end)
+    
+    frame:HookScript("OnHide", function()
+        local db = framesDB[frame.system]
+        if not db.minimap then db.minimap = {} end
+        if db.settings[ENUM_EDITMODEACTIONBARSETTING_MINIMAPPINNED] ~= 1 then
+            db.minimap.hide = true
+        end
+        icon:Hide(name)
+    end)
+    
+    if not framesDialogs[frame.system] then framesDialogs[frame.system] = {} end
+    if framesDialogsKeys[frame.system] and framesDialogsKeys[frame.system][ENUM_EDITMODEACTIONBARSETTING_MINIMAPPINNED] then return end
+    if not framesDialogsKeys[frame.system] then framesDialogsKeys[frame.system] = {} end
+    framesDialogsKeys[frame.system][ENUM_EDITMODEACTIONBARSETTING_MINIMAPPINNED] = true
+    table.insert(framesDialogs[frame.system],
+        {
+            setting = ENUM_EDITMODEACTIONBARSETTING_MINIMAPPINNED,
+            name = "Pin to Minimap",
+            type = Enum.EditModeSettingDisplayType.Checkbox,
+    })
+    
+    frame.minimapLDBIcon = icon
+end
+
+function pinToMinimap(frame)
+    local db = framesDB[frame.system]
+    if not db.minimap then db.minimap = {} end
+    
+    db.minimap.hide = nil
+    frame.minimapLDBIcon:Show(frame:GetName().."LDB")
+    
+    frame:ClearAllPoints()
+    frame:SetPoint("CENTER", frame.minimapLDBIcon:GetMinimapButton(frame:GetName().."LDB"), "CENTER")
+    frame.originalSizeX, frame.originalSizeY = frame:GetSize()
+    frame.Selection:Hide()
+end
+
+function unpinFromMinimap(frame)
+    local db = framesDB[frame.system]
+    frame:ClearAllPoints()
+    frame:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", db.x, db.y)
+    if frame.originalSizeX and frame.originalSizeY then
+        frame:SetSize(frame.originalSizeX, frame.originalSizeY)
+    end
+    frame.Selection:Show()
+    db.minimap.hide = true
+    frame.minimapLDBIcon:Hide(frame:GetName().."LDB")
 end

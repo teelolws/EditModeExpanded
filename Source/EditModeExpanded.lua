@@ -40,6 +40,7 @@ f:SetScript("OnEvent", function(__, event, arg1)
         QueueStatusButton:SetParent(UIParent)
         lib:RegisterFrame(QueueStatusButton, "LFG", db.QueueStatusButton)
         lib:RegisterResizable(QueueStatusButton)
+        lib:RegisterMinimapPinnable(QueueStatusButton)
 
         DurabilityFrame:SetParent(UIParent)
         lib:RegisterFrame(DurabilityFrame, "Durability", db.DurabilityFrame)

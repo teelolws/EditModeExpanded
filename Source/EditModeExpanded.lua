@@ -16,6 +16,7 @@ local defaults = {
     }
 }
 
+local achievementFrameLoaded
 local petFrameLoaded
 local addonLoaded
 local f = CreateFrame("Frame")
@@ -72,7 +73,12 @@ f:SetScript("OnEvent", function(__, event, arg1)
             lib:SetDefaultSize(TotemFrame, 100, 40)
             lib:RegisterHideable(TotemFrame)
         end
-        
+    elseif (event == "UNIT_PET") and (not petFrameLoaded) and (addonLoaded) then
+        petFrameLoaded = true
+        PetFrame:SetParent(UIParent)
+        lib:RegisterFrame(PetFrame, "Pet", f.db.profile.PetFrame)
+    elseif (event == "PLAYER_ENTERINGWORLD") and (not achievementFrameLoaded) and (addonLoaded) then
+        achievementFrameLoaded = true
         if ( not AchievementFrame ) then
 			AchievementFrame_LoadUI()
         end
@@ -81,12 +87,9 @@ f:SetScript("OnEvent", function(__, event, arg1)
         AchievementAlertSystem.alertContainer.Selection:HookScript("OnMouseDown", function()
             AchievementAlertSystem:AddAlert(6)
         end)
-    elseif (event == "UNIT_PET") and (not petFrameLoaded) and (addonLoaded) then
-        petFrameLoaded = true
-        PetFrame:SetParent(UIParent)
-        lib:RegisterFrame(PetFrame, "Pet", f.db.profile.PetFrame)
     end
 end)
 
 f:RegisterEvent("ADDON_LOADED")
 f:RegisterEvent("UNIT_PET")
+f:RegisterEvent("PLAYER_ENTERING_WORLD")

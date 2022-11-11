@@ -1,6 +1,6 @@
 ## Interface: 100000
 ## Title: Edit Mode Expanded
-## Version: 10.0-012
+## Version: 10.0-013
 ## Notes: Expands Edit Mode to apply to other frames
 ## Author: Teelo
 ## SavedVariablesPerCharacter: EditModeExpandedDB

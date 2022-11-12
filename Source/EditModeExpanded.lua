@@ -131,12 +131,12 @@ f:SetScript("OnEvent", function(__, event, arg1)
         petFrameLoaded = true
         PetFrame:SetParent(UIParent)
         lib:RegisterFrame(PetFrame, "Pet", f.db.global.PetFrame)
-    elseif (event == "PLAYER_ENTERINGWORLD") and (not achievementFrameLoaded) and (addonLoaded) then
+    elseif (event == "PLAYER_ENTERING_WORLD") and (not achievementFrameLoaded) and (addonLoaded) then
         achievementFrameLoaded = true
         if ( not AchievementFrame ) then
 			AchievementFrame_LoadUI()
         end
-        lib:RegisterFrame(AchievementAlertSystem.alertContainer, "Achievements", db.Achievements)
+        lib:RegisterFrame(AchievementAlertSystem.alertContainer, "Achievements", f.db.global.Achievements)
         lib:SetDefaultSize(AchievementAlertSystem.alertContainer, 20, 20)
         AchievementAlertSystem.alertContainer.Selection:HookScript("OnMouseDown", function()
             AchievementAlertSystem:AddAlert(6)

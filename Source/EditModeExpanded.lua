@@ -1,7 +1,24 @@
 local lib = LibStub:GetLibrary("EditModeExpanded-1.0")
 
-local defaults = {
+-- old character specific database, will remove legacy support eventually
+local legacyDefaults = {
     profile = {
+        MicroButtonAndBagsBar = {},
+        BackpackBar = {},
+        StatusTrackingBarManager = {},
+        QueueStatusButton = {},
+        TotemFrame = {},
+        PetFrame = {},
+        DurabilityFrame = {},
+        VehicleSeatIndicator = {},
+        HolyPower = {},
+        Achievements = {},
+        SoulShards = {},
+    }
+}
+
+local defaults = {
+    global = {
         MicroButtonAndBagsBar = {},
         BackpackBar = {},
         StatusTrackingBarManager = {},
@@ -23,9 +40,46 @@ local f = CreateFrame("Frame")
 f:SetScript("OnEvent", function(__, event, arg1)
     if (event == "ADDON_LOADED") and (arg1 == "EditModeExpanded") and (not addonLoaded) then
         addonLoaded = true
-        f.db = LibStub("AceDB-3.0"):New("EditModeExpandedDB", defaults)
+        f.db = LibStub("AceDB-3.0"):New("EditModeExpandedADB", defaults)
         
-        local db = f.db.profile
+        local db = f.db.global
+        
+        --
+        -- Start legacy db import - remove this eventually
+        --
+        local legacydb = LibStub("AceDB-3.0"):New("EditModeExpandedDB", legacyDefaults)
+        legacydb = legacydb.profile
+        for buttonName, buttonData in pairs(legacydb) do
+            for k, v in pairs(buttonData) do
+                if not db[buttonName].profiles then db[buttonName].profiles = {} end
+                if buttonData.profiles then
+                    for profileName, profileData in pairs(buttonData.profiles) do
+                        if not db[buttonName].profiles[profileName] then
+                            local t = {}
+                            for str in string.gmatch(profileName, "([^\-]+)") do
+                                table.insert(t, str)
+                            end
+                            local layoutType = t[1]
+                            local layoutName = t[2]
+                            
+                            if layoutType == (Enum.EditModeLayoutType.Character.."") then
+                                local unitName, unitRealm = UnitFullName("player")
+                                profileName = layoutType.."-"..unitName.."-"..unitRealm.."-"..layoutName
+                            end
+                            
+                            db[buttonName].profiles[profileName] = profileData
+                        end
+                    end
+                end
+                
+                legacydb[buttonName] = {}
+                break
+            end
+            
+        end
+        --
+        -- End legacy db import
+        --
 
         if not IsAddOnLoaded("Bartender4") then -- moving/resizing found to be incompatible
             lib:RegisterFrame(MicroButtonAndBagsBar, "Micro Menu", db.MicroButtonAndBagsBar)

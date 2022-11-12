@@ -499,13 +499,14 @@ hooksecurefunc(EditModeManagerFrame, "ExitEditMode", function()
         frame:StopMovingOrSizing();
         
         if framesDB[frame.system] and framesDB[frame.system].settings and (framesDB[frame.system].settings[ENUM_EDITMODEACTIONBARSETTING_HIDEABLE] ~= nil) then
-            if (framesDB[frame.system].settings[ENUM_EDITMODEACTIONBARSETTING_HIDEABLE] ~= 1) and wasVisible[frame.system] then
-                frame:Show()
-            else
+            if (framesDB[frame.system].settings[ENUM_EDITMODEACTIONBARSETTING_HIDEABLE] == 1) then
                 frame:Hide()
+            else
+                frame:SetShown(wasVisible[frame.system])
             end
+        else
+            frame:SetShown(wasVisible[frame.system])
         end
-        frame:SetShown(wasVisible[frame.system])
         
         if originalSize[frame.system] then
             frame:SetSize(originalSize[frame.system].x, originalSize[frame.system].y)
@@ -676,13 +677,15 @@ hooksecurefunc(f, "OnLoad", function()
                         savedValue = framesDB[EditModeExpandedSystemSettingsDialog.attachedToSystem.system].settings[displayInfo.setting]
                         if savedValue == nil then savedValue = 0 end
                         settingFrame.Button:SetChecked(savedValue)
-                        settingFrame.Button:HookScript("OnClick", function()
+                        settingFrame.Button:SetScript("OnClick", function()
                             if settingFrame.Button:GetChecked() then
                                 framesDB[EditModeExpandedSystemSettingsDialog.attachedToSystem.system].settings[displayInfo.setting] = 1
                                 EditModeExpandedSystemSettingsDialog.attachedToSystem:Hide()
+                                wasVisible[EditModeExpandedSystemSettingsDialog.attachedToSystem.system] = false
                             else
                                 framesDB[EditModeExpandedSystemSettingsDialog.attachedToSystem.system].settings[displayInfo.setting] = 0
                                 EditModeExpandedSystemSettingsDialog.attachedToSystem:Show()
+                                wasVisible[EditModeExpandedSystemSettingsDialog.attachedToSystem.system] = true
                             end
                         end)
                     end
@@ -691,7 +694,7 @@ hooksecurefunc(f, "OnLoad", function()
                         savedValue = framesDB[EditModeExpandedSystemSettingsDialog.attachedToSystem.system].settings[displayInfo.setting]
                         if savedValue == nil then savedValue = 0 end
                         settingFrame.Button:SetChecked(savedValue)
-                        settingFrame.Button:HookScript("OnClick", function()
+                        settingFrame.Button:SetScript("OnClick", function()
                             if settingFrame.Button:GetChecked() then
                                 framesDB[EditModeExpandedSystemSettingsDialog.attachedToSystem.system].settings[displayInfo.setting] = 1
                                 pinToMinimap(EditModeExpandedSystemSettingsDialog.attachedToSystem)

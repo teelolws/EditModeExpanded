@@ -498,10 +498,14 @@ hooksecurefunc(EditModeManagerFrame, "ExitEditMode", function()
         frame:ClearHighlight();
         frame:StopMovingOrSizing();
         
-        frame:SetShown(wasVisible[frame.system])
         if framesDB[frame.system] and framesDB[frame.system].settings and (framesDB[frame.system].settings[ENUM_EDITMODEACTIONBARSETTING_HIDEABLE] ~= nil) then
-            frame:SetShown(framesDB[frame.system].settings[ENUM_EDITMODEACTIONBARSETTING_HIDEABLE] ~= 1)
+            if (framesDB[frame.system].settings[ENUM_EDITMODEACTIONBARSETTING_HIDEABLE] ~= 1) and wasVisible[frame.system] then
+                frame:Show()
+            else
+                frame:Hide()
+            end
         end
+        frame:SetShown(wasVisible[frame.system])
         
         if originalSize[frame.system] then
             frame:SetSize(originalSize[frame.system].x, originalSize[frame.system].y)
@@ -770,6 +774,10 @@ do
             -- if currently selected Edit Mode profile does not exist in the db, try importing a legacy db instead
             local layoutInfo = EditModeManagerFrame:GetActiveLayoutInfo()
             local profileName = layoutInfo.layoutType.."-"..layoutInfo.layoutName
+            if layoutInfo.layoutType == Enum.EditModeLayoutType.Character then
+                local unitName, unitRealm = UnitFullName("player")
+                profileName = layoutInfo.layoutType.."-"..unitName.."-"..unitRealm.."-"..layoutInfo.layoutName
+            end
             
             if not db.profiles then db.profiles = {} end
             if not db.profiles[profileName] then
@@ -842,12 +850,15 @@ function lib:RegisterMinimapPinnable(frame)
         if db.settings[ENUM_EDITMODEACTIONBARSETTING_MINIMAPPINNED] == 1 then
             db.minimap.hide = nil
             icon:Show(name)
+            frame:ClearAllPoints()
+            frame:SetPoint("CENTER", icon:GetMinimapButton(name), "CENTER")
         end
     end)
     
     frame:HookScript("OnHide", function()
         local db = framesDB[frame.system]
         if not db.minimap then db.minimap = {} end
+        if not db.settings then db.settings = {} end
         if db.settings[ENUM_EDITMODEACTIONBARSETTING_MINIMAPPINNED] ~= 1 then
             db.minimap.hide = true
         end
@@ -863,7 +874,8 @@ function lib:RegisterMinimapPinnable(frame)
             setting = ENUM_EDITMODEACTIONBARSETTING_MINIMAPPINNED,
             name = "Pin to Minimap",
             type = Enum.EditModeSettingDisplayType.Checkbox,
-    })
+        }
+    )
     
     frame.minimapLDBIcon = icon
 end

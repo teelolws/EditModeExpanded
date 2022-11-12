@@ -130,7 +130,7 @@ f:SetScript("OnEvent", function(__, event, arg1)
     elseif (event == "UNIT_PET") and (not petFrameLoaded) and (addonLoaded) then
         petFrameLoaded = true
         PetFrame:SetParent(UIParent)
-        lib:RegisterFrame(PetFrame, "Pet", f.db.profile.PetFrame)
+        lib:RegisterFrame(PetFrame, "Pet", f.db.global.PetFrame)
     elseif (event == "PLAYER_ENTERINGWORLD") and (not achievementFrameLoaded) and (addonLoaded) then
         achievementFrameLoaded = true
         if ( not AchievementFrame ) then

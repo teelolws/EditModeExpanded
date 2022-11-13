@@ -184,6 +184,8 @@ function lib:RegisterFrame(frame, name, db)
 	frame.snappedFrames = {};
     frame.Selection:EnableKeyboard();
     frame.Selection:SetPropagateKeyboardInput(true);
+    -- prevent the frame to go outside the screen
+    frame:SetClampedToScreen(true);
     
     function frame.UpdateMagnetismRegistration() end
 

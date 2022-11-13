@@ -428,6 +428,14 @@ end
 -- param1: custom system frame
 --function lib:RegisterMinimapPinnable(frame)
 
+-- a simple check of "has this frame been registered with EME" - maybe you want to test if another addon registered it already?
+function lib:IsRegistered(frame)
+    for _, f in pairs(frames) do
+        if frame == f then return true end
+    end
+    return false
+end
+
 --
 -- Require update on game patch
 --

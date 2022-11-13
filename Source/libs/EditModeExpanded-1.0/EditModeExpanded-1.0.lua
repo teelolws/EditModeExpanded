@@ -772,6 +772,7 @@ do
     f:RegisterEvent("EDIT_MODE_LAYOUTS_UPDATED")
     f:SetScript("OnEvent", function()
         for _, frame in pairs(frames) do
+            EditModeExpandedSystemSettingsDialog:Hide()
             local db = baseFramesDB[frame.system]
             
             -- if currently selected Edit Mode profile does not exist in the db, try importing a legacy db instead
@@ -801,23 +802,44 @@ do
             db = db.profiles[profileName]
             framesDB[frame.system] = db
 
+            -- update scale
             if db.settings and db.settings[Enum.EditModeUnitFrameSetting.FrameSize] then
                 frame:SetScaleOverride(db.settings[Enum.EditModeUnitFrameSetting.FrameSize]/100)
             end
             
+            -- update position
             frame:ClearAllPoints()
             if db.x and db.y then
                 frame:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", db.x, db.y)
             else
                 if not pcall( function() frame:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", db.defaultX, db.defaultY) end ) then
+                    print(frame:GetName(), db.defaultX, db.defaultY)
                     frame:SetPoint("BOTTOMLEFT", nil, "BOTTOMLEFT", db.defaultX, db.defaultY)
                 end
             end
             
+            -- the option in the expanded frame
             frame.EMECheckButtonFrame:SetChecked(db.enabled)
             
+            -- frame hide option
             if db.settings and (db.settings[ENUM_EDITMODEACTIONBARSETTING_HIDEABLE] ~= nil) then
                 frame:SetShown(framesDB[frame.system].settings[ENUM_EDITMODEACTIONBARSETTING_HIDEABLE] ~= 1)
+            end
+            
+            -- minimap pinning
+            if framesDialogsKeys[frame.system] and framesDialogsKeys[frame.system][ENUM_EDITMODEACTIONBARSETTING_MINIMAPPINNED] then
+                if db.settings and (db.settings[ENUM_EDITMODEACTIONBARSETTING_MINIMAPPINNED] ~= nil) then
+                    if db.settings[ENUM_EDITMODEACTIONBARSETTING_MINIMAPPINNED] == 1 then
+                        pinToMinimap(frame)
+                    else
+                        unpinFromMinimap(frame)
+                    end
+                end
+            end
+            
+            -- only way I can find to un-select frames
+            if frame:IsShown() then
+                frame:HighlightSystem()
             end
         end
     end)
@@ -892,7 +914,6 @@ function pinToMinimap(frame)
     
     frame:ClearAllPoints()
     frame:SetPoint("CENTER", frame.minimapLDBIcon:GetMinimapButton(frame:GetName().."LDB"), "CENTER")
-    frame.originalSizeX, frame.originalSizeY = frame:GetSize()
     frame.Selection:Hide()
 end
 
@@ -900,9 +921,6 @@ function unpinFromMinimap(frame)
     local db = framesDB[frame.system]
     frame:ClearAllPoints()
     frame:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", db.x, db.y)
-    if frame.originalSizeX and frame.originalSizeY then
-        frame:SetSize(frame.originalSizeX, frame.originalSizeY)
-    end
     frame.Selection:Show()
     db.minimap.hide = true
     frame.minimapLDBIcon:Hide(frame:GetName().."LDB")

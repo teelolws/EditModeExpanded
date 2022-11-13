@@ -268,16 +268,20 @@ function lib:RegisterFrame(frame, name, db)
     resetButton:SetText(RESET)
     resetButton:SetPoint("TOPLEFT", checkButtonFrame.Text, "TOPRIGHT", 20, 2)
     resetButton:SetScript("OnClick", function()
-        frame:SetScale(1)
+        local db = framesDB[frame.system]
+        frame:ClearAllPoints()
+        frame:SetScaleOverride(1)
         if not pcall( function() frame:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", db.defaultX, db.defaultY) end ) then
             -- need a better solution here
             frame:SetPoint("BOTTOMLEFT", nil, "BOTTOMLEFT", db.defaultX, db.defaultY)
         end
-        local db = framesDB[frame.system]
+        
         db.x = db.defaultX
         db.y = db.defaultY
         if not db.settings then db.settings = {} end
         db.settings[Enum.EditModeUnitFrameSetting.FrameSize] = 100
+        EditModeExpandedSystemSettingsDialog:Hide()
+        frame:HighlightSystem()
     end)
     
     EditModeManagerExpandedFrame:HookScript("OnHide", function()
@@ -846,7 +850,7 @@ do
             end
             
             -- only way I can find to un-select frames
-            if frame:IsShown() then
+            if EditModeManagerFrame.editModeActive and frame:IsShown() then
                 frame:HighlightSystem()
             end
         end
@@ -922,14 +926,12 @@ function pinToMinimap(frame)
     
     frame:ClearAllPoints()
     frame:SetPoint("CENTER", frame.minimapLDBIcon:GetMinimapButton(frame:GetName().."LDB"), "CENTER")
-    frame.Selection:Hide()
 end
 
 function unpinFromMinimap(frame)
     local db = framesDB[frame.system]
     frame:ClearAllPoints()
     frame:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", db.x, db.y)
-    frame.Selection:Show()
     db.minimap.hide = true
     frame.minimapLDBIcon:Hide(frame:GetName().."LDB")
 end

@@ -390,6 +390,7 @@ end
 -- call this if the frame needs to be moved back into position at some point after ADDON_LOADED
 function lib:RepositionFrame(frame)
     local db = framesDB[frame.system]
+    frame:ClearAllPoints()
     if not pcall( function() frame:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", db.x or db.defaultX, db.y or db.defaultY) end ) then
         frame:SetPoint("BOTTOMLEFT", nil, "BOTTOMLEFT", db.x or db.defaultX, db.y or db.defaultY)
     end

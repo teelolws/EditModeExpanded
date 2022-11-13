@@ -36,6 +36,16 @@ local defaults = {
 local achievementFrameLoaded
 local petFrameLoaded
 local addonLoaded
+local totemFrameLoaded
+
+local function registerTotemFrame(db)
+    TotemFrame:SetParent(UIParent)
+    lib:RegisterFrame(TotemFrame, "Totem", db.TotemFrame)
+    lib:SetDefaultSize(TotemFrame, 100, 40)
+    lib:RegisterHideable(TotemFrame)
+    totemFrameLoaded = true
+end
+
 local f = CreateFrame("Frame")
 f:SetScript("OnEvent", function(__, event, arg1)
     if (event == "ADDON_LOADED") and (arg1 == "EditModeExpanded") and (not addonLoaded) then
@@ -114,23 +124,25 @@ f:SetScript("OnEvent", function(__, event, arg1)
             lib:RegisterHideable(PaladinPowerBarFrame)
             
             -- Totem Frame is used for Consecration
-            TotemFrame:SetParent(UIParent)
-            lib:RegisterFrame(TotemFrame, "Totem", db.TotemFrame)
-            lib:SetDefaultSize(TotemFrame, 100, 40)
-            lib:RegisterHideable(TotemFrame)
+            registerTotemFrame(db)
         elseif class == "WARLOCK" then
             lib:RegisterFrame(WarlockPowerFrame, "Soul Shards", db.SoulShards)
             lib:RegisterHideable(WarlockPowerFrame)
+            hooksecurefunc(WarlockPowerFrame, "IsDirty", function()
+                lib:RepositionFrame(WarlockPowerFrame)
+            end)
+            
+            -- Totem Frame is used for Summon Darkglare
+            registerTotemFrame(db)
         elseif class == "SHAMAN" then
-            TotemFrame:SetParent(UIParent)
-            lib:RegisterFrame(TotemFrame, "Totem", db.TotemFrame)
-            lib:SetDefaultSize(TotemFrame, 100, 40)
-            lib:RegisterHideable(TotemFrame)
+            registerTotemFrame(db)
         end
     elseif (event == "UNIT_PET") and (not petFrameLoaded) and (addonLoaded) then
-        petFrameLoaded = true
-        PetFrame:SetParent(UIParent)
-        lib:RegisterFrame(PetFrame, "Pet", f.db.global.PetFrame)
+        --if not InCombatLockdown() then
+            petFrameLoaded = true
+            PetFrame:SetParent(UIParent)
+            lib:RegisterFrame(PetFrame, "Pet", f.db.global.PetFrame)
+        --end
     elseif (event == "PLAYER_ENTERING_WORLD") and (not achievementFrameLoaded) and (addonLoaded) then
         achievementFrameLoaded = true
         if ( not AchievementFrame ) then
@@ -141,9 +153,14 @@ f:SetScript("OnEvent", function(__, event, arg1)
         AchievementAlertSystem.alertContainer.Selection:HookScript("OnMouseDown", function()
             AchievementAlertSystem:AddAlert(6)
         end)
+    elseif (event == "PLAYER_TOTEM_UPDATE") then
+        if totemFrameLoaded then
+            lib:RepositionFrame(TotemFrame)
+        end
     end
 end)
 
 f:RegisterEvent("ADDON_LOADED")
 f:RegisterEvent("UNIT_PET")
 f:RegisterEvent("PLAYER_ENTERING_WORLD")
+f:RegisterEvent("PLAYER_TOTEM_UPDATE")

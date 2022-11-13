@@ -418,6 +418,13 @@ function lib:SetDefaultSize(frame, x, y)
     defaultSize[frame.system] = {["x"] = x, ["y"] = y}
 end
 
+-- use this for small frames - frames that have a dimension < 40, that you don't want to be bumped up to 40 during Edit Mode
+function lib:SetDontResize(frame)
+    assert(type(frame) == "table")
+    
+    frame.EMEDontResize = true
+end
+
 -- call this if the frame needs to be moved back into position at some point after ADDON_LOADED
 function lib:RepositionFrame(frame)
     local db = framesDB[frame.system]
@@ -527,7 +534,7 @@ hooksecurefunc(EditModeManagerFrame, "EnterEditMode", function(self)
         wasVisible[frame.system] = frame:IsShown()
         frame:SetShown(framesDB[frame.system].enabled)
         local x, y = frame:GetSize()
-        if (x < 40) or (y < 40) then
+        if (not frame.EMEDontResize) and ((x < 40) or (y < 40)) then
             originalSize[frame.system] = {["x"] = x, ["y"] = y}
             if defaultSize[frame.system] then
                 frame:SetSize(defaultSize[frame.system].x, defaultSize[frame.system].y)

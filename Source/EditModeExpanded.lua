@@ -128,8 +128,11 @@ f:SetScript("OnEvent", function(__, event, arg1)
         elseif class == "WARLOCK" then
             lib:RegisterFrame(WarlockPowerFrame, "Soul Shards", db.SoulShards)
             lib:RegisterHideable(WarlockPowerFrame)
+            local i = 60
             hooksecurefunc(WarlockPowerFrame, "IsDirty", function()
-                lib:RepositionFrame(WarlockPowerFrame)
+                if not EditModeManagerFrame.editModeActive then
+                    lib:RepositionFrame(WarlockPowerFrame)
+                end
             end)
             
             -- Totem Frame is used for Summon Darkglare
@@ -138,11 +141,27 @@ f:SetScript("OnEvent", function(__, event, arg1)
             registerTotemFrame(db)
         end
     elseif (event == "UNIT_PET") and (not petFrameLoaded) and (addonLoaded) then
-        --if not InCombatLockdown() then
-            petFrameLoaded = true
+        petFrameLoaded = true
+        local function init()
             PetFrame:SetParent(UIParent)
             lib:RegisterFrame(PetFrame, "Pet", f.db.global.PetFrame)
-        --end
+        end
+        
+        if InCombatLockdown() then
+            -- delay registering until combat ends
+            local tempFrame = CreateFrame("Frame")
+            tempFrame:RegisterEvent("PLAYER_REGEN_ENABLED")
+            local doOnce
+            tempFrame:SetScript("OnEvent", function()
+                if doOnce then return end
+                doOnce = true
+                init()
+                tempFrame:UnregisterEvent("PLAYER_REGEN_ENABLED")
+                lib:RepositionFrame(PetFrame)
+            end)
+        else
+            init()
+        end
     elseif (event == "PLAYER_ENTERING_WORLD") and (not achievementFrameLoaded) and (addonLoaded) then
         achievementFrameLoaded = true
         if ( not AchievementFrame ) then

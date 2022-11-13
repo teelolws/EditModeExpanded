@@ -27,6 +27,8 @@ local wasVisible = {}
 local originalSize = {}
 local defaultSize = {}
 
+local profilesInitialised
+
 -- Custom version of FrameXML\Mixin.lua where I instead do *not* overwrite existing functions 
 local function Mixin(object, ...)
     for i = 1, select("#", ...) do
@@ -144,6 +146,35 @@ function lib:RegisterFrame(frame, name, db)
     -- if this is the first frame being registered, load the other parts of this library
     if f.OnLoad then f.OnLoad() end
     
+    local baseDB = db
+    
+    if profilesInitialised then
+        local layoutInfo = EditModeManagerFrame:GetActiveLayoutInfo()
+        local profileName = layoutInfo.layoutType.."-"..layoutInfo.layoutName
+        if layoutInfo.layoutType == Enum.EditModeLayoutType.Character then
+            local unitName, unitRealm = UnitFullName("player")
+            profileName = layoutInfo.layoutType.."-"..unitName.."-"..unitRealm.."-"..layoutInfo.layoutName
+        end
+        
+        if not db.profiles then db.profiles = {} end
+        if not db.profiles[profileName] then
+            db.profiles[profileName] = {}
+            db.profiles[profileName].x = db.x
+            db.profiles[profileName].y = db.y
+            db.profiles[profileName].enabled = db.enabled
+            db.profiles[profileName].settings = db.settings
+            db.profiles[profileName].defaultX = db.defaultX
+            db.profiles[profileName].defaultY = db.defaultY
+            
+            db.x = nil
+            db.y = nil
+            db.enabled = nil
+            db.settings = nil
+        end
+        
+        db = db.profiles[profileName]
+    end
+    
     -- If the frame was already registered (perhaps by another addon that uses this library), don't register it again
     for _, f in ipairs(frames) do
         if (frame == f) or ((frame == MicroButtonAndBagsBar) and (f == MicroButtonAndBagsBarMovable)) then
@@ -169,7 +200,7 @@ function lib:RegisterFrame(frame, name, db)
     
     frame.system = index
     index = index + 1
-    baseFramesDB[frame.system] = db 
+    baseFramesDB[frame.system] = baseDB 
     framesDB[frame.system] = db
 
 	frame.Selection = CreateFrame("Frame", nil, frame, "EditModeSystemSelectionTemplate")
@@ -486,6 +517,9 @@ hooksecurefunc(f, "OnLoad", function()
 end)
 
 hooksecurefunc(EditModeManagerFrame, "EnterEditMode", function(self)
+    -- can cause errors if the player is in combat - eg trying to move or show/hide protected frames
+    if InCombatLockdown() then return end
+    
     if #frames <= 0 then EditModeManagerExpandedFrame:Hide() end
     for _, frame in ipairs(frames) do
         frame:SetHasActiveChanges(false)
@@ -509,6 +543,11 @@ hooksecurefunc(EditModeManagerFrame, "EnterEditMode", function(self)
 end)
 
 hooksecurefunc(EditModeManagerFrame, "ExitEditMode", function()
+    if InCombatLockdown() then
+        print("EditModeExpanded Error: could not hide Edit Mode properly - you were in combat!")
+        return
+    end
+    
     for _, frame in ipairs(frames) do
         frame:ClearHighlight();
         frame:StopMovingOrSizing();
@@ -786,6 +825,8 @@ do
     local f = CreateFrame("Frame")
     f:RegisterEvent("EDIT_MODE_LAYOUTS_UPDATED")
     f:SetScript("OnEvent", function()
+        profilesInitialised = true
+        
         for _, frame in pairs(frames) do
             EditModeExpandedSystemSettingsDialog:Hide()
             local db = baseFramesDB[frame.system]
@@ -828,7 +869,6 @@ do
                 frame:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", db.x, db.y)
             else
                 if not pcall( function() frame:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", db.defaultX, db.defaultY) end ) then
-                    print(frame:GetName(), db.defaultX, db.defaultY)
                     frame:SetPoint("BOTTOMLEFT", nil, "BOTTOMLEFT", db.defaultX, db.defaultY)
                 end
             end

@@ -32,6 +32,7 @@ local defaults = {
         SoulShards = {},
         ToT = {},
         TargetSpellBar = {},
+        FocusSpellBar = {},
     }
 }
 
@@ -92,7 +93,7 @@ f:SetScript("OnEvent", function(__, event, arg1)
         --
         -- End legacy db import
         --
-
+        
         if not IsAddOnLoaded("Bartender4") then -- moving/resizing found to be incompatible
             lib:RegisterFrame(MicroButtonAndBagsBar, "Micro Menu", db.MicroButtonAndBagsBar)
             lib:RegisterResizable(MicroButtonAndBagsBarMovable)
@@ -144,18 +145,7 @@ f:SetScript("OnEvent", function(__, event, arg1)
             registerTotemFrame(db)
         end
         
-        lib:RegisterFrame(TargetFrameToT, "Target of Target", db.ToT)
-        TargetFrameToT:HookScript("OnHide", function()
-            if (not InCombatLockdown()) and EditModeManagerFrame.editModeActive and lib:IsFrameEnabled(TargetFrameToT) then
-                TargetFrameToT:Show()
-            end
-        end)
         
-        --lib:RegisterFrame(TargetFrameSpellBar, "Target Cast Bar", db.TargetSpellBar, TargetFrame, "TOPLEFT")
-        --hooksecurefunc("Target_Spellbar_AdjustPosition", function(self)
-        --    if self ~= TargetFrameSpellBar then return end
-        --    lib:RepositionFrame(TargetFrameSpellBar)
-        --end)
     elseif (event == "UNIT_PET") and (not petFrameLoaded) and (addonLoaded) then
         petFrameLoaded = true
         local function init()
@@ -187,6 +177,38 @@ f:SetScript("OnEvent", function(__, event, arg1)
         lib:SetDefaultSize(AchievementAlertSystem.alertContainer, 20, 20)
         AchievementAlertSystem.alertContainer.Selection:HookScript("OnMouseDown", function()
             AchievementAlertSystem:AddAlert(6)
+        end)
+        
+        lib:RegisterFrame(TargetFrameToT, "Target of Target", f.db.global.ToT)
+        TargetFrameToT:HookScript("OnHide", function()
+            if (not InCombatLockdown()) and EditModeManagerFrame.editModeActive and lib:IsFrameEnabled(TargetFrameToT) then
+                TargetFrameToT:Show()
+            end
+        end)
+        
+        lib:RegisterFrame(TargetFrameSpellBar, "Target Cast Bar", f.db.global.TargetSpellBar, TargetFrame, "TOPLEFT")
+        hooksecurefunc("Target_Spellbar_AdjustPosition", function(self)
+            if self ~= TargetFrameSpellBar then return end
+            lib:RepositionFrame(TargetFrameSpellBar)
+            if EditModeManagerFrame.editModeActive then
+                TargetFrameSpellBar:Show()
+            end
+        end)
+        TargetFrameSpellBar:HookScript("OnShow", function(self)
+            lib:RepositionFrame(TargetFrameSpellBar)
+        end)
+        
+        lib:RegisterFrame(FocusFrameSpellBar, "Focus Cast Bar", f.db.global.FocusSpellBar, FocusFrame, "TOPLEFT")
+        lib:SetDontResize(FocusFrameSpellBar)
+        hooksecurefunc("Target_Spellbar_AdjustPosition", function(self)
+            if self ~= FocusFrameSpellBar then return end
+            lib:RepositionFrame(FocusFrameSpellBar)
+            if EditModeManagerFrame.editModeActive then
+                FocusFrameSpellBar:Show()
+            end
+        end)
+        FocusFrameSpellBar:HookScript("OnShow", function(self)
+            lib:RepositionFrame(FocusFrameSpellBar)
         end)
     elseif (event == "PLAYER_TOTEM_UPDATE") then
         if totemFrameLoaded then

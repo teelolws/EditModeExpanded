@@ -214,6 +214,17 @@ function lib:RegisterFrame(frame, name, db, anchorTo, anchorPoint)
     baseFramesDB[frame.system] = baseDB 
     framesDB[frame.system] = db
 
+    db.defaultScale = frame:GetScale()
+    db.defaultX, db.defaultY = frame:GetRect()
+    
+    -- needs investigation: why does this frame behave 'weirdly' if default scale 1 is not set?
+    if frame == FocusFrameSpellBar then
+        if not db.settings then db.settings = {} end
+        if not db.settings[Enum.EditModeUnitFrameSetting.FrameSize] then
+            db.settings[Enum.EditModeUnitFrameSetting.FrameSize] = 100
+        end
+    end
+
 	frame.Selection = CreateFrame("Frame", nil, frame, "EditModeSystemSelectionTemplate")
     frame.Selection:SetAllPoints(frame)
     frame.defaultHideSelection = true
@@ -291,6 +302,10 @@ function lib:RegisterFrame(frame, name, db, anchorTo, anchorPoint)
         end
         local db = framesDB[frame.system]
         db.x, db.y = self:GetRect()
+        
+        local x, y = getOffsetXY(frame, db.x, db.y)
+        frame:ClearAllPoints()
+        frame:SetPoint(anchorPoint, anchorTo, anchorPoint, x, y)
     end)
     
     function frame:ClearHighlight()
@@ -392,9 +407,6 @@ function lib:RegisterFrame(frame, name, db, anchorTo, anchorPoint)
     	end
     end
     
-    db.defaultScale = frame:GetScale()
-    db.defaultX, db.defaultY = frame:GetRect()
-    
     if db.settings and db.settings[Enum.EditModeUnitFrameSetting.FrameSize] then
         frame:SetScaleOverride(db.settings[Enum.EditModeUnitFrameSetting.FrameSize]/100)
     end
@@ -445,7 +457,10 @@ end
 function lib:RepositionFrame(frame)
     local db = framesDB[frame.system]
     frame:ClearAllPoints()
-    local x, y = getOffsetXY(frame, db.x or defaultX or 0, db.y or db.defaultY or 0)
+    if (not (db.x or db.defaultX)) or (not (db.y or db.defaultY)) then
+        return
+    end
+    local x, y = getOffsetXY(frame, db.x or db.defaultX, db.y or db.defaultY)
     local anchorPoint = frame.EMEanchorPoint
     if not pcall( function() frame:SetPoint(anchorPoint, frame.EMEanchorTo, anchorPoint, x, y) end ) then
         frame:SetPoint(anchorPoint, nil, anchorPoint, x, y)
@@ -861,6 +876,10 @@ do
         for _, frame in pairs(frames) do
             EditModeExpandedSystemSettingsDialog:Hide()
             local db = baseFramesDB[frame.system]
+            if frame == MicroButtonAndBagsBarMovable then
+                if not db.MenuBar then db.MenuBar = {} end
+                db = db.MenuBar
+            end
             
             -- if currently selected Edit Mode profile does not exist in the db, try importing a legacy db instead
             local layoutInfo = EditModeManagerFrame:GetActiveLayoutInfo()
@@ -901,13 +920,16 @@ do
                 local x, y = getOffsetXY(frame, db.x, db.y)
                 frame:SetPoint(anchorPoint, frame.EMEanchorTo, anchorPoint, x, y)
             else
-                local x, y = getOffsetXY(frame, defaultX, db.defaultY)
-                if not pcall( function() frame:SetPoint(anchorPoint, frame.EMEanchorTo, anchorPoint, x, y) end ) then
-                    frame:SetPoint(anchorPoint, nil, anchorPoint, x, y)
+                if db.defaultX and db.defaultY then
+                    local x, y = getOffsetXY(frame, db.defaultX, db.defaultY)
+                    if not pcall( function() frame:SetPoint(anchorPoint, frame.EMEanchorTo, anchorPoint, x, y) end ) then
+                        frame:SetPoint(anchorPoint, nil, anchorPoint, x, y)
+                    end
                 end
             end
             
             -- the option in the expanded frame
+            if db.enabled == nil then db.enabled = true end
             frame.EMECheckButtonFrame:SetChecked(db.enabled)
             
             -- frame hide option
@@ -1022,6 +1044,21 @@ function getOffsetXY(frame, x, y)
         return x, y
     end
     
-    local targetX, targetY = frame.EMEanchorTo:GetRect()
-    return targetX - x, targetY - y
+    local anchorPoint = frame.EMEanchorPoint or "BOTTOMLEFT"
+    if anchorPoint == "BOTTOMLEFT" then
+        local targetX, targetY = frame.EMEanchorTo:GetRect()
+        return x - targetX, y - targetY
+    elseif anchorPoint == "BOTTOMRIGHT" then
+        local targetX, targetY, targetWidth = frame.EMEanchorTo:GetRect()
+        local width = frame:GetSize()
+        return (x+width) - (targetX+targetWidth), y - targetY
+    elseif anchorPoint == "TOPLEFT" then
+        local targetX, targetY, _, targetHeight = frame.EMEanchorTo:GetRect()
+        local _, height = frame:GetSize()
+        return x - targetX, (y+height) - (targetY+targetHeight)
+    else -- TOPRIGHT
+        local targetX, targetY, targetWidth, targetHeight = frame.EMEanchorTo:GetRect()
+        local width, height = frame:GetSize()
+        return (x+width) - (targetX+targetWidth), (y+width) - (targetY+targetWidth)
+    end 
 end

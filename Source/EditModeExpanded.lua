@@ -30,6 +30,8 @@ local defaults = {
         HolyPower = {},
         Achievements = {},
         SoulShards = {},
+        ToT = {},
+        TargetSpellBar = {},
     }
 }
 
@@ -141,6 +143,19 @@ f:SetScript("OnEvent", function(__, event, arg1)
         elseif class == "SHAMAN" then
             registerTotemFrame(db)
         end
+        
+        lib:RegisterFrame(TargetFrameToT, "Target of Target", db.ToT)
+        TargetFrameToT:HookScript("OnHide", function()
+            if (not InCombatLockdown()) and EditModeManagerFrame.editModeActive and lib:IsFrameEnabled(TargetFrameToT) then
+                TargetFrameToT:Show()
+            end
+        end)
+        
+        --lib:RegisterFrame(TargetFrameSpellBar, "Target Cast Bar", db.TargetSpellBar, TargetFrame, "TOPLEFT")
+        --hooksecurefunc("Target_Spellbar_AdjustPosition", function(self)
+        --    if self ~= TargetFrameSpellBar then return end
+        --    lib:RepositionFrame(TargetFrameSpellBar)
+        --end)
     elseif (event == "UNIT_PET") and (not petFrameLoaded) and (addonLoaded) then
         petFrameLoaded = true
         local function init()

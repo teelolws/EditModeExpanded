@@ -46,6 +46,7 @@ end
 -- functions declared further down
 local pinToMinimap
 local unpinFromMinimap
+local getOffsetXY
 
 --
 -- Code to deal with splitting the Main Menu Bar from the Backpack bar
@@ -135,10 +136,17 @@ end
 -- param1: frame, the Frame to register
 -- param2: name, localized name to appear when the frame is selected during Edit Mode
 -- param3: db, a table in your saved variables to save the frame position in
-function lib:RegisterFrame(frame, name, db)
+-- param4: frame to anchor to, default is UIParent
+-- param5: point to anchor, default is BOTTOMLEFT
+function lib:RegisterFrame(frame, name, db, anchorTo, anchorPoint)
     assert(type(frame) == "table")
     assert(type(name) == "string")
     assert(type(db) == "table")
+    
+    if not anchorTo then anchorTo = UIParent end
+    if not anchorPoint then anchorPoint = "BOTTOMLEFT" end
+    frame.EMEanchorTo = anchorTo
+    frame.EMEanchorPoint = anchorPoint
     
     -- IMPORTANT: force update every patch incase of UI changes that cause problems and/or make this library redundant!
     if GetBuildInfo() ~= CURRENT_BUILD then return end
@@ -182,7 +190,8 @@ function lib:RegisterFrame(frame, name, db)
                 -- import new db settings if there are none saved in the existing db
                 framesDB[f.system].x = db.x
                 framesDB[f.system].y = db.y
-                f:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", db.x, db.y)
+                local x, y = getOffsetXY(frame, db.x, db.y)
+                f:SetPoint(anchorPoint, anchorTo, anchorPoint, x, y)
             end
             return
         end
@@ -190,6 +199,8 @@ function lib:RegisterFrame(frame, name, db)
     
     if frame == MicroButtonAndBagsBar then
         frame = duplicateMicroButtonAndBagsBar(db)
+        frame.EMEanchorTo = anchorTo
+        frame.EMEanchorPoint = anchorPoint
         if not db.MenuBar then db.MenuBar = {} end
         db = db.MenuBar
     end
@@ -230,7 +241,7 @@ function lib:RegisterFrame(frame, name, db)
 
     function frame:MoveWithArrowKey(key)
         if self.isSelected then
-            x, y = self:GetRect();
+            local x, y = self:GetRect();
 
             local new_x = x;
             local new_y = y;
@@ -246,8 +257,9 @@ function lib:RegisterFrame(frame, name, db)
                 self.Selection:SetPropagateKeyboardInput(false);
                 local db = framesDB[frame.system]
                 db.x, db.y = new_x, new_y;
-                self:ClearAllPoints();
-                self:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", db.x, db.y);
+                self:ClearAllPoints()
+                local x, y = getOffsetXY(frame, db.x, db.y)
+                self:SetPoint(anchorPoint, anchorTo, anchorPoint, x, y);
                 return
             end
         end
@@ -304,9 +316,12 @@ function lib:RegisterFrame(frame, name, db)
         local db = framesDB[frame.system]
         frame:ClearAllPoints()
         frame:SetScaleOverride(1)
-        if not pcall( function() frame:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", db.defaultX, db.defaultY) end ) then
+        if not db.defaultX then db.defaultX = 0 end
+        if not db.defaultY then db.defaultY = 0 end
+        local x, y = getOffsetXY(frame, db.defaultX, db.defaultY)
+        if not pcall( function() frame:SetPoint(anchorPoint, anchorTo, anchorPoint, x, y) end ) then
             -- need a better solution here
-            frame:SetPoint("BOTTOMLEFT", nil, "BOTTOMLEFT", db.defaultX, db.defaultY)
+            frame:SetPoint("BOTTOMLEFT", nil, "BOTTOMLEFT", x, y)
         end
         
         db.x = db.defaultX
@@ -393,7 +408,8 @@ function lib:RegisterFrame(frame, name, db)
             end
         end 
         frame:ClearAllPoints()
-        frame:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", db.x, db.y)
+        local x, y = getOffsetXY(frame, db.x, db.y)
+        frame:SetPoint(anchorPoint, anchorTo, anchorPoint, x, y)
     else
         db.x, db.y = frame:GetRect()
     end
@@ -429,8 +445,10 @@ end
 function lib:RepositionFrame(frame)
     local db = framesDB[frame.system]
     frame:ClearAllPoints()
-    if not pcall( function() frame:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", db.x or db.defaultX, db.y or db.defaultY) end ) then
-        frame:SetPoint("BOTTOMLEFT", nil, "BOTTOMLEFT", db.x or db.defaultX, db.y or db.defaultY)
+    local x, y = getOffsetXY(frame, db.x or defaultX or 0, db.y or db.defaultY or 0)
+    local anchorPoint = frame.EMEanchorPoint
+    if not pcall( function() frame:SetPoint(anchorPoint, frame.EMEanchorTo, anchorPoint, x, y) end ) then
+        frame:SetPoint(anchorPoint, nil, anchorPoint, x, y)
     end
 end
 
@@ -479,6 +497,12 @@ function lib:IsRegistered(frame)
         if frame == f then return true end
     end
     return false
+end
+
+-- Is the Expanded frame checkbox checked for this frame?
+function lib:IsFrameEnabled(frame)
+    local db = framesDB[frame.system]
+    return db.enabled
 end
 
 --
@@ -872,11 +896,14 @@ do
             
             -- update position
             frame:ClearAllPoints()
+            local anchorPoint = frame.EMEanchorPoint
             if db.x and db.y then
-                frame:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", db.x, db.y)
+                local x, y = getOffsetXY(frame, db.x, db.y)
+                frame:SetPoint(anchorPoint, frame.EMEanchorTo, anchorPoint, x, y)
             else
-                if not pcall( function() frame:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", db.defaultX, db.defaultY) end ) then
-                    frame:SetPoint("BOTTOMLEFT", nil, "BOTTOMLEFT", db.defaultX, db.defaultY)
+                local x, y = getOffsetXY(frame, defaultX, db.defaultY)
+                if not pcall( function() frame:SetPoint(anchorPoint, frame.EMEanchorTo, anchorPoint, x, y) end ) then
+                    frame:SetPoint(anchorPoint, nil, anchorPoint, x, y)
                 end
             end
             
@@ -981,7 +1008,20 @@ end
 function unpinFromMinimap(frame)
     local db = framesDB[frame.system]
     frame:ClearAllPoints()
-    frame:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", db.x, db.y)
+    local x, y = getOffsetXY(frame, db.x, db.y)
+    frame:SetPoint(frame.EMEanchorPoint, frame.EMEanchorTo, frame.EMEanchorPoint, db.x, db.y)
     db.minimap.hide = true
     frame.minimapLDBIcon:Hide(frame:GetName().."LDB")
+end
+
+--
+-- Handle frame being based on a frame other than UIParent
+--
+function getOffsetXY(frame, x, y)
+    if frame.EMEanchorTo == UIParent then
+        return x, y
+    end
+    
+    local targetX, targetY = frame.EMEanchorTo:GetRect()
+    return targetX - x, targetY - y
 end

@@ -319,23 +319,21 @@ f:SetScript("OnEvent", function(__, event, arg1)
         
         if db.EMEOptions.targetCast then
             lib:RegisterFrame(TargetFrameSpellBar, "Target Cast Bar", f.db.global.TargetSpellBar, TargetFrame, "TOPLEFT")
-            hooksecurefunc("Target_Spellbar_AdjustPosition", function(self)
-                if self ~= TargetFrameSpellBar then return end
+            hooksecurefunc(TargetFrameSpellBar, "AdjustPosition", function(self)
                 lib:RepositionFrame(TargetFrameSpellBar)
                 if EditModeManagerFrame.editModeActive then
                     TargetFrameSpellBar:Show()
                 end
             end)
-            TargetFrameSpellBar:HookScript("OnShow", function(self)
-                lib:RepositionFrame(TargetFrameSpellBar)
-            end)
+            --TargetFrameSpellBar:HookScript("OnShow", function(self)
+            --    lib:RepositionFrame(TargetFrameSpellBar)
+            --end)
         end
         
         if db.EMEOptions.focusCast then
             lib:RegisterFrame(FocusFrameSpellBar, "Focus Cast Bar", f.db.global.FocusSpellBar, FocusFrame, "TOPLEFT")
             lib:SetDontResize(FocusFrameSpellBar)
-            hooksecurefunc("Target_Spellbar_AdjustPosition", function(self)
-                if self ~= FocusFrameSpellBar then return end
+            hooksecurefunc(FocusFrameSpellBar, "AdjustPosition", function(self)
                 lib:RepositionFrame(FocusFrameSpellBar)
                 if EditModeManagerFrame.editModeActive then
                     FocusFrameSpellBar:Show()

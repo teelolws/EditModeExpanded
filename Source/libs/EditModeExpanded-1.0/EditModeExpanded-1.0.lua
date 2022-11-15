@@ -565,6 +565,7 @@ end)
 hooksecurefunc(EditModeManagerFrame, "EnterEditMode", function(self)
     -- can cause errors if the player is in combat - eg trying to move or show/hide protected frames
     if InCombatLockdown() then return end
+    if not EditModeManagerExpandedFrame then return end -- happens if library is embedded but nothing has been registered
     
     if #frames <= 0 then EditModeManagerExpandedFrame:Hide() end
     for _, frame in ipairs(frames) do
@@ -593,6 +594,7 @@ hooksecurefunc(EditModeManagerFrame, "ExitEditMode", function()
         print("EditModeExpanded Error: could not hide Edit Mode properly - you were in combat!")
         return
     end
+    if not EditModeManagerExpandedFrame then return end -- happens if library is embedded but nothing has been registered
     
     for _, frame in ipairs(frames) do
         frame:ClearHighlight();

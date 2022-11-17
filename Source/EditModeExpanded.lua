@@ -265,6 +265,11 @@ f:SetScript("OnEvent", function(__, event, arg1)
             if db.EMEOptions.totem then
                 registerTotemFrame(db)
             end
+        elseif class == "MONK" then
+            -- Summon black ox uses totem frame
+            if db.EMEOptions.totem then
+                registerTotemFrame(db)
+            end
         end
         
         

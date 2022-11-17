@@ -997,9 +997,7 @@ function lib:RegisterMinimapPinnable(frame)
         local db = framesDB[frame.system]
         if not db.minimap then db.minimap = {} end
         if not db.settings then db.settings = {} end
-        if db.settings[ENUM_EDITMODEACTIONBARSETTING_MINIMAPPINNED] ~= 1 then
-            db.minimap.hide = true
-        end
+        db.minimap.hide = true
         icon:Hide(name)
     end)
     

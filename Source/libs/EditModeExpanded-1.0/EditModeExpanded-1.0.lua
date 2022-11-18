@@ -412,7 +412,7 @@ function lib:RegisterFrame(frame, name, db, anchorTo, anchorPoint)
     end
     
     if db.x and db.y then
-        if frame:GetScale() == 1 then
+        if (frame:GetScale() == 1) and (anchorTo == UIParent) and (anchorPoint == "TOPLEFT") then
             -- if stored coordinates are outside the screen resolution, reset them back to defaults
             local _, _, screenX, screenY = UIParent:GetRect()
             if (db.x < 0) or (db.x >= screenX) or (db.y < 0) or (db.y > screenY) then
@@ -456,7 +456,7 @@ end
 -- call this if the frame needs to be moved back into position at some point after ADDON_LOADED
 function lib:RepositionFrame(frame)
     local db = framesDB[frame.system]
-    
+
     frame:ClearAllPoints()
     
     if (not (db.x or db.defaultX)) or (not (db.y or db.defaultY)) then

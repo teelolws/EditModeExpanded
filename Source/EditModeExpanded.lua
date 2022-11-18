@@ -51,6 +51,7 @@ local defaults = {
         ToT = {},
         TargetSpellBar = {},
         FocusSpellBar = {},
+        CompactRaidFrameManager = {},
     }
 }
 
@@ -230,6 +231,8 @@ f:SetScript("OnEvent", function(__, event, arg1)
             lib:RegisterFrame(VehicleSeatIndicator, "Vehicle Seats", db.VehicleSeatIndicator)
             lib:RegisterResizable(VehicleSeatIndicator)
         end
+        
+        --lib:RegisterFrame(CompactRaidFrameManager, "Raid Frame Manager", db.CompactRaidFrameManager)
         
         local class = UnitClassBase("player")
         

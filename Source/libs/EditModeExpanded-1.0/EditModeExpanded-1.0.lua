@@ -456,10 +456,18 @@ end
 -- call this if the frame needs to be moved back into position at some point after ADDON_LOADED
 function lib:RepositionFrame(frame)
     local db = framesDB[frame.system]
+    
     frame:ClearAllPoints()
+    
     if (not (db.x or db.defaultX)) or (not (db.y or db.defaultY)) then
         return
     end
+    
+    if db.settings and (db.settings[ENUM_EDITMODEACTIONBARSETTING_HIDEABLE] == 1) then
+        frame:Hide()
+        return
+    end
+    
     local x, y = getOffsetXY(frame, db.x or db.defaultX, db.y or db.defaultY)
     local anchorPoint = frame.EMEanchorPoint
     if not pcall( function() frame:SetPoint(anchorPoint, frame.EMEanchorTo, anchorPoint, x, y) end ) then

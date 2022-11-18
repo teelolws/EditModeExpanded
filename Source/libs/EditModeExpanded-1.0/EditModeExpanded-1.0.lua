@@ -915,6 +915,11 @@ do
                 db.settings = nil
             end
             
+            if db.minimap then
+                db.profiles[profileName].minimap = db.minimap
+                db.minimap = nil
+            end
+            
             db = db.profiles[profileName]
             framesDB[frame.system] = db
 
@@ -993,6 +998,7 @@ function lib:RegisterMinimapPinnable(frame)
     frame:HookScript("OnShow", function()
         local db = framesDB[frame.system]
         if not db.minimap then db.minimap = {} end
+        if not db.settings then db.settings = {} end
         if db.settings[ENUM_EDITMODEACTIONBARSETTING_MINIMAPPINNED] == 1 then
             db.minimap.hide = nil
             icon:Show(name)
@@ -1007,6 +1013,21 @@ function lib:RegisterMinimapPinnable(frame)
         if not db.settings then db.settings = {} end
         db.minimap.hide = true
         icon:Hide(name)
+    end)
+    
+    hooksecurefunc(frame, "SetShown", function()
+        local db = framesDB[frame.system]
+        if not db.minimap then db.minimap = {} end
+        if not db.settings then db.settings = {} end
+        if (db.settings[ENUM_EDITMODEACTIONBARSETTING_MINIMAPPINNED] == 1) and frame:IsShown() then
+            db.minimap.hide = nil
+            icon:Show(name)
+            frame:ClearAllPoints()
+            frame:SetPoint("CENTER", icon:GetMinimapButton(name), "CENTER")
+        else
+            db.minimap.hide = true
+            icon:Hide(name)
+        end
     end)
     
     if not framesDialogs[frame.system] then framesDialogs[frame.system] = {} end
@@ -1028,8 +1049,11 @@ function pinToMinimap(frame)
     local db = framesDB[frame.system]
     if not db.minimap then db.minimap = {} end
     
-    db.minimap.hide = nil
-    frame.minimapLDBIcon:Show(frame:GetName().."LDB")
+    if db.minimap.hide then
+        frame.minimapLDBIcon:Hide(frame:GetName().."LDB")
+    else
+        frame.minimapLDBIcon:Show(frame:GetName().."LDB")
+    end
     
     frame:ClearAllPoints()
     frame:SetPoint("CENTER", frame.minimapLDBIcon:GetMinimapButton(frame:GetName().."LDB"), "CENTER")

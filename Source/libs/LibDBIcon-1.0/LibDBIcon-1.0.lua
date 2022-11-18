@@ -271,6 +271,7 @@ local function createButton(name, object, db)
 		updatePosition(button, db and db.minimapPos)
 		if not db or not db.hide then
 			button:Show()
+            print("c")
 		else
 			button:Hide()
 		end
@@ -296,6 +297,7 @@ if not lib.loggedIn then
 			updatePosition(button, button.db and button.db.minimapPos)
 			if not button.db or not button.db.hide then
 				button:Show()
+                print("dd")
 			else
 				button:Hide()
 			end
@@ -311,9 +313,11 @@ local function getDatabase(name)
 end
 
 function lib:Register(name, object, db)
+    print("k")
 	if not object.icon then error("Can't register LDB objects without icons set!") end
 	if lib.objects[name] or lib.notCreated[name] then error(DBICON10.. ": Object '".. name .."' is already registered.") end
 	if not db or not db.hide then
+        print("l")
 		createButton(name, object, db)
 	else
 		lib.notCreated[name] = {object, db}
@@ -354,6 +358,7 @@ function lib:Show(name)
 	local button = lib.objects[name]
 	if button then
 		button:Show()
+        print(debugstack())
 		updatePosition(button, button.db and button.db.minimapPos or button.minimapPos)
 	end
 end
@@ -371,6 +376,7 @@ function lib:Refresh(name, db)
 	updatePosition(button, button.db and button.db.minimapPos or button.minimapPos)
 	if not button.db or not button.db.hide then
 		button:Show()
+        print("d")
 	else
 		button:Hide()
 	end

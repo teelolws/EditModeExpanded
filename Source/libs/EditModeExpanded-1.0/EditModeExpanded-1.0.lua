@@ -540,6 +540,7 @@ function lib:IsFrameEnabled(frame)
     return db.enabled
 end
 
+local customCheckboxCallDuringProfileInit = {}
 -- call this to register a custom checkbox where you're providing the handler
 -- limit one per frame
 function lib:RegisterCustomCheckbox(frame, name, onChecked, onUnchecked)
@@ -555,6 +556,21 @@ function lib:RegisterCustomCheckbox(frame, name, onChecked, onUnchecked)
             onChecked = onChecked,
             onUnchecked = onUnchecked,
     })
+    
+    local function callLater()
+        local db = framesDB[frame.system]
+        if db.settings[ENUM_EDITMODEACTIONBARSETTING_CUSTOM] == 1 then
+            onChecked()
+        else
+            onUnchecked()
+        end
+    end
+    
+    if profilesInitialised then
+        callLater()
+    else
+        table.insert(customCheckboxCallDuringProfileInit, callLater)
+    end
 end
 
 --
@@ -1010,6 +1026,10 @@ do
             if EditModeManagerFrame.editModeActive and frame:IsShown() then
                 frame:HighlightSystem()
             end
+        end
+        
+        for _, func in pairs(customCheckboxCallDuringProfileInit) do
+            func()
         end
     end)
 end

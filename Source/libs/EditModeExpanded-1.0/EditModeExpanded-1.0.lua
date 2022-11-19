@@ -559,6 +559,7 @@ function lib:RegisterCustomCheckbox(frame, name, onChecked, onUnchecked)
     
     local function callLater()
         local db = framesDB[frame.system]
+        if not db.settings then db.settings = {} end
         if db.settings[ENUM_EDITMODEACTIONBARSETTING_CUSTOM] == 1 then
             onChecked()
         else

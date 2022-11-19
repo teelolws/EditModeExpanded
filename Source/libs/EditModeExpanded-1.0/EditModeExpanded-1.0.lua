@@ -7,7 +7,7 @@ local MAJOR, MINOR = "EditModeExpanded-1.0", 23
 local lib = LibStub:NewLibrary(MAJOR, MINOR)
 if not lib then return end
 
--- the internal frames provided by Blizzard go up to index 12. They reference an Enum.
+-- the internal frames provided by Blizzard go up to index 12. They reference Enum.EditModeSystem, which starts from index 0
 local index = 13
 local frames = {}
 local baseFramesDB = {} -- the base db that includes all profiles inside
@@ -17,6 +17,7 @@ local framesDialogsKeys = {}
 
 local ENUM_EDITMODEACTIONBARSETTING_HIDEABLE = 10 -- Enum.EditModeActionBarSetting.Hideable = 10
 local ENUM_EDITMODEACTIONBARSETTING_MINIMAPPINNED = 11
+local ENUM_EDITMODEACTIONBARSETTING_CUSTOM = 12
 
 -- run OnLoad the first time RegisterFrame is called by an addon
 local f = {}
@@ -156,6 +157,31 @@ function lib:RegisterFrame(frame, name, db, anchorTo, anchorPoint)
     
     local baseDB = db
     
+    -- If the frame was already registered (perhaps by another addon that uses this library), don't register it again
+    for _, f in ipairs(frames) do
+        if (frame == f) or ((frame == MicroButtonAndBagsBar) and (f == MicroButtonAndBagsBarMovable)) then
+            if (not framesDB[f.system].x) and (not framesDB[f.system].y) then
+                -- import new db settings if there are none saved in the existing db
+                framesDB[f.system].x = db.x
+                framesDB[f.system].y = db.y
+                local x, y = getOffsetXY(frame, db.x, db.y)
+                f:SetPoint(anchorPoint, anchorTo, anchorPoint, x, y)
+            end
+            return
+        end
+    end
+    
+    -- frame is an existing Edit Mode frame by Blizzard, handle it differently
+    if frame.system then
+        if framesDB[frame.system] then return end
+        baseFramesDB[frame.system] = baseDB
+        framesDB[frame.system] = db
+        hooksecurefunc(frame, "SelectSystem", function()
+            EditModeExpandedSystemSettingsDialog:AttachToSystemFrame(frame)
+        end)
+        return
+    end
+    
     if profilesInitialised then
         local layoutInfo = EditModeManagerFrame:GetActiveLayoutInfo()
         local profileName = layoutInfo.layoutType.."-"..layoutInfo.layoutName
@@ -182,21 +208,7 @@ function lib:RegisterFrame(frame, name, db, anchorTo, anchorPoint)
         
         db = db.profiles[profileName]
     end
-    
-    -- If the frame was already registered (perhaps by another addon that uses this library), don't register it again
-    for _, f in ipairs(frames) do
-        if (frame == f) or ((frame == MicroButtonAndBagsBar) and (f == MicroButtonAndBagsBarMovable)) then
-            if (not framesDB[f.system].x) and (not framesDB[f.system].y) then
-                -- import new db settings if there are none saved in the existing db
-                framesDB[f.system].x = db.x
-                framesDB[f.system].y = db.y
-                local x, y = getOffsetXY(frame, db.x, db.y)
-                f:SetPoint(anchorPoint, anchorTo, anchorPoint, x, y)
-            end
-            return
-        end
-    end
-    
+
     if frame == MicroButtonAndBagsBar then
         frame = duplicateMicroButtonAndBagsBar(db)
         frame.EMEanchorTo = anchorTo
@@ -528,6 +540,23 @@ function lib:IsFrameEnabled(frame)
     return db.enabled
 end
 
+-- call this to register a custom checkbox where you're providing the handler
+-- limit one per frame
+function lib:RegisterCustomCheckbox(frame, name, onChecked, onUnchecked)
+    if not framesDialogs[frame.system] then framesDialogs[frame.system] = {} end
+    if framesDialogsKeys[frame.system] and framesDialogsKeys[frame.system][ENUM_EDITMODEACTIONBARSETTING_CUSTOM] then return end
+    if not framesDialogsKeys[frame.system] then framesDialogsKeys[frame.system] = {} end
+    framesDialogsKeys[frame.system][ENUM_EDITMODEACTIONBARSETTING_CUSTOM] = true
+    table.insert(framesDialogs[frame.system],
+        {
+            setting = ENUM_EDITMODEACTIONBARSETTING_CUSTOM,
+            name = name,
+            type = Enum.EditModeSettingDisplayType.Checkbox,
+            onChecked = onChecked,
+            onUnchecked = onUnchecked,
+    })
+end
+
 --
 -- Require update on game patch
 --
@@ -628,17 +657,16 @@ hooksecurefunc(EditModeManagerFrame, "ExitEditMode", function()
 end)
 
 hooksecurefunc(EditModeManagerFrame, "SelectSystem", function(self, systemFrame)
-    local wasCustom
     for _, frame in ipairs(frames) do
         if systemFrame ~= frame then
             frame:HighlightSystem()
-        else
-            wasCustom = true
         end
     end
-    if not wasCustom then
+    
+    if (not systemFrame.system) or (not framesDB[systemFrame.system]) then
         EditModeExpandedSystemSettingsDialog:Hide()
-    end            
+        return
+    end
 end)
 
 --
@@ -815,7 +843,22 @@ hooksecurefunc(f, "OnLoad", function()
                         end)
                     end
                     
-  					settingsToSetup[settingFrame] = { displayInfo = updatedDisplayInfo, currentValue = savedValue, settingName = settingName },
+                    if displayInfo.setting == ENUM_EDITMODEACTIONBARSETTING_CUSTOM then
+                        savedValue = framesDB[EditModeExpandedSystemSettingsDialog.attachedToSystem.system].settings[displayInfo.setting]
+                        if savedValue == nil then savedValue = 0 end
+                        settingFrame.Button:SetChecked(savedValue)
+                        settingFrame.Button:SetScript("OnClick", function()
+                            if settingFrame.Button:GetChecked() then
+                                framesDB[EditModeExpandedSystemSettingsDialog.attachedToSystem.system].settings[displayInfo.setting] = 1
+                                displayInfo.onChecked()
+                            else
+                                framesDB[EditModeExpandedSystemSettingsDialog.attachedToSystem.system].settings[displayInfo.setting] = 0
+                                displayInfo.onUnchecked()
+                            end
+                        end)
+                    end
+                    
+  					settingsToSetup[settingFrame] = { displayInfo = updatedDisplayInfo, currentValue = savedValue, settingName = settingName }
   					settingFrame:Show();
   				end
     		end

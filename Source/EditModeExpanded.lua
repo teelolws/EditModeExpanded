@@ -51,6 +51,7 @@ local defaults = {
         ToT = {},
         TargetSpellBar = {},
         FocusSpellBar = {},
+        CompactRaidFrameContainer = {},
         CompactRaidFrameManager = {},
     }
 }
@@ -232,7 +233,30 @@ f:SetScript("OnEvent", function(__, event, arg1)
             lib:RegisterResizable(VehicleSeatIndicator)
         end
         
-        --lib:RegisterFrame(CompactRaidFrameManager, "Raid Frame Manager", db.CompactRaidFrameManager)
+        lib:RegisterFrame(CompactRaidFrameContainer, "Raid Frame Container", db.CompactRaidFrameContainer)
+        local originalFrameManagerX, originalFrameManagerY = CompactRaidFrameManager:GetRect()
+        lib:RegisterCustomCheckbox(CompactRaidFrameContainer, "Hide Frame Manager", 
+            -- on checked
+            function()
+                -- this frame cannot be :Hide() hidden, as other frames are parented to it. Cannot change the parenting either, without causing other problems.
+                -- So, instead, lets shove it off the screen.
+                local x, y = CompactRaidFrameContainer:GetRect()
+                originalFrameManagerX, originalFrameManagerY = CompactRaidFrameManager:GetRect()
+                CompactRaidFrameManager:ClearAllPoints()
+                CompactRaidFrameManager:SetPoint("TOPRIGHT", UIParent, "BOTTOMLEFT", 0, 0)
+                CompactRaidFrameContainer:ClearAllPoints()
+                CompactRaidFrameContainer:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", x, y)
+            end,
+            
+            -- on unchecked
+            function()
+                local x, y = CompactRaidFrameContainer:GetRect()
+                CompactRaidFrameManager:ClearAllPoints()
+                CompactRaidFrameManager:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", originalFrameManagerX, originalFrameManagerY)
+                CompactRaidFrameContainer:ClearAllPoints()
+                CompactRaidFrameContainer:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", x, y)
+            end
+        )
         
         local class = UnitClassBase("player")
         

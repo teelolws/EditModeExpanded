@@ -54,6 +54,7 @@ local defaults = {
         FocusSpellBar = {},
         CompactRaidFrameContainer = {},
         CompactRaidFrameManager = {},
+        TalkingHead = {},
     }
 }
 
@@ -272,6 +273,17 @@ f:SetScript("OnEvent", function(__, event, arg1)
                 end
             )
         end
+        
+        --if db.EMEOptions.talkingHead then
+            lib:RegisterFrame(TalkingHeadFrame, "", db.TalkingHead)
+            lib:RegisterHideable(TalkingHeadFrame)
+            TalkingHeadFrame:HookScript("OnEvent", function(...)
+                if lib:IsFrameMarkedHidden(TalkingHeadFrame) then
+                    TalkingHeadFrame:Close()
+                    TalkingHeadFrame:Hide()
+                end
+            end)
+        --end
         
         local class = UnitClassBase("player")
         

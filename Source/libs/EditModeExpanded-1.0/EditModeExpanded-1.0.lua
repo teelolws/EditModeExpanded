@@ -495,7 +495,8 @@ function lib:RepositionFrame(frame)
     assert(type(frame) == "table")
     assert(frame.system > 12)
     
-    local db = framesDB[frame.system]
+    local systemID = getSystemID(frame)
+    local db = framesDB[systemID]
 
     frame:ClearAllPoints()
     
@@ -542,16 +543,22 @@ end
 function lib:RegisterHideable(frame)
     local systemID = getSystemID(frame)
     
-    if not framesDialogs[frame.system] then framesDialogs[frame.system] = {} end
-    if framesDialogsKeys[frame.system] and framesDialogsKeys[frame.system][ENUM_EDITMODEACTIONBARSETTING_HIDEABLE] then return end
-    if not framesDialogsKeys[frame.system] then framesDialogsKeys[frame.system] = {} end
-    framesDialogsKeys[frame.system][ENUM_EDITMODEACTIONBARSETTING_HIDEABLE] = true
-    table.insert(framesDialogs[frame.system],
+    if not framesDialogs[systemID] then framesDialogs[systemID] = {} end
+    if framesDialogsKeys[systemID] and framesDialogsKeys[systemID][ENUM_EDITMODEACTIONBARSETTING_HIDEABLE] then return end
+    if not framesDialogsKeys[systemID] then framesDialogsKeys[systemID] = {} end
+    framesDialogsKeys[systemID][ENUM_EDITMODEACTIONBARSETTING_HIDEABLE] = true
+    table.insert(framesDialogs[systemID],
         {
             setting = ENUM_EDITMODEACTIONBARSETTING_HIDEABLE,
             name = "Hide",
             type = Enum.EditModeSettingDisplayType.Checkbox,
     })
+end
+
+function lib:IsFrameMarkedHidden(frame)
+    local systemID = getSystemID(frame)
+    
+    return framesDB[systemID].settings[ENUM_EDITMODEACTIONBARSETTING_HIDEABLE] == 1
 end
 
 -- implemented further down the file

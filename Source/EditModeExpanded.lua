@@ -283,6 +283,7 @@ f:SetScript("OnEvent", function(__, event, arg1)
                     TalkingHeadFrame:Hide()
                 end
             end)
+            lib:RegisterResizable(TalkingHeadFrame)
         end
         
         local class = UnitClassBase("player")

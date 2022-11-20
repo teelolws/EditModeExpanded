@@ -521,11 +521,11 @@ end
 function lib:RegisterResizable(frame)
     local systemID = getSystemID(frame)
     
-    if not framesDialogs[frame.system] then framesDialogs[frame.system] = {} end
-    if framesDialogsKeys[frame.system] and framesDialogsKeys[frame.system][Enum.EditModeUnitFrameSetting.FrameSize] then return end
-    if not framesDialogsKeys[frame.system] then framesDialogsKeys[frame.system] = {} end
-    framesDialogsKeys[frame.system][Enum.EditModeUnitFrameSetting.FrameSize] = true
-    table.insert(framesDialogs[frame.system],
+    if not framesDialogs[systemID] then framesDialogs[systemID] = {} end
+    if framesDialogsKeys[systemID] and framesDialogsKeys[systemID][Enum.EditModeUnitFrameSetting.FrameSize] then return end
+    if not framesDialogsKeys[systemID] then framesDialogsKeys[systemID] = {} end
+    framesDialogsKeys[systemID][Enum.EditModeUnitFrameSetting.FrameSize] = true
+    table.insert(framesDialogs[systemID],
 		{
 			setting = Enum.EditModeUnitFrameSetting.FrameSize,
 			name = HUD_EDIT_MODE_SETTING_UNIT_FRAME_FRAME_SIZE,

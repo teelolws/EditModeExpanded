@@ -391,9 +391,10 @@ f:SetScript("OnEvent", function(__, event, arg1)
                     TargetFrameSpellBar:Show()
                 end
             end)
-            --TargetFrameSpellBar:HookScript("OnShow", function(self)
-            --    lib:RepositionFrame(TargetFrameSpellBar)
-            --end)
+            TargetFrameSpellBar:HookScript("OnShow", function(self)
+                lib:RepositionFrame(TargetFrameSpellBar)
+            end)
+            lib:SetDontResize(TargetFrameSpellBar)
         end
         
         if db.EMEOptions.focusCast then

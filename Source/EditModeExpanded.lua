@@ -226,13 +226,6 @@ f:SetScript("OnEvent", function(__, event, arg1)
             lib:RegisterResizable(StatusTrackingBarManager)
             lib:RegisterHideable(StatusTrackingBarManager)
         end
-        
-        if db.EMEOptions.lfg then
-            QueueStatusButton:SetParent(UIParent)
-            lib:RegisterFrame(QueueStatusButton, "LFG", db.QueueStatusButton)
-            lib:RegisterResizable(QueueStatusButton)
-            lib:RegisterMinimapPinnable(QueueStatusButton)
-        end
 
         if db.EMEOptions.durability then
             DurabilityFrame:SetParent(UIParent)
@@ -409,6 +402,13 @@ f:SetScript("OnEvent", function(__, event, arg1)
             FocusFrameSpellBar:HookScript("OnShow", function(self)
                 lib:RepositionFrame(FocusFrameSpellBar)
             end)
+        end
+        
+        if db.EMEOptions.lfg then
+            QueueStatusButton:SetParent(UIParent)
+            lib:RegisterFrame(QueueStatusButton, "LFG", db.QueueStatusButton)
+            lib:RegisterResizable(QueueStatusButton)
+            lib:RegisterMinimapPinnable(QueueStatusButton)
         end
     elseif (event == "PLAYER_TOTEM_UPDATE") then
         if totemFrameLoaded then

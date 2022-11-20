@@ -1085,6 +1085,7 @@ end
 --
 
 -- Prerequsities: LibDataBroker and LibDBIcon
+-- Must be called during PLAYER_ENTERING_WORLD or later, or issues with MBB compatibility can occur
 function lib:RegisterMinimapPinnable(frame)
     local name = frame:GetName().."LDB"
     local db = framesDB[frame.system]
@@ -1152,6 +1153,19 @@ function lib:RegisterMinimapPinnable(frame)
     )
     
     frame.minimapLDBIcon = icon
+    
+    -- compatibility with Minimap Button Bag
+    if MBB_Version and MBB_OnClick then
+        hooksecurefunc("MBB_OnClick", function()
+            if (db.settings[ENUM_EDITMODEACTIONBARSETTING_MINIMAPPINNED] == 1) then
+                if MBB_IsShown == 1 then
+                    frame:Show()
+                else
+                    frame:Hide()
+                end
+            end
+        end)
+    end
 end
 
 function pinToMinimap(frame)

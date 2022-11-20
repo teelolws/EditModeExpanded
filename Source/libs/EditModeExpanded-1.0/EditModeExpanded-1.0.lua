@@ -558,6 +558,7 @@ end
 function lib:IsFrameMarkedHidden(frame)
     local systemID = getSystemID(frame)
     
+    if not framesDB[systemID].settings then framesDB[systemID].settings = {} end
     return framesDB[systemID].settings[ENUM_EDITMODEACTIONBARSETTING_HIDEABLE] == 1
 end
 

@@ -36,6 +36,7 @@ local defaults = {
             targetOfTarget = true,
             targetCast = true,
             focusCast = true,
+            compactRaidFrameContainer = true,
         },
         MicroButtonAndBagsBar = {},
         BackpackBar = {},
@@ -132,6 +133,11 @@ local options = {
         focusCast = {
             name = "Focus Cast Bar",
             desc = "Enables / Disables Focus Cast Bar support",
+            type = "toggle",
+        },
+        compactRaidFrameContainer = {
+            name = "Compact Raid Frame Container",
+            desc = "Enables / Disables additional options for the Compact Raid Frames",
             type = "toggle",
         },
     },
@@ -233,30 +239,32 @@ f:SetScript("OnEvent", function(__, event, arg1)
             lib:RegisterResizable(VehicleSeatIndicator)
         end
         
-        lib:RegisterFrame(CompactRaidFrameContainer, "Raid Frame Container", db.CompactRaidFrameContainer)
-        local originalFrameManagerX, originalFrameManagerY = CompactRaidFrameManager:GetRect()
-        lib:RegisterCustomCheckbox(CompactRaidFrameContainer, "Hide Frame Manager", 
-            -- on checked
-            function()
-                -- this frame cannot be :Hide() hidden, as other frames are parented to it. Cannot change the parenting either, without causing other problems.
-                -- So, instead, lets shove it off the screen.
-                local x, y = CompactRaidFrameContainer:GetRect()
-                originalFrameManagerX, originalFrameManagerY = CompactRaidFrameManager:GetRect()
-                CompactRaidFrameManager:ClearAllPoints()
-                CompactRaidFrameManager:SetPoint("TOPRIGHT", UIParent, "BOTTOMLEFT", 0, 0)
-                CompactRaidFrameContainer:ClearAllPoints()
-                CompactRaidFrameContainer:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", x, y)
-            end,
-            
-            -- on unchecked
-            function()
-                local x, y = CompactRaidFrameContainer:GetRect()
-                CompactRaidFrameManager:ClearAllPoints()
-                CompactRaidFrameManager:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", originalFrameManagerX, originalFrameManagerY)
-                CompactRaidFrameContainer:ClearAllPoints()
-                CompactRaidFrameContainer:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", x, y)
-            end
-        )
+        if db.EMEOptions.compactRaidFrameContainer then
+            lib:RegisterFrame(CompactRaidFrameContainer, "Raid Frame Container", db.CompactRaidFrameContainer)
+            local originalFrameManagerX, originalFrameManagerY = CompactRaidFrameManager:GetRect()
+            lib:RegisterCustomCheckbox(CompactRaidFrameContainer, "Hide Frame Manager", 
+                -- on checked
+                function()
+                    -- this frame cannot be :Hide() hidden, as other frames are parented to it. Cannot change the parenting either, without causing other problems.
+                    -- So, instead, lets shove it off the screen.
+                    local x, y = CompactRaidFrameContainer:GetRect()
+                    originalFrameManagerX, originalFrameManagerY = CompactRaidFrameManager:GetRect()
+                    CompactRaidFrameManager:ClearAllPoints()
+                    CompactRaidFrameManager:SetPoint("TOPRIGHT", UIParent, "BOTTOMLEFT", 0, 0)
+                    CompactRaidFrameContainer:ClearAllPoints()
+                    CompactRaidFrameContainer:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", x, y)
+                end,
+                
+                -- on unchecked
+                function()
+                    local x, y = CompactRaidFrameContainer:GetRect()
+                    CompactRaidFrameManager:ClearAllPoints()
+                    CompactRaidFrameManager:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", originalFrameManagerX, originalFrameManagerY)
+                    CompactRaidFrameContainer:ClearAllPoints()
+                    CompactRaidFrameContainer:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", x, y)
+                end
+            )
+        end
         
         local class = UnitClassBase("player")
         

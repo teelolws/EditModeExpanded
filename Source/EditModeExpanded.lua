@@ -240,23 +240,30 @@ f:SetScript("OnEvent", function(__, event, arg1)
         end
         
         if db.EMEOptions.compactRaidFrameContainer then
-            lib:RegisterFrame(CompactRaidFrameContainer, "Raid Frame Container", db.CompactRaidFrameContainer)
             local originalFrameManagerX, originalFrameManagerY = CompactRaidFrameManager:GetRect()
+            lib:RegisterFrame(CompactRaidFrameContainer, "Raid Frame Container", db.CompactRaidFrameContainer)
+            local wasMoved = false
             lib:RegisterCustomCheckbox(CompactRaidFrameContainer, "Hide Frame Manager", 
                 -- on checked
                 function()
+                    if wasMoved then return end
+                    wasMoved = true
+                    
                     -- this frame cannot be :Hide() hidden, as other frames are parented to it. Cannot change the parenting either, without causing other problems.
                     -- So, instead, lets shove it off the screen.
-                    local x, y = CompactRaidFrameContainer:GetRect()
+                    --local x, y = CompactRaidFrameContainer:GetRect()
                     originalFrameManagerX, originalFrameManagerY = CompactRaidFrameManager:GetRect()
                     CompactRaidFrameManager:ClearAllPoints()
                     CompactRaidFrameManager:SetPoint("TOPRIGHT", UIParent, "BOTTOMLEFT", 0, 0)
-                    CompactRaidFrameContainer:ClearAllPoints()
-                    CompactRaidFrameContainer:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", x, y)
+                    --CompactRaidFrameContainer:ClearAllPoints()
+                    --CompactRaidFrameContainer:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", x, y)
                 end,
                 
                 -- on unchecked
                 function()
+                    if not wasMoved then return end
+                    wasMoved = false
+                    
                     local x, y = CompactRaidFrameContainer:GetRect()
                     CompactRaidFrameManager:ClearAllPoints()
                     CompactRaidFrameManager:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", originalFrameManagerX, originalFrameManagerY)

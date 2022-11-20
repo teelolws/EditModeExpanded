@@ -37,6 +37,7 @@ local defaults = {
             targetCast = true,
             focusCast = true,
             compactRaidFrameContainer = true,
+            talkingHead = true,
         },
         MicroButtonAndBagsBar = {},
         BackpackBar = {},
@@ -141,6 +142,11 @@ local options = {
             desc = "Enables / Disables additional options for the Compact Raid Frames",
             type = "toggle",
         },
+        talkingHead = {
+            name = "Talking Head",
+            desc = "Enables / Disables additional options for the Talking Head",
+            type = "toggle",
+        }
     },
 }
 
@@ -218,6 +224,7 @@ f:SetScript("OnEvent", function(__, event, arg1)
         if db.EMEOptions.xp then
             lib:RegisterFrame(StatusTrackingBarManager, "Experience Bar", db.StatusTrackingBarManager)
             lib:RegisterResizable(StatusTrackingBarManager)
+            lib:RegisterHideable(StatusTrackingBarManager)
         end
         
         if db.EMEOptions.lfg then
@@ -274,7 +281,7 @@ f:SetScript("OnEvent", function(__, event, arg1)
             )
         end
         
-        --if db.EMEOptions.talkingHead then
+        if db.EMEOptions.talkingHead then
             lib:RegisterFrame(TalkingHeadFrame, "", db.TalkingHead)
             lib:RegisterHideable(TalkingHeadFrame)
             TalkingHeadFrame:HookScript("OnEvent", function(...)
@@ -283,7 +290,7 @@ f:SetScript("OnEvent", function(__, event, arg1)
                     TalkingHeadFrame:Hide()
                 end
             end)
-        --end
+        end
         
         local class = UnitClassBase("player")
         

@@ -284,6 +284,10 @@ f:SetScript("OnEvent", function(__, event, arg1)
                 end
             end)
             lib:RegisterResizable(TalkingHeadFrame)
+            -- should be moved to PLAYER_ENTERING_WORLD or something
+            C_Timer.After(1, function()
+                lib:UpdateFrameResize(TalkingHeadFrame)
+            end)
         end
         
         local class = UnitClassBase("player")

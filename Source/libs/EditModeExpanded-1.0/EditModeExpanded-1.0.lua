@@ -537,6 +537,16 @@ function lib:RegisterResizable(frame)
 			formatter = showAsPercentage,
 		})
 end
+
+function lib:UpdateFrameResize(frame)
+    local systemID = getSystemID(frame)
+    local db = framesDB[systemID]
+    
+    if not db.settings then db.settings = {} end
+    if db.settings[Enum.EditModeUnitFrameSetting.FrameSize] ~= nil then
+        frame:SetScale(db.settings[Enum.EditModeUnitFrameSetting.FrameSize]/100)
+    end
+end
  
 -- Call this to add a checkbox to the frames dialog box, allowing the frame to be permanently hidden outside of Edit Mode
 -- param1: an edit mode registered frame, either one already registered by Blizz, or a custom one you have registered with lib:RegisterFrame

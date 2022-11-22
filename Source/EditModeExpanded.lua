@@ -365,10 +365,13 @@ f:SetScript("OnEvent", function(__, event, arg1)
             if ( not AchievementFrame ) then
     			AchievementFrame_LoadUI()
             end
-            lib:RegisterFrame(AchievementAlertSystem.alertContainer, "Achievements", f.db.global.Achievements)
-            lib:SetDefaultSize(AchievementAlertSystem.alertContainer, 20, 20)
-            AchievementAlertSystem.alertContainer.Selection:HookScript("OnMouseDown", function()
+            lib:RegisterFrame(AlertFrame, "Achievements", f.db.global.Achievements)
+            lib:SetDefaultSize(AlertFrame, 20, 20)
+            AlertFrame.Selection:HookScript("OnMouseDown", function()
                 AchievementAlertSystem:AddAlert(6)
+            end)
+            AlertFrame:HookScript("OnEvent", function()
+                lib:RepositionFrame(AlertFrame)
             end)
         end
         

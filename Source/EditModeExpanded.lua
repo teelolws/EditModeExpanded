@@ -39,6 +39,7 @@ local defaults = {
             compactRaidFrameContainer = true,
             talkingHead = true,
             minimap = true,
+            uiWidgetTopCenterContainerFrame = false,
         },
         MicroButtonAndBagsBar = {},
         BackpackBar = {},
@@ -58,6 +59,7 @@ local defaults = {
         CompactRaidFrameManager = {},
         TalkingHead = {},
         Minimap = {},
+        UIWidgetTopCenterContainerFrame = {},
     }
 }
 
@@ -148,7 +150,17 @@ local options = {
             name = "Talking Head",
             desc = "Enables / Disables additional options for the Talking Head",
             type = "toggle",
-        }
+        },
+        minimap = {
+            name = "Minimap",
+            desc = "Enables / Disables additional options for the Minimap",
+            type = "toggle",
+        },
+        uiWidgetTopCenterContainerFrame = {
+            name = "Subzone Information",
+            desc = "Enables / Disables top of screen subzone information widget support. Be aware: this frame behaves... unusually... if you are not in an area that shows anything!",
+            type = "toggle",
+        },
     },
 }
 
@@ -425,6 +437,11 @@ f:SetScript("OnEvent", function(__, event, arg1)
             lib:RegisterFrame(MinimapCluster, "", db.Minimap)
             lib:RegisterResizable(MinimapCluster)
             C_Timer.After(1, function()lib:UpdateFrameResize(MinimapCluster)end)
+        end
+        
+        if db.EMEOptions.uiWidgetTopCenterContainerFrame then
+            lib:RegisterFrame(UIWidgetTopCenterContainerFrame, "Subzone Information", db.UIWidgetTopCenterContainerFrame)
+            lib:SetDontResize(UIWidgetTopCenterContainerFrame)
         end
     elseif (event == "PLAYER_TOTEM_UPDATE") then
         if totemFrameLoaded then

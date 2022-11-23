@@ -38,6 +38,7 @@ local defaults = {
             focusCast = true,
             compactRaidFrameContainer = true,
             talkingHead = true,
+            minimap = true,
         },
         MicroButtonAndBagsBar = {},
         BackpackBar = {},
@@ -56,6 +57,7 @@ local defaults = {
         CompactRaidFrameContainer = {},
         CompactRaidFrameManager = {},
         TalkingHead = {},
+        Minimap = {},
     }
 }
 
@@ -417,6 +419,12 @@ f:SetScript("OnEvent", function(__, event, arg1)
             lib:RegisterFrame(QueueStatusButton, "LFG", db.QueueStatusButton)
             lib:RegisterResizable(QueueStatusButton)
             lib:RegisterMinimapPinnable(QueueStatusButton)
+        end
+        
+        if db.EMEOptions.minimap then
+            lib:RegisterFrame(MinimapCluster, "", db.Minimap)
+            lib:RegisterResizable(MinimapCluster)
+            C_Timer.After(1, function()lib:UpdateFrameResize(MinimapCluster)end)
         end
     elseif (event == "PLAYER_TOTEM_UPDATE") then
         if totemFrameLoaded then

@@ -1115,6 +1115,13 @@ function lib:RegisterMinimapPinnable(frame)
     local icon = LibStub("LibDBIcon-1.0")
     icon:Register(name, LDB, db.minimap)
     
+        -- compatibility with Minimap Button Bag
+    if MBB_Version and MBB_OnClick and MBB_Ignore then
+        icon:Show(name)
+        table.insert(MBB_Ignore, icon:GetMinimapButton(name):GetName())
+        icon:Hide(name)
+    end
+    
     frame:HookScript("OnShow", function()
         local db = framesDB[frame.system]
         if not db.minimap then db.minimap = {} end
@@ -1163,19 +1170,6 @@ function lib:RegisterMinimapPinnable(frame)
     )
     
     frame.minimapLDBIcon = icon
-    
-    -- compatibility with Minimap Button Bag
-    if MBB_Version and MBB_OnClick then
-        hooksecurefunc("MBB_OnClick", function()
-            if (db.settings[ENUM_EDITMODEACTIONBARSETTING_MINIMAPPINNED] == 1) then
-                if MBB_IsShown == 1 then
-                    frame:Show()
-                else
-                    frame:Hide()
-                end
-            end
-        end)
-    end
 end
 
 function pinToMinimap(frame)

@@ -51,6 +51,7 @@ end
 local pinToMinimap
 local unpinFromMinimap
 local getOffsetXY
+local registerFrameMovableWithArrowKeys
 
 local function getSystemID(frame)
     if frame.system < STARTING_INDEX then
@@ -194,8 +195,11 @@ function lib:RegisterFrame(frame, name, db, anchorTo, anchorPoint)
         baseFramesDB[systemID] = baseDB
         framesDB[systemID] = db
         hooksecurefunc(frame, "SelectSystem", function()
-            EditModeExpandedSystemSettingsDialog:AttachToSystemFrame(frame)
+            if framesDialogs[systemID] then
+                EditModeExpandedSystemSettingsDialog:AttachToSystemFrame(frame)
+            end
         end)
+        registerFrameMovableWithArrowKeys(frame, anchorPoint, anchorTo)
         return
     end
     
@@ -264,9 +268,9 @@ function lib:RegisterFrame(frame, name, db, anchorTo, anchorPoint)
 	frame.Selection:SetLabelText(frame.systemName);
 	frame:SetupSettingsDialogAnchor();
 	frame.snappedFrames = {};
-    frame.Selection:EnableKeyboard();
-    frame.Selection:SetPropagateKeyboardInput(true);
-    -- prevent the frame to go outside the screen
+    registerFrameMovableWithArrowKeys(frame, anchorPoint, anchorTo)
+    
+    -- prevent the frame from going outside the screen boundaries
     frame:SetClampedToScreen(true);
     
     function frame.UpdateMagnetismRegistration() end
@@ -274,38 +278,6 @@ function lib:RegisterFrame(frame, name, db, anchorTo, anchorPoint)
     frame.Selection:SetScript("OnMouseDown", function()
     	frame:SelectSystem()
     end)
-
-    frame.Selection:SetScript("OnKeyDown", function(self, key)
-        frame:MoveWithArrowKey(key);
-    end)
-
-    function frame:MoveWithArrowKey(key)
-        if self.isSelected then
-            local x, y = self:GetRect();
-
-            local new_x = x;
-            local new_y = y;
-
-            if key == "RIGHT" then      new_x = new_x + 1;
-            elseif key == "LEFT" then   new_x = new_x - 1;
-            elseif key == "UP" then     new_y = new_y + 1;
-            elseif key == "DOWN" then   new_y = new_y - 1;
-            end
-            
-            if new_x ~= x or new_y ~= y then
-                -- consume the key used to prevent movement / cam turning
-                self.Selection:SetPropagateKeyboardInput(false);
-                local db = framesDB[frame.system]
-                db.x, db.y = new_x, new_y;
-                self:ClearAllPoints()
-                local x, y = getOffsetXY(frame, db.x, db.y)
-                self:SetPoint(anchorPoint, anchorTo, anchorPoint, x, y);
-                return
-            end
-        end
-
-        self.Selection:SetPropagateKeyboardInput(true);
-    end
     
     function frame:SelectSystem()
         if not self.isSelected then
@@ -791,6 +763,8 @@ hooksecurefunc(f, "OnLoad", function()
             frame:ClearAllPoints()
             frame:SetPoint("TOPLEFT", UIParent, "BOTTOMLEFT", 400, 500);
     		self:Layout();
+        else
+            frame:Hide()
     	end
     end
     
@@ -846,108 +820,113 @@ hooksecurefunc(f, "OnLoad", function()
             local systemID = getSystemID(self.attachedToSystem)
     		
             local systemSettingDisplayInfo = GetSystemSettingDisplayInfo(framesDialogs[systemID]);
-    		for index, displayInfo in ipairs(systemSettingDisplayInfo) do
-  				local settingPool = self:GetSettingPool(displayInfo.type);
-				if settingPool then
-					local settingFrame;
-
-					if draggingSlider and draggingSlider.setting == displayInfo.setting then
-						-- This is a slider that is being interacted with and so was not released.
-						settingFrame = draggingSlider;
-					else
-						settingFrame = settingPool:Acquire();
-					end
-
-					settingFrame:SetPoint("TOPLEFT");
-  					settingFrame.layoutIndex = index;
-                    
-                    local settingName = (self.attachedToSystem:UseSettingAltName(displayInfo.setting) and displayInfo.altName) and displayInfo.altName or displayInfo.name;
-  					local updatedDisplayInfo = self.attachedToSystem:UpdateDisplayInfoOptions(displayInfo);
-                    if not framesDB[systemID].settings then framesDB[systemID].settings = {} end
-  					
-                    local savedValue = framesDB[systemID].settings[updatedDisplayInfo.setting]
-                    
-                    if displayInfo.setting == Enum.EditModeUnitFrameSetting.FrameSize then
-                        savedValue = savedValue or 100
-                        settingFrame:OnLoad()
+            if systemSettingDisplayInfo then
+        		for index, displayInfo in ipairs(systemSettingDisplayInfo) do
+      				local settingPool = self:GetSettingPool(displayInfo.type);
+    				if settingPool then
+    					local settingFrame;
+    
+    					if draggingSlider and draggingSlider.setting == displayInfo.setting then
+    						-- This is a slider that is being interacted with and so was not released.
+    						settingFrame = draggingSlider;
+    					else
+    						settingFrame = settingPool:Acquire();
+    					end
+    
+    					settingFrame:SetPoint("TOPLEFT");
+      					settingFrame.layoutIndex = index;
                         
-                        CallbackRegistryMixin.OnLoad(settingFrame);
-
-                    	local function OnValueChanged(self, value)
-                            if not self.initInProgress then
-                                EditModeExpandedSystemSettingsDialog:OnSettingValueChanged(self.setting, value);
+                        local settingName = (self.attachedToSystem:UseSettingAltName(displayInfo.setting) and displayInfo.altName) and displayInfo.altName or displayInfo.name;
+      					local updatedDisplayInfo = self.attachedToSystem:UpdateDisplayInfoOptions(displayInfo);
+                        if not framesDB[systemID].settings then framesDB[systemID].settings = {} end
+      					
+                        local savedValue = framesDB[systemID].settings[updatedDisplayInfo.setting]
+                        
+                        if displayInfo.setting == Enum.EditModeUnitFrameSetting.FrameSize then
+                            savedValue = savedValue or 100
+                            settingFrame:OnLoad()
+                            
+                            CallbackRegistryMixin.OnLoad(settingFrame);
+    
+                        	local function OnValueChanged(self, value)
+                                if not self.initInProgress then
+                                    EditModeExpandedSystemSettingsDialog:OnSettingValueChanged(self.setting, value);
+                                end
                             end
+                            
+                            settingFrame.cbrHandles = EventUtil.CreateCallbackHandleContainer();
+                        	settingFrame.cbrHandles:RegisterCallback(settingFrame.Slider, MinimalSliderWithSteppersMixin.Event.OnValueChanged, OnValueChanged, settingFrame);
                         end
                         
-                        settingFrame.cbrHandles = EventUtil.CreateCallbackHandleContainer();
-                    	settingFrame.cbrHandles:RegisterCallback(settingFrame.Slider, MinimalSliderWithSteppersMixin.Event.OnValueChanged, OnValueChanged, settingFrame);
-                    end
-                    
-                    if displayInfo.setting == ENUM_EDITMODEACTIONBARSETTING_HIDEABLE then
-                        savedValue = framesDB[systemID].settings[displayInfo.setting]
-                        if savedValue == nil then savedValue = 0 end
-                        settingFrame.Button:SetChecked(savedValue)
-                        settingFrame.Button:SetScript("OnClick", function()
-                            if settingFrame.Button:GetChecked() then
-                                framesDB[systemID].settings[displayInfo.setting] = 1
-                                EditModeExpandedSystemSettingsDialog.attachedToSystem:Hide()
-                                wasVisible[systemID] = false
-                            else
-                                framesDB[systemID].settings[displayInfo.setting] = 0
-                                EditModeExpandedSystemSettingsDialog.attachedToSystem:Show()
-                                wasVisible[systemID] = true
-                            end
-                        end)
-                    end
-                    
-                    if displayInfo.setting == ENUM_EDITMODEACTIONBARSETTING_MINIMAPPINNED then
-                        savedValue = framesDB[systemID].settings[displayInfo.setting]
-                        if savedValue == nil then savedValue = 0 end
-                        settingFrame.Button:SetChecked(savedValue)
-                        settingFrame.Button:SetScript("OnClick", function()
-                            if settingFrame.Button:GetChecked() then
-                                framesDB[systemID].settings[displayInfo.setting] = 1
-                                pinToMinimap(EditModeExpandedSystemSettingsDialog.attachedToSystem)
-                            else
-                                framesDB[systemID].settings[displayInfo.setting] = 0
-                                unpinFromMinimap(EditModeExpandedSystemSettingsDialog.attachedToSystem)
-                            end
-                        end)
-                    end
-                    
-                    if displayInfo.setting == ENUM_EDITMODEACTIONBARSETTING_CUSTOM then
-                        savedValue = framesDB[systemID].settings[displayInfo.setting]
-                        if savedValue == nil then savedValue = 0 end
-                        settingFrame.Button:SetChecked(savedValue)
-                        settingFrame.Button:SetScript("OnClick", function()
-                            if settingFrame.Button:GetChecked() then
-                                framesDB[systemID].settings[displayInfo.setting] = 1
-                                displayInfo.onChecked()
-                            else
-                                framesDB[systemID].settings[displayInfo.setting] = 0
-                                displayInfo.onUnchecked()
-                            end
-                        end)
-                    end
-                    
-  					settingsToSetup[settingFrame] = { displayInfo = updatedDisplayInfo, currentValue = savedValue, settingName = settingName }
-  					settingFrame:Show();
-  				end
-    		end
-    
-    		self.Buttons:ClearAllPoints();
-    
-    		if not next(settingsToSetup) then
-    			self.Settings:Hide();
-    			self.Buttons:SetPoint("TOP", self.Title, "BOTTOM", 0, -12);
-    		else
-    			self.Settings:Show();
-    			self.Settings:Layout();
-    			for settingFrame, settingData in pairs(settingsToSetup) do
-    				settingFrame:SetupSetting(settingData);
-    			end
-    			self.Buttons:SetPoint("TOPLEFT", self.Settings, "BOTTOMLEFT", 0, -12);
-    		end
+                        if displayInfo.setting == ENUM_EDITMODEACTIONBARSETTING_HIDEABLE then
+                            savedValue = framesDB[systemID].settings[displayInfo.setting]
+                            if savedValue == nil then savedValue = 0 end
+                            settingFrame.Button:SetChecked(savedValue)
+                            settingFrame.Button:SetScript("OnClick", function()
+                                if settingFrame.Button:GetChecked() then
+                                    framesDB[systemID].settings[displayInfo.setting] = 1
+                                    EditModeExpandedSystemSettingsDialog.attachedToSystem:Hide()
+                                    wasVisible[systemID] = false
+                                else
+                                    framesDB[systemID].settings[displayInfo.setting] = 0
+                                    EditModeExpandedSystemSettingsDialog.attachedToSystem:Show()
+                                    wasVisible[systemID] = true
+                                end
+                            end)
+                        end
+                        
+                        if displayInfo.setting == ENUM_EDITMODEACTIONBARSETTING_MINIMAPPINNED then
+                            savedValue = framesDB[systemID].settings[displayInfo.setting]
+                            if savedValue == nil then savedValue = 0 end
+                            settingFrame.Button:SetChecked(savedValue)
+                            settingFrame.Button:SetScript("OnClick", function()
+                                if settingFrame.Button:GetChecked() then
+                                    framesDB[systemID].settings[displayInfo.setting] = 1
+                                    pinToMinimap(EditModeExpandedSystemSettingsDialog.attachedToSystem)
+                                else
+                                    framesDB[systemID].settings[displayInfo.setting] = 0
+                                    unpinFromMinimap(EditModeExpandedSystemSettingsDialog.attachedToSystem)
+                                end
+                            end)
+                        end
+                        
+                        if displayInfo.setting == ENUM_EDITMODEACTIONBARSETTING_CUSTOM then
+                            savedValue = framesDB[systemID].settings[displayInfo.setting]
+                            if savedValue == nil then savedValue = 0 end
+                            settingFrame.Button:SetChecked(savedValue)
+                            settingFrame.Button:SetScript("OnClick", function()
+                                if settingFrame.Button:GetChecked() then
+                                    framesDB[systemID].settings[displayInfo.setting] = 1
+                                    displayInfo.onChecked()
+                                else
+                                    framesDB[systemID].settings[displayInfo.setting] = 0
+                                    displayInfo.onUnchecked()
+                                end
+                            end)
+                        end
+                        
+      					settingsToSetup[settingFrame] = { displayInfo = updatedDisplayInfo, currentValue = savedValue, settingName = settingName }
+      					settingFrame:Show();
+      				end
+        		end
+        
+        		self.Buttons:ClearAllPoints();
+        
+        		if not next(settingsToSetup) then
+        			self.Settings:Hide();
+        			self.Buttons:SetPoint("TOP", self.Title, "BOTTOM", 0, -12);
+        		else
+        			self.Settings:Show();
+        			self.Settings:Layout();
+        			for settingFrame, settingData in pairs(settingsToSetup) do
+        				settingFrame:SetupSetting(settingData);
+        			end
+        			self.Buttons:SetPoint("TOPLEFT", self.Settings, "BOTTOMLEFT", 0, -12);
+        		end
+            else
+                self.attachedToSystem = nil
+                EditModeExpandedSystemSettingsDialog:Hide()
+            end
     	end
     end
 end)
@@ -1220,4 +1199,48 @@ function getOffsetXY(frame, x, y)
         local width, height = frame:GetSize()
         return (x+width) - (targetX+targetWidth), (y+width) - (targetY+targetWidth)
     end 
+end
+
+--
+-- Handle allowing frame to be moved with arrow keys
+--
+function registerFrameMovableWithArrowKeys(frame, anchorPoint, anchorTo)
+    frame.Selection:EnableKeyboard();
+    frame.Selection:SetPropagateKeyboardInput(true);
+    frame.Selection:SetScript("OnKeyDown", function(self, key)
+        frame:MoveWithArrowKey(key);
+    end)
+
+    function frame:MoveWithArrowKey(key)
+        if self.isSelected then
+            local x, y = self:GetRect();
+
+            local new_x = x;
+            local new_y = y;
+
+            if key == "RIGHT" then      new_x = new_x + 1;
+            elseif key == "LEFT" then   new_x = new_x - 1;
+            elseif key == "UP" then     new_y = new_y + 1;
+            elseif key == "DOWN" then   new_y = new_y - 1;
+            end
+            
+            if new_x ~= x or new_y ~= y then
+                -- consume the key used to prevent movement / cam turning
+                self.Selection:SetPropagateKeyboardInput(false);
+                
+                if existingFrames[frame:GetName()] then
+                    -- TODO: have to save changes into the native Edit Mode
+                else
+                    local db = framesDB[getSystemID(frame)]
+                    db.x, db.y = new_x, new_y
+                end
+                self:ClearAllPoints()
+                local x, y = getOffsetXY(frame, new_x, new_y)
+                self:SetPoint(anchorPoint, anchorTo, anchorPoint, x, y);
+                return
+            end
+        end
+
+        self.Selection:SetPropagateKeyboardInput(true);
+    end
 end

@@ -55,10 +55,6 @@ local defaults = {
         ToT = {},
         TargetSpellBar = {},
         FocusSpellBar = {},
-        CompactRaidFrameContainer = {},
-        CompactRaidFrameManager = {},
-        TalkingHead = {},
-        Minimap = {},
         UIWidgetTopCenterContainerFrame = {},
     }
 }
@@ -225,6 +221,12 @@ f:SetScript("OnEvent", function(__, event, arg1)
         AceConfigRegistry:RegisterOptionsTable("EditModeExpanded", options)
         AceConfigDialog:AddToBlizOptions("EditModeExpanded")
         
+        for _, frame in ipairs(EditModeManagerFrame.registeredSystemFrames) do
+            local name = frame:GetName()
+            if not db[name] then db[name] = {} end
+            lib:RegisterFrame(frame, "", db[name])
+        end
+        
         if not IsAddOnLoaded("Bartender4") then -- moving/resizing found to be incompatible
             if db.EMEOptions.menu then
                 lib:RegisterFrame(MicroButtonAndBagsBar, "Micro Menu", db.MicroButtonAndBagsBar)
@@ -256,7 +258,6 @@ f:SetScript("OnEvent", function(__, event, arg1)
         
         if db.EMEOptions.compactRaidFrameContainer then
             local originalFrameManagerX, originalFrameManagerY = CompactRaidFrameManager:GetRect()
-            lib:RegisterFrame(CompactRaidFrameContainer, "Raid Frame Container", db.CompactRaidFrameContainer)
             local wasMoved = false
             lib:RegisterCustomCheckbox(CompactRaidFrameContainer, "Hide Frame Manager", 
                 -- on checked
@@ -289,7 +290,6 @@ f:SetScript("OnEvent", function(__, event, arg1)
         end
         
         if db.EMEOptions.talkingHead then
-            lib:RegisterFrame(TalkingHeadFrame, "", db.TalkingHead)
             lib:RegisterHideable(TalkingHeadFrame)
             TalkingHeadFrame:HookScript("OnEvent", function(...)
                 if lib:IsFrameMarkedHidden(TalkingHeadFrame) then
@@ -434,7 +434,6 @@ f:SetScript("OnEvent", function(__, event, arg1)
         end
         
         if db.EMEOptions.minimap then
-            lib:RegisterFrame(MinimapCluster, "", db.Minimap)
             lib:RegisterResizable(MinimapCluster)
             C_Timer.After(1, function()lib:UpdateFrameResize(MinimapCluster)end)
         end

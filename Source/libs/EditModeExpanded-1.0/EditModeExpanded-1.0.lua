@@ -1115,7 +1115,7 @@ function lib:RegisterMinimapPinnable(frame)
     local icon = LibStub("LibDBIcon-1.0")
     icon:Register(name, LDB, db.minimap)
     
-        -- compatibility with Minimap Button Bag
+    -- compatibility with Minimap Button Bag
     if MBB_Version and MBB_OnClick and MBB_Ignore then
         icon:Show(name)
         table.insert(MBB_Ignore, icon:GetMinimapButton(name):GetName())

@@ -234,6 +234,12 @@ f:SetScript("OnEvent", function(__, event, arg1)
                 lib:RegisterHideable(MicroButtonAndBagsBarMovable)
                 lib:RegisterResizable(EditModeExpandedBackpackBar)
                 lib:RegisterHideable(EditModeExpandedBackpackBar)
+                hooksecurefunc("MoveMicroButtons", function()
+                    CharacterMicroButton:ClearAllPoints()
+                    CharacterMicroButton:SetPoint("BOTTOMLEFT", MicroButtonAndBagsBarMovable, "BOTTOMLEFT", 7, 6)
+                    LFDMicroButton:ClearAllPoints()
+                    LFDMicroButton:SetPoint("BOTTOMLEFT", GuildMicroButton, "BOTTOMRIGHT", 1, 0)
+                end)
             end
         end
         

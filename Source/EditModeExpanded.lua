@@ -40,6 +40,7 @@ local defaults = {
             talkingHead = true,
             minimap = true,
             uiWidgetTopCenterContainerFrame = false,
+            uiWidgetPowerBarContainerFrame = true,
         },
         MicroButtonAndBagsBar = {},
         BackpackBar = {},
@@ -156,6 +157,11 @@ local options = {
         uiWidgetTopCenterContainerFrame = {
             name = "Subzone Information",
             desc = "Enables / Disables top of screen subzone information widget support. Be aware: this frame behaves... unusually... if you are not in an area that shows anything!",
+            type = "toggle",
+        },
+        uiWidgetPowerBarContainerFrame = {
+            name = "Dragonriding",
+            desc = "Enables / Disables support for the Power Bar used by Dragonriding (and a few other things)",
             type = "toggle",
         },
     },
@@ -442,7 +448,7 @@ f:SetScript("OnEvent", function(__, event, arg1)
         
         if db.EMEOptions.minimap then
             lib:RegisterResizable(MinimapCluster)
-            C_Timer.After(1, function()lib:UpdateFrameResize(MinimapCluster)end)
+            C_Timer.After(1, function() lib:UpdateFrameResize(MinimapCluster) end)
         end
         
         if db.EMEOptions.uiWidgetTopCenterContainerFrame then
@@ -450,14 +456,16 @@ f:SetScript("OnEvent", function(__, event, arg1)
             lib:SetDontResize(UIWidgetTopCenterContainerFrame)
         end
         
-        lib:RegisterFrame(UIWidgetPowerBarContainerFrame, "Dragonriding", db.UIWidgetPowerBarContainerFrame)
-        local ddd
-        hooksecurefunc(UIWidgetPowerBarContainerFrame, "SetPoint", function()
-            if ddd then return end
-            ddd = true
-            lib:RepositionFrame(UIWidgetPowerBarContainerFrame)
-            ddd = false
-        end)
+        if db.EMEOptions.uiWidgetPowerBarContainerFrame then
+            lib:RegisterFrame(UIWidgetPowerBarContainerFrame, "Dragonriding", db.UIWidgetPowerBarContainerFrame)
+            local blockRecursion = false
+            hooksecurefunc(UIWidgetPowerBarContainerFrame, "SetPoint", function()
+                if blockRecursion then return end
+                blockRecursion = true
+                lib:RepositionFrame(UIWidgetPowerBarContainerFrame)
+                blockRecursion = false
+            end)
+        end
     elseif (event == "PLAYER_TOTEM_UPDATE") then
         if totemFrameLoaded then
             lib:RepositionFrame(TotemFrame)

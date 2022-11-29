@@ -56,6 +56,7 @@ local defaults = {
         TargetSpellBar = {},
         FocusSpellBar = {},
         UIWidgetTopCenterContainerFrame = {},
+        UIWidgetPowerBarContainerFrame = {},
     }
 }
 
@@ -448,6 +449,15 @@ f:SetScript("OnEvent", function(__, event, arg1)
             lib:RegisterFrame(UIWidgetTopCenterContainerFrame, "Subzone Information", db.UIWidgetTopCenterContainerFrame)
             lib:SetDontResize(UIWidgetTopCenterContainerFrame)
         end
+        
+        lib:RegisterFrame(UIWidgetPowerBarContainerFrame, "Dragonriding", db.UIWidgetPowerBarContainerFrame)
+        local ddd
+        hooksecurefunc(UIWidgetPowerBarContainerFrame, "SetPoint", function()
+            if ddd then return end
+            ddd = true
+            lib:RepositionFrame(UIWidgetPowerBarContainerFrame)
+            ddd = false
+        end)
     elseif (event == "PLAYER_TOTEM_UPDATE") then
         if totemFrameLoaded then
             lib:RepositionFrame(TotemFrame)

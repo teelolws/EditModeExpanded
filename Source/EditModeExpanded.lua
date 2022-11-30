@@ -40,7 +40,6 @@ local defaults = {
             talkingHead = true,
             minimap = true,
             uiWidgetTopCenterContainerFrame = false,
-            uiWidgetPowerBarContainerFrame = true,
         },
         MicroButtonAndBagsBar = {},
         BackpackBar = {},
@@ -57,7 +56,6 @@ local defaults = {
         TargetSpellBar = {},
         FocusSpellBar = {},
         UIWidgetTopCenterContainerFrame = {},
-        UIWidgetPowerBarContainerFrame = {},
     }
 }
 
@@ -157,11 +155,6 @@ local options = {
         uiWidgetTopCenterContainerFrame = {
             name = "Subzone Information",
             desc = "Enables / Disables top of screen subzone information widget support. Be aware: this frame behaves... unusually... if you are not in an area that shows anything!",
-            type = "toggle",
-        },
-        uiWidgetPowerBarContainerFrame = {
-            name = "Dragonriding",
-            desc = "Enables / Disables support for the Power Bar used by Dragonriding (and a few other things)",
             type = "toggle",
         },
     },
@@ -454,17 +447,6 @@ f:SetScript("OnEvent", function(__, event, arg1)
         if db.EMEOptions.uiWidgetTopCenterContainerFrame then
             lib:RegisterFrame(UIWidgetTopCenterContainerFrame, "Subzone Information", db.UIWidgetTopCenterContainerFrame)
             lib:SetDontResize(UIWidgetTopCenterContainerFrame)
-        end
-        
-        if db.EMEOptions.uiWidgetPowerBarContainerFrame then
-            lib:RegisterFrame(UIWidgetPowerBarContainerFrame, "Dragonriding", db.UIWidgetPowerBarContainerFrame)
-            local blockRecursion = false
-            hooksecurefunc(UIWidgetPowerBarContainerFrame, "SetPoint", function()
-                if blockRecursion then return end
-                blockRecursion = true
-                lib:RepositionFrame(UIWidgetPowerBarContainerFrame)
-                blockRecursion = false
-            end)
         end
     elseif (event == "PLAYER_TOTEM_UPDATE") then
         if totemFrameLoaded then

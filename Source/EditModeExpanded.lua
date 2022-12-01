@@ -40,6 +40,7 @@ local defaults = {
             talkingHead = true,
             minimap = true,
             uiWidgetTopCenterContainerFrame = false,
+            stanceBar = true,
         },
         MicroButtonAndBagsBar = {},
         BackpackBar = {},
@@ -56,6 +57,7 @@ local defaults = {
         TargetSpellBar = {},
         FocusSpellBar = {},
         UIWidgetTopCenterContainerFrame = {},
+        StanceBar = {},
     }
 }
 
@@ -155,6 +157,11 @@ local options = {
         uiWidgetTopCenterContainerFrame = {
             name = "Subzone Information",
             desc = "Enables / Disables top of screen subzone information widget support. Be aware: this frame behaves... unusually... if you are not in an area that shows anything!",
+            type = "toggle",
+        },
+        stanceBar = {
+            name = "Stance Bar",
+            desc = "Enables / Disables additional options for the Stance Bar",
             type = "toggle",
         },
     },
@@ -447,6 +454,20 @@ f:SetScript("OnEvent", function(__, event, arg1)
         if db.EMEOptions.uiWidgetTopCenterContainerFrame then
             lib:RegisterFrame(UIWidgetTopCenterContainerFrame, "Subzone Information", db.UIWidgetTopCenterContainerFrame)
             lib:SetDontResize(UIWidgetTopCenterContainerFrame)
+        end
+        
+        if db.EMEOptions.stanceBar then
+            lib:RegisterHideable(StanceBar)
+            StanceBar:HookScript("OnEvent", function(...)
+                if lib:IsFrameMarkedHidden(StanceBar) then
+                    StanceBar:Hide()
+                end
+            end)
+            C_Timer.After(1, function()
+                if lib:IsFrameMarkedHidden(StanceBar) then
+                    StanceBar:Hide()
+                end
+            end)
         end
     elseif (event == "PLAYER_TOTEM_UPDATE") then
         if totemFrameLoaded then

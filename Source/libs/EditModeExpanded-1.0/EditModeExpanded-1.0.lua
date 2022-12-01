@@ -3,7 +3,7 @@
 --
 
 local CURRENT_BUILD = "10.0.2"
-local MAJOR, MINOR = "EditModeExpanded-1.0", 30
+local MAJOR, MINOR = "EditModeExpanded-1.0", 32
 local lib = LibStub:NewLibrary(MAJOR, MINOR)
 if not lib then return end
 
@@ -692,6 +692,19 @@ hooksecurefunc(EditModeManagerFrame, "ExitEditMode", function()
             frame:SetSize(originalSize[frame.system].x, originalSize[frame.system].y)
         end
     end
+    
+    for frameName in pairs(existingFrames) do
+        local frame = _G[frameName]
+        local systemID = getSystemID(frame)
+        if framesDB[systemID] and framesDB[systemID].settings and (framesDB[systemID].settings[ENUM_EDITMODEACTIONBARSETTING_HIDEABLE] ~= nil) then
+            if (framesDB[systemID].settings[ENUM_EDITMODEACTIONBARSETTING_HIDEABLE] == 1) then
+                frame:Hide()
+            else
+                frame:SetShown(wasVisible[systemID])
+            end
+        end
+    end
+    
     wipe(wasVisible)
     wipe(originalSize)
     EditModeExpandedSystemSettingsDialog:Hide()

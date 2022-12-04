@@ -1242,7 +1242,35 @@ function registerFrameMovableWithArrowKeys(frame, anchorPoint, anchorTo)
                 self.Selection:SetPropagateKeyboardInput(false);
                 
                 if existingFrames[frame:GetName()] then
-                    -- TODO: have to save changes into the native Edit Mode
+                    local layoutInfoCopy = CopyTable(EditModeManagerFrame.layoutInfo)
+                    local activeLayout = layoutInfoCopy.layouts[layoutInfoCopy.activeLayout]
+                    local a, b, c, d, e = self:GetPoint()
+                    for index, frameData in ipairs(activeLayout.systems) do
+                        local anchorInfo = frameData.anchorInfo
+                        if frame.EMELayoutInfoIDKnown then
+                            if (frame.EMELayoutInfoIDKnown.system == frameData.system) and (frame.EMELayoutInfoIDKnown.systemIndex == frameData.systemIndex) then
+                                anchorInfo.offsetX = new_x
+                                anchorInfo.offsetY = new_y
+                                break
+                            end
+                        end
+                        if 
+                            (anchorInfo.point == a) and 
+                            (anchorInfo.relativeTo == b:GetName()) and 
+                            (anchorInfo.relativePoint == c) and 
+                            (tonumber(string.format("%.3f", anchorInfo.offsetX)) == tonumber(string.format("%.3f", d))) and 
+                            (tonumber(string.format("%.3f", anchorInfo.offsetY)) == tonumber(string.format("%.3f", e))) 
+                        then
+                            frame.EMELayoutInfoIDKnown = {
+                                system = frameData.system,
+                                systemIndex = frameData.systemIndex,
+                            }
+                            anchorInfo.offsetX = new_x
+                            anchorInfo.offsetY = new_y
+                            break
+                        end
+                    end
+                    C_EditMode.SaveLayouts(layoutInfoCopy)
                 else
                     local db = framesDB[getSystemID(frame)]
                     db.x, db.y = new_x, new_y

@@ -423,6 +423,7 @@ f:SetScript("OnEvent", function(__, event, arg1)
                 lib:RepositionFrame(TargetFrameSpellBar)
             end)
             lib:SetDontResize(TargetFrameSpellBar)
+            lib:RegisterResizable(TargetFrameSpellBar)            
         end
         
         if db.EMEOptions.focusCast then

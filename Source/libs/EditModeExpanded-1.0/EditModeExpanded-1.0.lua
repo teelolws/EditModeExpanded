@@ -1195,6 +1195,8 @@ function getOffsetXY(frame, x, y)
         return x, y
     end
     
+    local scale = frame:GetScale()
+    
     local anchorPoint = frame.EMEanchorPoint or "BOTTOMLEFT"
     if anchorPoint == "BOTTOMLEFT" then
         local targetX, targetY = frame.EMEanchorTo:GetRect()
@@ -1206,7 +1208,7 @@ function getOffsetXY(frame, x, y)
     elseif anchorPoint == "TOPLEFT" then
         local targetX, targetY, _, targetHeight = frame.EMEanchorTo:GetRect()
         local _, height = frame:GetSize()
-        return x - targetX, (y+height) - (targetY+targetHeight)
+        return x - (targetX/scale), (y+height) - ((targetY+targetHeight)/scale)
     else -- TOPRIGHT
         local targetX, targetY, targetWidth, targetHeight = frame.EMEanchorTo:GetRect()
         local width, height = frame:GetSize()

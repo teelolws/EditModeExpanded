@@ -335,12 +335,12 @@ f:SetScript("OnEvent", function(__, event, arg1)
                 lib:RegisterFrame(WarlockPowerFrame, "Soul Shards", db.SoulShards)
                 lib:RegisterHideable(WarlockPowerFrame)
                 lib:SetDontResize(WarlockPowerFrame)
-                local i = 60
                 hooksecurefunc(WarlockPowerFrame, "IsDirty", function()
                     if not EditModeManagerFrame.editModeActive then
                         lib:RepositionFrame(WarlockPowerFrame)
                     end
                 end)
+                lib:RegisterResizable(WarlockPowerFrame)
             end
             
             -- Totem Frame is used for Summon Darkglare

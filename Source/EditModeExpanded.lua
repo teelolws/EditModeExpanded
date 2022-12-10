@@ -41,6 +41,7 @@ local defaults = {
             minimap = true,
             uiWidgetTopCenterContainerFrame = false,
             stanceBar = true,
+            runes = true,
         },
         MicroButtonAndBagsBar = {},
         BackpackBar = {},
@@ -58,6 +59,7 @@ local defaults = {
         FocusSpellBar = {},
         UIWidgetTopCenterContainerFrame = {},
         StanceBar = {},
+        Runes = {},
     }
 }
 
@@ -162,6 +164,11 @@ local options = {
         stanceBar = {
             name = "Stance Bar",
             desc = "Enables / Disables additional options for the Stance Bar",
+            type = "toggle",
+        },
+        runes = {
+            name = "Death Knight Runes",
+            desc = "Enables / Disables Death Knight runes support",
             type = "toggle",
         },
     },
@@ -355,6 +362,18 @@ f:SetScript("OnEvent", function(__, event, arg1)
             -- Summon black ox uses totem frame
             if db.EMEOptions.totem then
                 registerTotemFrame(db)
+            end
+        elseif class == "DEATHKNIGHT" then
+            if db.EMEOptions.runes then
+                lib:RegisterFrame(RuneFrame, "Runes", db.Runes)
+                lib:RegisterHideable(RuneFrame)
+                lib:SetDontResize(RuneFrame)
+                lib:RegisterResizable(RuneFrame)
+                hooksecurefunc(PlayerFrameBottomManagedFramesContainer, "Layout", function()
+                    if not EditModeManagerFrame.editModeActive then
+                        lib:RepositionFrame(RuneFrame)
+                    end
+                end)
             end
         end
         

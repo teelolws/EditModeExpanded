@@ -25,6 +25,7 @@ local defaults = {
             stanceBar = true,
             runes = true,
             arcaneCharges = true,
+            chi = true,
         },
         MicroButtonAndBagsBar = {},
         BackpackBar = {},
@@ -44,6 +45,7 @@ local defaults = {
         StanceBar = {},
         Runes = {},
         ArcaneCharges = {},
+        Chi = {},
     }
 }
 
@@ -158,6 +160,11 @@ local options = {
         arcaneCharges = {
             name = "Mage Arcane Charges",
             desc = "Enables / Disables Mage arcane charges support",
+            type = "toggle",
+        },
+        chi = {
+            name = "Monk Chi",
+            desc = "Enables / Disables Monk chi support",
             type = "toggle",
         },
     },
@@ -314,6 +321,18 @@ f:SetScript("OnEvent", function(__, event, arg1)
             -- Summon black ox uses totem frame
             if db.EMEOptions.totem then
                 registerTotemFrame(db)
+            end
+            
+            if db.EMEOptions.chi then
+                lib:RegisterFrame(MonkHarmonyBarFrame, "Chi", db.Chi)
+                lib:SetDontResize(MonkHarmonyBarFrame)
+                lib:RegisterHideable(MonkHarmonyBarFrame)
+                lib:RegisterResizable(MonkHarmonyBarFrame)
+                hooksecurefunc(PlayerFrameBottomManagedFramesContainer, "Layout", function()
+                    if not EditModeManagerFrame.editModeActive then
+                        lib:RepositionFrame(MonkHarmonyBarFrame)
+                    end
+                end)
             end
         elseif class == "DEATHKNIGHT" then
             if db.EMEOptions.runes then

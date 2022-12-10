@@ -2,24 +2,6 @@ local lib = LibStub:GetLibrary("EditModeExpanded-1.0")
 local AceConfigDialog = LibStub("AceConfigDialog-3.0")
 local AceConfigRegistry = LibStub("AceConfigRegistry-3.0")
 
--- old character specific database, will remove legacy support eventually
-local legacyDefaults = {
-    profile = {
-        MicroButtonAndBagsBar = {},
-        BackpackBar = {},
-        StatusTrackingBarManager = {},
-        QueueStatusButton = {},
-        TotemFrame = {},
-        PetFrame = {},
-        DurabilityFrame = {},
-        VehicleSeatIndicator = {},
-        HolyPower = {},
-        Achievements = {},
-        SoulShards = {},
-    }
-}
--- end legacy
-
 local defaults = {
     global = {
         EMEOptions = {
@@ -201,43 +183,6 @@ f:SetScript("OnEvent", function(__, event, arg1)
         f.db = LibStub("AceDB-3.0"):New("EditModeExpandedADB", defaults)
         
         local db = f.db.global
-        
-        --
-        -- Start legacy db import - remove this eventually
-        --
-        local legacydb = LibStub("AceDB-3.0"):New("EditModeExpandedDB", legacyDefaults)
-        legacydb = legacydb.profile
-        for buttonName, buttonData in pairs(legacydb) do
-            for k, v in pairs(buttonData) do
-                if not db[buttonName].profiles then db[buttonName].profiles = {} end
-                if buttonData.profiles then
-                    for profileName, profileData in pairs(buttonData.profiles) do
-                        if not db[buttonName].profiles[profileName] then
-                            local t = {}
-                            for str in string.gmatch(profileName, "([^\-]+)") do
-                                table.insert(t, str)
-                            end
-                            local layoutType = t[1]
-                            local layoutName = t[2]
-                            
-                            if layoutType == (Enum.EditModeLayoutType.Character.."") then
-                                local unitName, unitRealm = UnitFullName("player")
-                                profileName = layoutType.."-"..unitName.."-"..unitRealm.."-"..layoutName
-                            end
-                            
-                            db[buttonName].profiles[profileName] = profileData
-                        end
-                    end
-                end
-                
-                legacydb[buttonName] = {}
-                break
-            end
-            
-        end
-        --
-        -- End legacy db import
-        --
         
         AceConfigRegistry:RegisterOptionsTable("EditModeExpanded", options)
         AceConfigDialog:AddToBlizOptions("EditModeExpanded")

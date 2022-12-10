@@ -26,6 +26,7 @@ local defaults = {
             runes = true,
             arcaneCharges = true,
             chi = true,
+            evokerEssences = true,
         },
         MicroButtonAndBagsBar = {},
         BackpackBar = {},
@@ -46,6 +47,7 @@ local defaults = {
         Runes = {},
         ArcaneCharges = {},
         Chi = {},
+        EvokerEssences = {},
     }
 }
 
@@ -165,6 +167,11 @@ local options = {
         chi = {
             name = "Monk Chi",
             desc = "Enables / Disables Monk chi support",
+            type = "toggle",
+        },
+        evokerEssences = {
+            name = "Evoker Essences",
+            desc = "Enables / Disables Evoker essences support",
             type = "toggle",
         },
     },
@@ -355,6 +362,18 @@ f:SetScript("OnEvent", function(__, event, arg1)
                 hooksecurefunc(PlayerFrameBottomManagedFramesContainer, "Layout", function()
                     if not EditModeManagerFrame.editModeActive then
                         lib:RepositionFrame(MageArcaneChargesFrame)
+                    end
+                end)
+            end
+        elseif class == "EVOKER" then
+            if db.EMEOptions.evokerEssences then
+                lib:RegisterFrame(EssencePlayerFrame, "Essences", db.EvokerEssences)
+                lib:SetDontResize(EssencePlayerFrame)
+                lib:RegisterHideable(EssencePlayerFrame)
+                lib:RegisterResizable(EssencePlayerFrame)
+                hooksecurefunc(EssencePowerBar, "UpdatePower", function()
+                    if not EditModeManagerFrame.editModeActive then
+                        lib:RepositionFrame(EssencePlayerFrame)
                     end
                 end)
             end

@@ -42,6 +42,7 @@ local defaults = {
             uiWidgetTopCenterContainerFrame = false,
             stanceBar = true,
             runes = true,
+            arcaneCharges = true,
         },
         MicroButtonAndBagsBar = {},
         BackpackBar = {},
@@ -60,6 +61,7 @@ local defaults = {
         UIWidgetTopCenterContainerFrame = {},
         StanceBar = {},
         Runes = {},
+        ArcaneCharges = {},
     }
 }
 
@@ -169,6 +171,11 @@ local options = {
         runes = {
             name = "Death Knight Runes",
             desc = "Enables / Disables Death Knight runes support",
+            type = "toggle",
+        },
+        arcaneCharges = {
+            name = "Mage Arcane Charges",
+            desc = "Enables / Disables Mage arcane charges support",
             type = "toggle",
         },
     },
@@ -372,6 +379,18 @@ f:SetScript("OnEvent", function(__, event, arg1)
                 hooksecurefunc(PlayerFrameBottomManagedFramesContainer, "Layout", function()
                     if not EditModeManagerFrame.editModeActive then
                         lib:RepositionFrame(RuneFrame)
+                    end
+                end)
+            end
+        elseif class == "MAGE" then
+            if db.EMEOptions.arcaneCharges then
+                lib:RegisterFrame(MageArcaneChargesFrame, "Arcane Charges", db.ArcaneCharges)
+                lib:RegisterHideable(MageArcaneChargesFrame)
+                lib:SetDontResize(MageArcaneChargesFrame)
+                lib:RegisterResizable(MageArcaneChargesFrame)
+                hooksecurefunc(PlayerFrameBottomManagedFramesContainer, "Layout", function()
+                    if not EditModeManagerFrame.editModeActive then
+                        lib:RepositionFrame(MageArcaneChargesFrame)
                     end
                 end)
             end

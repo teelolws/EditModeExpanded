@@ -706,8 +706,6 @@ hooksecurefunc(EditModeManagerFrame, "ExitEditMode", function()
         if framesDB[systemID] and framesDB[systemID].settings and (framesDB[systemID].settings[ENUM_EDITMODEACTIONBARSETTING_HIDEABLE] ~= nil) then
             if (framesDB[systemID].settings[ENUM_EDITMODEACTIONBARSETTING_HIDEABLE] == 1) then
                 frame:Hide()
-            else
-                frame:SetShown(wasVisible[systemID])
             end
         end
     end

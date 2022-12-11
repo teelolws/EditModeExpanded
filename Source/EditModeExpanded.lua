@@ -27,6 +27,7 @@ local defaults = {
             arcaneCharges = true,
             chi = true,
             evokerEssences = true,
+            showCoordinates = false,
         },
         MicroButtonAndBagsBar = {},
         BackpackBar = {},
@@ -173,6 +174,11 @@ local options = {
             name = "Evoker Essences",
             desc = "Enables / Disables Evoker essences support",
             type = "toggle",
+        },
+        showCoordinates = {
+            name = "Show Coordinates",
+            type = "toggle",
+            desc = "Show window coordinates of selected frame",
         },
     },
 }
@@ -489,6 +495,15 @@ f:SetScript("OnEvent", function(__, event, arg1)
                 if lib:IsFrameMarkedHidden(StanceBar) then
                     StanceBar:Hide()
                 end
+            end)
+        end
+        
+        if db.EMEOptions.showCoordinates then 
+            hooksecurefunc(EditModeExpandedSystemSettingsDialog, "AttachToSystemFrame", function(self, frame)
+                self.Title:SetText(frame.systemName.." ("..math.floor(frame:GetLeft())..","..math.floor(frame:GetBottom())..")")
+            end)
+            hooksecurefunc(EditModeExpandedSystemSettingsDialog, "UpdateSettings", function(self, frame)
+                self.Title:SetText(frame.systemName.." ("..math.floor(frame:GetLeft())..","..math.floor(frame:GetBottom())..")")
             end)
         end
     elseif (event == "PLAYER_TOTEM_UPDATE") then

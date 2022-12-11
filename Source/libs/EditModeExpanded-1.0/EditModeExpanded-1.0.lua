@@ -200,6 +200,11 @@ function lib:RegisterFrame(frame, name, db, anchorTo, anchorPoint)
             end
         end)
         registerFrameMovableWithArrowKeys(frame, anchorPoint, anchorTo)
+        
+        frame.Selection:HookScript("OnDragStop", function(self)
+            EditModeExpandedSystemSettingsDialog:UpdateSettings(frame)
+        end)
+        
         return
     end
     
@@ -307,6 +312,8 @@ function lib:RegisterFrame(frame, name, db, anchorTo, anchorPoint)
         local x, y = getOffsetXY(frame, db.x, db.y)
         frame:ClearAllPoints()
         frame:SetPoint(anchorPoint, anchorTo, anchorPoint, x, y)
+        
+        EditModeExpandedSystemSettingsDialog:UpdateSettings(frame)
     end)
     
     function frame:ClearHighlight()
@@ -825,7 +832,7 @@ hooksecurefunc(f, "OnLoad", function()
 	end)
     
     function EditModeExpandedSystemSettingsDialog:UpdateSettings(systemFrame)
-    	if systemFrame == self.attachedToSystem then
+        if systemFrame == self.attachedToSystem then
     		self:ReleaseAllNonSliders();
             local draggingSlider = self:ReleaseNonDraggingSliders();
     

@@ -716,17 +716,12 @@ hooksecurefunc(EditModeManagerFrame, "ExitEditMode", function()
 end)
 
 hooksecurefunc(EditModeManagerFrame, "SelectSystem", function(self, systemFrame)
+    EditModeExpandedSystemSettingsDialog:Hide()
+    
     for _, frame in ipairs(frames) do
         if systemFrame ~= frame then
             frame:HighlightSystem()
         end
-    end
-    
-    local systemID = getSystemID(systemFrame)
-    
-    if (not systemID) or (not framesDB[systemID]) then
-        EditModeExpandedSystemSettingsDialog:Hide()
-        return
     end
 end)
 

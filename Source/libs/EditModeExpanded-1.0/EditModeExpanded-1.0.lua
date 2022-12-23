@@ -21,6 +21,7 @@ local firstCheckButtonPlaced = false
 local ENUM_EDITMODEACTIONBARSETTING_HIDEABLE = 10 -- Enum.EditModeActionBarSetting.Hideable = 10
 local ENUM_EDITMODEACTIONBARSETTING_MINIMAPPINNED = 11
 local ENUM_EDITMODEACTIONBARSETTING_CUSTOM = 12
+local ENUM_EDITMODEACTIONBARSETTING_CLAMPED = 13
 
 -- run OnLoad the first time RegisterFrame is called by an addon
 local f = {}
@@ -276,7 +277,22 @@ function lib:RegisterFrame(frame, name, db, anchorTo, anchorPoint)
     registerFrameMovableWithArrowKeys(frame, anchorPoint, anchorTo)
     
     -- prevent the frame from going outside the screen boundaries
-    frame:SetClampedToScreen(true);
+    if db.clamped == nil then db.clamped = 1 end
+    if profilesInitialised and (db.clamped == 1) then
+        frame:SetClampedToScreen(true)
+    elseif profilesInitialised then
+        frame:SetClampedToScreen(false)
+    end
+    if not framesDialogs[frame.system] then framesDialogs[frame.system] = {} end
+    if not framesDialogsKeys[frame.system] then framesDialogsKeys[frame.system] = {} end
+    framesDialogsKeys[frame.system][ENUM_EDITMODEACTIONBARSETTING_CLAMPED] = true
+    table.insert(framesDialogs[frame.system],
+        {
+            setting = ENUM_EDITMODEACTIONBARSETTING_CLAMPED,
+            name = "Clamp to Screen",
+            type = Enum.EditModeSettingDisplayType.Checkbox,
+        }
+    )
     
     function frame.UpdateMagnetismRegistration() end
 
@@ -920,6 +936,21 @@ hooksecurefunc(f, "OnLoad", function()
                             end)
                         end
                         
+                        if displayInfo.setting == ENUM_EDITMODEACTIONBARSETTING_CLAMPED then
+                            savedValue = framesDB[systemID].clamped
+                            if savedValue == nil then savedValue = 1 end
+                            settingFrame.Button:SetChecked(savedValue)
+                            settingFrame.Button:SetScript("OnClick", function()
+                                if settingFrame.Button:GetChecked() then
+                                    framesDB[systemID].clamped = 1
+                                    systemFrame:SetClampedToScreen(true)
+                                else
+                                    framesDB[systemID].clamped = 0
+                                    systemFrame:SetClampedToScreen(false)
+                                end
+                            end)
+                        end
+                        
       					settingsToSetup[settingFrame] = { displayInfo = updatedDisplayInfo, currentValue = savedValue, settingName = settingName }
       					settingFrame:Show();
       				end
@@ -1022,6 +1053,7 @@ do
                 db.y = nil
                 db.enabled = nil
                 db.settings = nil
+                db.clamped = nil
             end
             
             if db.minimap then
@@ -1075,6 +1107,12 @@ do
             -- only way I can find to un-select frames
             if EditModeManagerFrame.editModeActive and frame:IsShown() then
                 frame:HighlightSystem()
+            end
+            
+            if db.clamped == 1 then
+                frame:SetClampedToScreen(true)
+            else
+                frame:SetClampedToScreen(false)
             end
         end
         

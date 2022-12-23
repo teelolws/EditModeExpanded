@@ -28,6 +28,7 @@ local defaults = {
             chi = true,
             evokerEssences = true,
             showCoordinates = false,
+            playerFrame = true,
         },
         MicroButtonAndBagsBar = {},
         BackpackBar = {},
@@ -49,6 +50,7 @@ local defaults = {
         ArcaneCharges = {},
         Chi = {},
         EvokerEssences = {},
+        PlayerFrame = {},
     }
 }
 
@@ -179,6 +181,11 @@ local options = {
             name = "Show Coordinates",
             type = "toggle",
             desc = "Show window coordinates of selected frame",
+        },
+        playerFrame = {
+            name = "Player Frame",
+            type = "toggle",
+            desc = "Enables / Disables additional options for the Player Frame",
         },
     },
 }
@@ -358,6 +365,16 @@ f:SetScript("OnEvent", function(__, event, arg1)
                         lib:RepositionFrame(RuneFrame)
                     end
                 end)
+                lib:RegisterCustomCheckbox(RuneFrame, "Unlink from Player Frame (may require reload)", 
+                    --onChecked
+                    function()
+                        RuneFrame:SetParent(UIParent)
+                    end,
+                    --onUnchecked
+                    function()
+                        RuneFrame:SetParent(PlayerFrameBottomManagedFramesContainer)
+                    end
+                )
             end
         elseif class == "MAGE" then
             if db.EMEOptions.arcaneCharges then
@@ -505,6 +522,10 @@ f:SetScript("OnEvent", function(__, event, arg1)
             hooksecurefunc(EditModeExpandedSystemSettingsDialog, "UpdateSettings", function(self, frame)
                 self.Title:SetText(frame.systemName.." ("..math.floor(frame:GetLeft())..","..math.floor(frame:GetBottom())..")")
             end)
+        end
+        
+        if db.EMEOptions.playerFrame then
+            lib:RegisterHideable(PlayerFrame)
         end
     elseif (event == "PLAYER_TOTEM_UPDATE") then
         if totemFrameLoaded then

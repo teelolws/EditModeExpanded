@@ -716,7 +716,9 @@ hooksecurefunc(EditModeManagerFrame, "ExitEditMode", function()
 end)
 
 hooksecurefunc(EditModeManagerFrame, "SelectSystem", function(self, systemFrame)
-    EditModeExpandedSystemSettingsDialog:Hide()
+    if EditModeExpandedSystemSettingsDialog.attachedToSystem ~= systemFrame then
+        EditModeExpandedSystemSettingsDialog:Hide()
+    end
     
     for _, frame in ipairs(frames) do
         if systemFrame ~= frame then

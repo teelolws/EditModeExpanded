@@ -1174,7 +1174,7 @@ function lib:RegisterMinimapPinnable(frame)
         icon:Hide(name)
     end)
     
-    hooksecurefunc(frame, "SetShown", function()
+    local function showHide()
         local db = framesDB[frame.system]
         if not db.minimap then db.minimap = {} end
         if not db.settings then db.settings = {} end
@@ -1187,7 +1187,12 @@ function lib:RegisterMinimapPinnable(frame)
             db.minimap.hide = true
             icon:Hide(name)
         end
+    end
+    
+    hooksecurefunc(frame, "SetShown", function()
+        showHide()
     end)
+    showHide()
     
     if not framesDialogs[frame.system] then framesDialogs[frame.system] = {} end
     if framesDialogsKeys[frame.system] and framesDialogsKeys[frame.system][ENUM_EDITMODEACTIONBARSETTING_MINIMAPPINNED] then return end

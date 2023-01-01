@@ -387,6 +387,11 @@ f:SetScript("OnEvent", function(__, event, arg1)
                         lib:RepositionFrame(MageArcaneChargesFrame)
                     end
                 end)
+                hooksecurefunc(MageArcaneChargesFrame, "HandleBarSetup", function()
+                    if not EditModeManagerFrame.editModeActive then
+                        lib:RepositionFrame(MageArcaneChargesFrame)
+                    end
+                end)
             end
         elseif class == "EVOKER" then
             if db.EMEOptions.evokerEssences then

@@ -492,12 +492,12 @@ function lib:RepositionFrame(frame)
     
     local systemID = getSystemID(frame)
     local db = framesDB[systemID]
-
-    frame:ClearAllPoints()
     
     if (not (db.x or db.defaultX)) or (not (db.y or db.defaultY)) then
         return
     end
+    
+    frame:ClearAllPoints()
     
     if db.settings and (db.settings[ENUM_EDITMODEACTIONBARSETTING_HIDEABLE] == 1) then
         frame:Hide()

@@ -531,6 +531,17 @@ f:SetScript("OnEvent", function(__, event, arg1)
         
         if db.EMEOptions.playerFrame then
             lib:RegisterHideable(PlayerFrame)
+            lib:RegisterCustomCheckbox(PlayerFrame, "Hide Resource Bar", 
+                -- on checked
+                function()
+                    PlayerFrame.manabar:Hide()
+                end,
+                
+                -- on unchecked
+                function()
+                    PlayerFrame.manabar:Show()
+                end
+            )
         end
     elseif (event == "PLAYER_TOTEM_UPDATE") then
         if totemFrameLoaded then

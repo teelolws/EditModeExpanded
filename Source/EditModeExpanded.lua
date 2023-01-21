@@ -5,10 +5,7 @@ local AceConfigRegistry = LibStub("AceConfigRegistry-3.0")
 local defaults = {
     global = {
         EMEOptions = {
-            menu = true,
-            xp = true,
             lfg = true,
-            durability = true,
             vehicle = true,
             holyPower = true,
             totem = true,
@@ -30,13 +27,9 @@ local defaults = {
             showCoordinates = false,
             playerFrame = true,
         },
-        MicroButtonAndBagsBar = {},
-        BackpackBar = {},
-        StatusTrackingBarManager = {},
         QueueStatusButton = {},
         TotemFrame = {},
         PetFrame = {},
-        DurabilityFrame = {},
         VehicleSeatIndicator = {},
         HolyPower = {},
         Achievements = {},
@@ -67,25 +60,10 @@ local options = {
             fontSize = "medium",
             order = 0,
         },
-        menu = {
-            name = "Menu Bar",
-            desc = "Enables / Disables Menu Bar support",
-            type = "toggle",
-        },
-        xp = {
-            name = "Experience Bar",
-            desc = "Enables / Disables Experience Bar support",
-            type = "toggle",
-        },
         lfg = {
             name = "LFG Button",
             desc = "Enables / Disables LFG Button support",
             type = "toggle", 
-        },
-        durability = {
-            name = "Durability",
-            desc = "Enables / Disables Durability Frame support",
-            type = "toggle",
         },
         vehicle = {
             name = "Vehicle",
@@ -218,41 +196,6 @@ f:SetScript("OnEvent", function(__, event, arg1)
             local name = frame:GetName()
             if not db[name] then db[name] = {} end
             lib:RegisterFrame(frame, "", db[name])
-        end
-        
-        if not IsAddOnLoaded("Bartender4") then -- moving/resizing found to be incompatible
-            if db.EMEOptions.menu then
-                lib:RegisterFrame(MicroButtonAndBagsBar, "Micro Menu", db.MicroButtonAndBagsBar)
-                lib:RegisterResizable(MicroButtonAndBagsBarMovable)
-                lib:RegisterHideable(MicroButtonAndBagsBarMovable)
-                lib:RegisterResizable(EditModeExpandedBackpackBar)
-                lib:RegisterHideable(EditModeExpandedBackpackBar)
-                hooksecurefunc("MoveMicroButtons", function()
-                    CharacterMicroButton:ClearAllPoints()
-                    CharacterMicroButton:SetPoint("BOTTOMLEFT", MicroButtonAndBagsBarMovable, "BOTTOMLEFT", 7, 6)
-                    LFDMicroButton:ClearAllPoints()
-                    LFDMicroButton:SetPoint("BOTTOMLEFT", GuildMicroButton, "BOTTOMRIGHT", 1, 0)
-                end)
-            end
-        end
-        
-        if db.EMEOptions.xp then
-            lib:RegisterFrame(StatusTrackingBarManager, "Experience Bar", db.StatusTrackingBarManager)
-            lib:RegisterResizable(StatusTrackingBarManager)
-            lib:RegisterHideable(StatusTrackingBarManager)
-        end
-
-        if db.EMEOptions.durability then
-            DurabilityFrame:SetParent(UIParent)
-            lib:RegisterFrame(DurabilityFrame, "Durability", db.DurabilityFrame)
-            lib:RegisterResizable(DurabilityFrame)
-        end
-        
-        if db.EMEOptions.vehicle then
-            VehicleSeatIndicator:SetParent(UIParent)
-            VehicleSeatIndicator:SetPoint("TOPLEFT", DurabilityFrame, "TOPLEFT")
-            lib:RegisterFrame(VehicleSeatIndicator, "Vehicle Seats", db.VehicleSeatIndicator)
-            lib:RegisterResizable(VehicleSeatIndicator)
         end
         
         if db.EMEOptions.compactRaidFrameContainer then
@@ -550,6 +493,12 @@ f:SetScript("OnEvent", function(__, event, arg1)
                     PlayerFrame.manabar:Hide()
                 end
             end)
+        end
+        
+        if db.EMEOptions.vehicle then
+            VehicleSeatIndicator:SetPoint("TOPLEFT", DurabilityFrame, "TOPLEFT")
+            lib:RegisterFrame(VehicleSeatIndicator, "Vehicle Seats", db.VehicleSeatIndicator)
+            lib:RegisterResizable(VehicleSeatIndicator)
         end
     elseif (event == "PLAYER_TOTEM_UPDATE") then
         if totemFrameLoaded then

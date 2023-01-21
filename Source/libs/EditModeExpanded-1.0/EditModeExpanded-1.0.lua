@@ -2,8 +2,8 @@
 -- Internal variables
 --
 
-local CURRENT_BUILD = "10.0.2"
-local MAJOR, MINOR = "EditModeExpanded-1.0", 40
+local CURRENT_BUILD = "10.0.5"
+local MAJOR, MINOR = "EditModeExpanded-1.0", 43
 local lib = LibStub:NewLibrary(MAJOR, MINOR)
 if not lib then return end
 
@@ -81,66 +81,6 @@ local MICRO_BUTTONS = {
 	"StoreMicroButton",
 	}
 
--- MicroButtonAndBagsBar:GetTop gets checked by EditModeManager, setting the scale of the Right Action bars
--- to allow it to be moved, we need to duplicate the frame, hide the original, and make the duplicate the one being moved instead
-local function duplicateMicroButtonAndBagsBar(db)
-    MicroButtonAndBagsBar:Hide()
-    local duplicate = CreateFrame("Frame", "MicroButtonAndBagsBarMovable", UIParent)
-    duplicate:SetSize(232, 40)
-    duplicate:SetPoint("BOTTOMRIGHT")
-    duplicate.QuickKeybindsMicroBagBarGlow = duplicate:CreateTexture(nil, "BACKGROUND")
-    duplicate.QuickKeybindsMicroBagBarGlow:SetAtlas("QuickKeybind_BagMicro_Glow", true)
-    duplicate.QuickKeybindsMicroBagBarGlow:Hide()
-    duplicate.QuickKeybindsMicroBagBarGlow:SetPoint("CENTER", duplicate, "CENTER", -30, 30)
-    
-    hooksecurefunc("MoveMicroButtons", function(anchor, anchorTo, relAnchor, x, y, isStacked)
-        if anchorTo == MicroButtonAndBagsBar then
-            anchorTo = duplicate
-            CharacterMicroButton:ClearAllPoints();
-            CharacterMicroButton:SetPoint(anchor, anchorTo, relAnchor, x, y);
-        end
-    end)
-    
-    hooksecurefunc(MicroButtonAndBagsBar.QuickKeybindsMicroBagBarGlow, "SetShown", function(self, showEffects)
-        duplicate.QuickKeybindsMicroBagBarGlow:SetShown(showEffects)
-    end)
-    
-    duplicate:Show()
-    
-    CharacterMicroButton:ClearAllPoints();
-    CharacterMicroButton:SetPoint("BOTTOMLEFT", duplicate, "BOTTOMLEFT", 7, 6)
-    
-    UpdateMicroButtonsParent(duplicate)
-    hooksecurefunc("UpdateMicroButtonsParent", function(parent)
-        for i=1, #MICRO_BUTTONS do
-            _G[MICRO_BUTTONS[i]]:SetParent(duplicate)
-        end
-    end)
-    
-    MainMenuBarBackpackButton:SetPoint("TOPRIGHT", duplicate, -4, 2)
-    MainMenuBarBackpackButton:SetParent(duplicate)
-    
-    QueueStatusButton:SetParent(duplicate)
-    
-    -- Now split the Backpack section into its own bar
-    local backpackBar = CreateFrame("Frame", "EditModeExpandedBackpackBar", UIParent)
-    backpackBar:SetSize(232, 40)
-    backpackBar:SetPoint("BOTTOMRIGHT", duplicate, "TOPRIGHT")
-    MainMenuBarBackpackButton:ClearAllPoints()
-    MainMenuBarBackpackButton:SetPoint("BOTTOMRIGHT", backpackBar, "BOTTOMRIGHT")
-    MainMenuBarBackpackButton:SetParent(backpackBar)
-    BagBarExpandToggle:SetParent(backpackBar)
-    CharacterBag0Slot:SetParent(backpackBar)
-    CharacterBag1Slot:SetParent(backpackBar)
-    CharacterBag2Slot:SetParent(backpackBar)
-    CharacterBag3Slot:SetParent(backpackBar)
-    CharacterReagentBag0Slot:SetParent(backpackBar)
-    
-    if not db.BackpackBar then db.BackpackBar = {} end
-    lib:RegisterFrame(EditModeExpandedBackpackBar, "Backpack", db.BackpackBar)
-    return duplicate
-end
-
 --
 -- Public API
 --
@@ -171,7 +111,7 @@ function lib:RegisterFrame(frame, name, db, anchorTo, anchorPoint)
     
     -- If the frame was already registered (perhaps by another addon that uses this library), don't register it again
     for _, f in ipairs(frames) do
-        if (frame == f) or ((frame == MicroButtonAndBagsBar) and (f == MicroButtonAndBagsBarMovable)) then
+        if frame == f then
             if (not framesDB[f.system].x) and (not framesDB[f.system].y) then
                 -- import new db settings if there are none saved in the existing db
                 framesDB[f.system].x = db.x
@@ -234,14 +174,6 @@ function lib:RegisterFrame(frame, name, db, anchorTo, anchorPoint)
         end
         
         db = db.profiles[profileName]
-    end
-
-    if frame == MicroButtonAndBagsBar then
-        frame = duplicateMicroButtonAndBagsBar(db)
-        frame.EMEanchorTo = anchorTo
-        frame.EMEanchorPoint = anchorPoint
-        if not db.MenuBar then db.MenuBar = {} end
-        db = db.MenuBar
     end
      
     table.insert(frames, frame)
@@ -1026,10 +958,6 @@ do
         for _, frame in pairs(frames) do
             EditModeExpandedSystemSettingsDialog:Hide()
             local db = baseFramesDB[frame.system]
-            if frame == MicroButtonAndBagsBarMovable then
-                if not db.MenuBar then db.MenuBar = {} end
-                db = db.MenuBar
-            end
             
             -- if currently selected Edit Mode profile does not exist in the db, try importing a legacy db instead
             local layoutInfo = EditModeManagerFrame:GetActiveLayoutInfo()
@@ -1265,70 +1193,5 @@ end
 -- Handle allowing frame to be moved with arrow keys
 --
 function registerFrameMovableWithArrowKeys(frame, anchorPoint, anchorTo)
-    frame.Selection:EnableKeyboard();
-    frame.Selection:SetPropagateKeyboardInput(true);
-    frame.Selection:SetScript("OnKeyDown", function(self, key)
-        frame:MoveWithArrowKey(key);
-    end)
-
-    function frame:MoveWithArrowKey(key)
-        if self.isSelected then
-            local x, y = self:GetRect();
-
-            local new_x = x;
-            local new_y = y;
-
-            if key == "RIGHT" then      new_x = new_x + 1;
-            elseif key == "LEFT" then   new_x = new_x - 1;
-            elseif key == "UP" then     new_y = new_y + 1;
-            elseif key == "DOWN" then   new_y = new_y - 1;
-            end
-            
-            if new_x ~= x or new_y ~= y then
-                -- consume the key used to prevent movement / cam turning
-                self.Selection:SetPropagateKeyboardInput(false);
-                
-                if existingFrames[frame:GetName()] then
-                    local layoutInfoCopy = CopyTable(EditModeManagerFrame.layoutInfo)
-                    local activeLayout = layoutInfoCopy.layouts[layoutInfoCopy.activeLayout]
-                    local a, b, c, d, e = self:GetPoint()
-                    for index, frameData in ipairs(activeLayout.systems) do
-                        local anchorInfo = frameData.anchorInfo
-                        if frame.EMELayoutInfoIDKnown then
-                            if (frame.EMELayoutInfoIDKnown.system == frameData.system) and (frame.EMELayoutInfoIDKnown.systemIndex == frameData.systemIndex) then
-                                anchorInfo.offsetX = new_x
-                                anchorInfo.offsetY = new_y
-                                break
-                            end
-                        end
-                        if 
-                            (anchorInfo.point == a) and 
-                            (anchorInfo.relativeTo == b:GetName()) and 
-                            (anchorInfo.relativePoint == c) and 
-                            (tonumber(string.format("%.3f", anchorInfo.offsetX)) == tonumber(string.format("%.3f", d))) and 
-                            (tonumber(string.format("%.3f", anchorInfo.offsetY)) == tonumber(string.format("%.3f", e))) 
-                        then
-                            frame.EMELayoutInfoIDKnown = {
-                                system = frameData.system,
-                                systemIndex = frameData.systemIndex,
-                            }
-                            anchorInfo.offsetX = new_x
-                            anchorInfo.offsetY = new_y
-                            break
-                        end
-                    end
-                    C_EditMode.SaveLayouts(layoutInfoCopy)
-                else
-                    local db = framesDB[getSystemID(frame)]
-                    db.x, db.y = new_x, new_y
-                end
-                self:ClearAllPoints()
-                local x, y = getOffsetXY(frame, new_x, new_y)
-                self:SetPoint(anchorPoint, anchorTo, anchorPoint, x, y);
-                return
-            end
-        end
-
-        self.Selection:SetPropagateKeyboardInput(true);
-    end
+    -- function implemented by Blizz in 10.0.5
 end

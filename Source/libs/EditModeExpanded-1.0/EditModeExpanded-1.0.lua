@@ -1193,5 +1193,70 @@ end
 -- Handle allowing frame to be moved with arrow keys
 --
 function registerFrameMovableWithArrowKeys(frame, anchorPoint, anchorTo)
-    -- function implemented by Blizz in 10.0.5
+    frame.Selection:EnableKeyboard();
+    frame.Selection:SetPropagateKeyboardInput(true);
+    frame.Selection:SetScript("OnKeyDown", function(self, key)
+        frame:MoveWithArrowKey(key);
+    end)
+
+    function frame:MoveWithArrowKey(key)
+        if self.isSelected then
+            local x, y = self:GetRect();
+
+            local new_x = x;
+            local new_y = y;
+
+            if key == "RIGHT" then      new_x = new_x + 1;
+            elseif key == "LEFT" then   new_x = new_x - 1;
+            elseif key == "UP" then     new_y = new_y + 1;
+            elseif key == "DOWN" then   new_y = new_y - 1;
+            end
+            
+            if new_x ~= x or new_y ~= y then
+                -- consume the key used to prevent movement / cam turning
+                self.Selection:SetPropagateKeyboardInput(false);
+                
+                if existingFrames[frame:GetName()] then
+                    local layoutInfoCopy = CopyTable(EditModeManagerFrame.layoutInfo)
+                    local activeLayout = layoutInfoCopy.layouts[layoutInfoCopy.activeLayout]
+                    local a, b, c, d, e = self:GetPoint()
+                    for index, frameData in ipairs(activeLayout.systems) do
+                        local anchorInfo = frameData.anchorInfo
+                        if frame.EMELayoutInfoIDKnown then
+                            if (frame.EMELayoutInfoIDKnown.system == frameData.system) and (frame.EMELayoutInfoIDKnown.systemIndex == frameData.systemIndex) then
+                                anchorInfo.offsetX = new_x
+                                anchorInfo.offsetY = new_y
+                                break
+                            end
+                        end
+                        if 
+                            (anchorInfo.point == a) and 
+                            (anchorInfo.relativeTo == b:GetName()) and 
+                            (anchorInfo.relativePoint == c) and 
+                            (tonumber(string.format("%.3f", anchorInfo.offsetX)) == tonumber(string.format("%.3f", d))) and 
+                            (tonumber(string.format("%.3f", anchorInfo.offsetY)) == tonumber(string.format("%.3f", e))) 
+                        then
+                            frame.EMELayoutInfoIDKnown = {
+                                system = frameData.system,
+                                systemIndex = frameData.systemIndex,
+                            }
+                            anchorInfo.offsetX = new_x
+                            anchorInfo.offsetY = new_y
+                            break
+                        end
+                    end
+                    C_EditMode.SaveLayouts(layoutInfoCopy)
+                else
+                    local db = framesDB[getSystemID(frame)]
+                    db.x, db.y = new_x, new_y
+                end
+                self:ClearAllPoints()
+                local x, y = getOffsetXY(frame, new_x, new_y)
+                self:SetPoint(anchorPoint, anchorTo, anchorPoint, x, y);
+                return
+            end
+        end
+
+        self.Selection:SetPropagateKeyboardInput(true);
+    end
 end

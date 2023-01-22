@@ -493,7 +493,7 @@ function lib:RepositionFrame(frame)
     local systemID = getSystemID(frame)
     local db = framesDB[systemID]
     
-    if (not (db.x or db.defaultX)) or (not (db.y or db.defaultY)) then
+    if (not (db.x or db.defaultX)) or (not (db.y or db.defaultY)) or (not frame.EMEanchorTo) or (not frame.EMEanchorTo:GetRect()) then
         return
     end
     

@@ -2,8 +2,8 @@
 -- Internal variables
 --
 
-local CURRENT_BUILD = "10.0.2"
-local MAJOR, MINOR = "EditModeExpanded-1.0", 40
+local CURRENT_BUILD = "10.0.5"
+local MAJOR, MINOR = "EditModeExpanded-1.0", 43
 local lib = LibStub:NewLibrary(MAJOR, MINOR)
 if not lib then return end
 
@@ -81,66 +81,6 @@ local MICRO_BUTTONS = {
 	"StoreMicroButton",
 	}
 
--- MicroButtonAndBagsBar:GetTop gets checked by EditModeManager, setting the scale of the Right Action bars
--- to allow it to be moved, we need to duplicate the frame, hide the original, and make the duplicate the one being moved instead
-local function duplicateMicroButtonAndBagsBar(db)
-    MicroButtonAndBagsBar:Hide()
-    local duplicate = CreateFrame("Frame", "MicroButtonAndBagsBarMovable", UIParent)
-    duplicate:SetSize(232, 40)
-    duplicate:SetPoint("BOTTOMRIGHT")
-    duplicate.QuickKeybindsMicroBagBarGlow = duplicate:CreateTexture(nil, "BACKGROUND")
-    duplicate.QuickKeybindsMicroBagBarGlow:SetAtlas("QuickKeybind_BagMicro_Glow", true)
-    duplicate.QuickKeybindsMicroBagBarGlow:Hide()
-    duplicate.QuickKeybindsMicroBagBarGlow:SetPoint("CENTER", duplicate, "CENTER", -30, 30)
-    
-    hooksecurefunc("MoveMicroButtons", function(anchor, anchorTo, relAnchor, x, y, isStacked)
-        if anchorTo == MicroButtonAndBagsBar then
-            anchorTo = duplicate
-            CharacterMicroButton:ClearAllPoints();
-            CharacterMicroButton:SetPoint(anchor, anchorTo, relAnchor, x, y);
-        end
-    end)
-    
-    hooksecurefunc(MicroButtonAndBagsBar.QuickKeybindsMicroBagBarGlow, "SetShown", function(self, showEffects)
-        duplicate.QuickKeybindsMicroBagBarGlow:SetShown(showEffects)
-    end)
-    
-    duplicate:Show()
-    
-    CharacterMicroButton:ClearAllPoints();
-    CharacterMicroButton:SetPoint("BOTTOMLEFT", duplicate, "BOTTOMLEFT", 7, 6)
-    
-    UpdateMicroButtonsParent(duplicate)
-    hooksecurefunc("UpdateMicroButtonsParent", function(parent)
-        for i=1, #MICRO_BUTTONS do
-            _G[MICRO_BUTTONS[i]]:SetParent(duplicate)
-        end
-    end)
-    
-    MainMenuBarBackpackButton:SetPoint("TOPRIGHT", duplicate, -4, 2)
-    MainMenuBarBackpackButton:SetParent(duplicate)
-    
-    QueueStatusButton:SetParent(duplicate)
-    
-    -- Now split the Backpack section into its own bar
-    local backpackBar = CreateFrame("Frame", "EditModeExpandedBackpackBar", UIParent)
-    backpackBar:SetSize(232, 40)
-    backpackBar:SetPoint("BOTTOMRIGHT", duplicate, "TOPRIGHT")
-    MainMenuBarBackpackButton:ClearAllPoints()
-    MainMenuBarBackpackButton:SetPoint("BOTTOMRIGHT", backpackBar, "BOTTOMRIGHT")
-    MainMenuBarBackpackButton:SetParent(backpackBar)
-    BagBarExpandToggle:SetParent(backpackBar)
-    CharacterBag0Slot:SetParent(backpackBar)
-    CharacterBag1Slot:SetParent(backpackBar)
-    CharacterBag2Slot:SetParent(backpackBar)
-    CharacterBag3Slot:SetParent(backpackBar)
-    CharacterReagentBag0Slot:SetParent(backpackBar)
-    
-    if not db.BackpackBar then db.BackpackBar = {} end
-    lib:RegisterFrame(EditModeExpandedBackpackBar, "Backpack", db.BackpackBar)
-    return duplicate
-end
-
 --
 -- Public API
 --
@@ -171,7 +111,7 @@ function lib:RegisterFrame(frame, name, db, anchorTo, anchorPoint)
     
     -- If the frame was already registered (perhaps by another addon that uses this library), don't register it again
     for _, f in ipairs(frames) do
-        if (frame == f) or ((frame == MicroButtonAndBagsBar) and (f == MicroButtonAndBagsBarMovable)) then
+        if frame == f then
             if (not framesDB[f.system].x) and (not framesDB[f.system].y) then
                 -- import new db settings if there are none saved in the existing db
                 framesDB[f.system].x = db.x
@@ -234,14 +174,6 @@ function lib:RegisterFrame(frame, name, db, anchorTo, anchorPoint)
         end
         
         db = db.profiles[profileName]
-    end
-
-    if frame == MicroButtonAndBagsBar then
-        frame = duplicateMicroButtonAndBagsBar(db)
-        frame.EMEanchorTo = anchorTo
-        frame.EMEanchorPoint = anchorPoint
-        if not db.MenuBar then db.MenuBar = {} end
-        db = db.MenuBar
     end
      
     table.insert(frames, frame)
@@ -1026,10 +958,6 @@ do
         for _, frame in pairs(frames) do
             EditModeExpandedSystemSettingsDialog:Hide()
             local db = baseFramesDB[frame.system]
-            if frame == MicroButtonAndBagsBarMovable then
-                if not db.MenuBar then db.MenuBar = {} end
-                db = db.MenuBar
-            end
             
             -- if currently selected Edit Mode profile does not exist in the db, try importing a legacy db instead
             local layoutInfo = EditModeManagerFrame:GetActiveLayoutInfo()

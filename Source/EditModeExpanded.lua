@@ -180,6 +180,11 @@ local options = {
             desc = "Enables / Disables additional options for the Menu Bar",
             type = "toggle",
         },
+        bags = {
+            name = "Bag Bar",
+            desc = "Enables / Disables additional options for the Bag Bag",
+            type = "toggle",
+        },
     },
 }
 
@@ -533,6 +538,15 @@ f:SetScript("OnEvent", function(__, event, arg1)
             C_Timer.After(1, function()
                 if lib:IsFrameMarkedHidden(MicroMenu) then
                     MicroMenu:Hide()
+                end
+            end)
+        end
+        
+        if db.EMEOptions.bags then
+            lib:RegisterHideable(BagsBar)
+            C_Timer.After(1, function()
+                if lib:IsFrameMarkedHidden(BagsBar) then
+                    BagsBar:Hide()
                 end
             end)
         end

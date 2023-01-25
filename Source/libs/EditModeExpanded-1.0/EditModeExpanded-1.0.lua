@@ -3,12 +3,12 @@
 --
 
 local CURRENT_BUILD = "10.0.5"
-local MAJOR, MINOR = "EditModeExpanded-1.0", 43
+local MAJOR, MINOR = "EditModeExpanded-1.0", 44
 local lib = LibStub:NewLibrary(MAJOR, MINOR)
 if not lib then return end
 
--- the internal frames provided by Blizzard go up to index 12. They reference Enum.EditModeSystem, which starts from index 0
-local STARTING_INDEX = 13
+-- the internal frames provided by Blizzard go up to index 16. They reference Enum.EditModeSystem, which starts from index 0
+local STARTING_INDEX = 17
 local index = STARTING_INDEX
 local frames = {}
 local baseFramesDB = {} -- the base db that includes all profiles inside

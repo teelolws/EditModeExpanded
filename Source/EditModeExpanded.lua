@@ -26,6 +26,7 @@ local defaults = {
             evokerEssences = true,
             showCoordinates = false,
             playerFrame = true,
+            mainStatusTrackingBarContainer = true,
         },
         QueueStatusButton = {},
         TotemFrame = {},
@@ -44,6 +45,7 @@ local defaults = {
         Chi = {},
         EvokerEssences = {},
         PlayerFrame = {},
+        MainStatusTrackingBarContainer = {},
     }
 }
 
@@ -164,6 +166,11 @@ local options = {
             name = "Player Frame",
             type = "toggle",
             desc = "Enables / Disables additional options for the Player Frame",
+        },
+        mainStatusTrackingBarContainer = {
+            name = "Experience Bar",
+            desc = "Enables / Disables additional options for the Experience Bar",
+            type = "toggle",
         },
     },
 }
@@ -499,6 +506,15 @@ f:SetScript("OnEvent", function(__, event, arg1)
             VehicleSeatIndicator:SetPoint("TOPLEFT", DurabilityFrame, "TOPLEFT")
             lib:RegisterFrame(VehicleSeatIndicator, "Vehicle Seats", db.VehicleSeatIndicator)
             lib:RegisterResizable(VehicleSeatIndicator)
+        end
+        
+        if db.EMEOptions.mainStatusTrackingBarContainer then
+            lib:RegisterResizable(MainStatusTrackingBarContainer)
+            lib:RegisterHideable(MainStatusTrackingBarContainer)
+            C_Timer.After(1, function() lib:UpdateFrameResize(MainStatusTrackingBarContainer) end)
+            hooksecurefunc(MainStatusTrackingBarContainer, "SetScale", function(frame, scale)
+                StatusTrackingBarManager.bars[4]:SetScale(scale)
+            end)
         end
     elseif (event == "PLAYER_TOTEM_UPDATE") then
         if totemFrameLoaded then

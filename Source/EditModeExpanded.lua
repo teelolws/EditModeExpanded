@@ -27,6 +27,8 @@ local defaults = {
             showCoordinates = false,
             playerFrame = true,
             mainStatusTrackingBarContainer = true,
+            menu = true,
+            bags = true,
         },
         QueueStatusButton = {},
         TotemFrame = {},
@@ -513,6 +515,9 @@ f:SetScript("OnEvent", function(__, event, arg1)
             lib:RegisterHideable(MainStatusTrackingBarContainer)
             C_Timer.After(1, function() lib:UpdateFrameResize(MainStatusTrackingBarContainer) end)
             hooksecurefunc(MainStatusTrackingBarContainer, "SetScale", function(frame, scale)
+                StatusTrackingBarManager.bars[4]:SetScale(scale)
+            end)
+            hooksecurefunc(MainStatusTrackingBarContainer, "SetScaleOverride", function(frame, scale)
                 StatusTrackingBarManager.bars[4]:SetScale(scale)
             end)
         end

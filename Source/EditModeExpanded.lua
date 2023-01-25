@@ -48,6 +48,7 @@ local defaults = {
         EvokerEssences = {},
         PlayerFrame = {},
         MainStatusTrackingBarContainer = {},
+        MicroMenu = {},
     }
 }
 
@@ -172,6 +173,11 @@ local options = {
         mainStatusTrackingBarContainer = {
             name = "Experience Bar",
             desc = "Enables / Disables additional options for the Experience Bar",
+            type = "toggle",
+        },
+        menu = {
+            name = "Menu Bar",
+            desc = "Enables / Disables additional options for the Menu Bar",
             type = "toggle",
         },
     },
@@ -519,6 +525,15 @@ f:SetScript("OnEvent", function(__, event, arg1)
             end)
             hooksecurefunc(MainStatusTrackingBarContainer, "SetScaleOverride", function(frame, scale)
                 StatusTrackingBarManager.bars[4]:SetScale(scale)
+            end)
+        end
+        
+        if db.EMEOptions.menu then
+            lib:RegisterHideable(MicroMenu)
+            C_Timer.After(1, function()
+                if lib:IsFrameMarkedHidden(MicroMenu) then
+                    MicroMenu:Hide()
+                end
             end)
         end
     elseif (event == "PLAYER_TOTEM_UPDATE") then

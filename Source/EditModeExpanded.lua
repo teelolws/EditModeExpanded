@@ -483,11 +483,17 @@ f:SetScript("OnEvent", function(__, event, arg1)
         
         if db.EMEOptions.stanceBar then
             lib:RegisterHideable(StanceBar)
-            StanceBar:HookScript("OnEvent", function(...)
+            hooksecurefunc(StanceBar, "Show", function()
                 if lib:IsFrameMarkedHidden(StanceBar) then
                     StanceBar:Hide()
                 end
             end)
+            hooksecurefunc(StanceBar, "SetShown", function()
+                if lib:IsFrameMarkedHidden(StanceBar) then
+                    StanceBar:Hide()
+                end
+            end)
+            
             C_Timer.After(1, function()
                 if lib:IsFrameMarkedHidden(StanceBar) then
                     StanceBar:Hide()

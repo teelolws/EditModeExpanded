@@ -455,6 +455,7 @@ f:SetScript("OnEvent", function(__, event, arg1)
         
         if db.EMEOptions.targetOfTarget then
             lib:RegisterFrame(TargetFrameToT, "Target of Target", f.db.global.ToT)
+            lib:RegisterResizable(TargetFrameToT)
             TargetFrameToT:HookScript("OnHide", function()
                 if (not InCombatLockdown()) and EditModeManagerFrame.editModeActive and lib:IsFrameEnabled(TargetFrameToT) then
                     TargetFrameToT:Show()

@@ -14,6 +14,7 @@ local defaults = {
             achievementAlert = true,
             targetOfTarget = true,
             targetCast = true,
+            focusTargetOfTarget = true,
             focusCast = true,
             compactRaidFrameContainer = true,
             talkingHead = true,
@@ -41,6 +42,7 @@ local defaults = {
         SoulShards = {},
         ToT = {},
         TargetSpellBar = {},
+        FocusToT = {},
         FocusSpellBar = {},
         UIWidgetTopCenterContainerFrame = {},
         StanceBar = {},
@@ -110,6 +112,11 @@ local options = {
         targetCast = {
             name = "Target Cast Bar",
             desc = "Enables / Disables Target Cast Bar support",
+            type = "toggle",
+        },
+        focusTargetOfTarget = {
+            name = "Focus Target of Target",
+            desc = "Enables / Disables Focus Target of Target support",
             type = "toggle",
         },
         focusCast = {
@@ -448,6 +455,15 @@ f:SetScript("OnEvent", function(__, event, arg1)
             end)
             lib:SetDontResize(TargetFrameSpellBar)
             lib:RegisterResizable(TargetFrameSpellBar)            
+        end
+        
+        if db.EMEOptions.focusTargetOfTarget then
+            lib:RegisterFrame(FocusFrameToT, "Focus Target of Target", f.db.global.FocusToT)
+            FocusFrameToT:HookScript("OnHide", function()
+                if (not InCombatLockdown()) and EditModeManagerFrame.editModeActive and lib:IsFrameEnabled(FocusFrameToT) then
+                    FocusFrameToT:Show()
+                end
+            end)
         end
         
         if db.EMEOptions.focusCast then

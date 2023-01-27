@@ -32,6 +32,7 @@ local defaults = {
             menuResizable = false,
             bags = true,
             bagsResizable = false,
+            comboPoints = true,
         },
         QueueStatusButton = {},
         TotemFrame = {},
@@ -53,6 +54,7 @@ local defaults = {
         PlayerFrame = {},
         MainStatusTrackingBarContainer = {},
         MicroMenu = {},
+        ComboPoints = {},
     }
 }
 
@@ -202,6 +204,11 @@ local options = {
         bagsResizable = {
             name = "Resize Bags Bar",
             desc = "Allows the Bags Bar to be resized, with more options than the default options. WARNING: this will override the resize slider provided by the base UI. If you try to use both sliders, unexpected things could happen!",
+            type = "toggle",
+        },
+        comboPoints = {
+            name = "Combo Ponts",
+            desc = "Enables / Disables Combo Points support",
             type = "toggle",
         },
     },
@@ -384,6 +391,19 @@ f:SetScript("OnEvent", function(__, event, arg1)
                 hooksecurefunc(EssencePowerBar, "UpdatePower", function()
                     if not EditModeManagerFrame.editModeActive then
                         lib:RepositionFrame(EssencePlayerFrame)
+                    end
+                end)
+            end
+            
+        elseif class == "ROGUE" then
+            if db.EMEOptions.comboPoints then
+                lib:RegisterFrame(ComboPointPlayerFrame, "Combo Points", db.ComboPoints)
+                lib:SetDontResize(ComboPointPlayerFrame)
+                lib:RegisterHideable(ComboPointPlayerFrame)
+                lib:RegisterResizable(ComboPointPlayerFrame)
+                hooksecurefunc(PlayerFrameBottomManagedFramesContainer, "Layout", function()
+                    if not EditModeManagerFrame.editModeActive then
+                        lib:RepositionFrame(ComboPointPlayerFrame)
                     end
                 end)
             end

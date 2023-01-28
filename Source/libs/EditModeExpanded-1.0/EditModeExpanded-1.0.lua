@@ -620,6 +620,16 @@ hooksecurefunc(EditModeManagerFrame, "EnterEditMode", function(self)
             end
         end
     end
+    
+    for frameName in pairs(existingFrames) do
+        local frame = _G[frameName]
+        local systemID = getSystemID(frame)
+        if framesDB[systemID] and framesDB[systemID].settings and (framesDB[systemID].settings[ENUM_EDITMODEACTIONBARSETTING_HIDEABLE] ~= nil) then
+            if (framesDB[systemID].settings[ENUM_EDITMODEACTIONBARSETTING_HIDEABLE] == 1) then
+                frame:Show()
+            end
+        end
+    end
 end)
 
 hooksecurefunc(EditModeManagerFrame, "ExitEditMode", function()

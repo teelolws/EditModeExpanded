@@ -299,6 +299,14 @@ f:SetScript("OnEvent", function(__, event, arg1)
                 lib:RegisterFrame(PaladinPowerBarFrame, "Holy Power", db.HolyPower)
                 C_Timer.After(4, function() lib:RepositionFrame(PaladinPowerBarFrame) end)
                 lib:RegisterHideable(PaladinPowerBarFrame)
+                hooksecurefunc(PaladinPowerBarFrame, "Setup", function()
+                    if not EditModeManagerFrame.editModeActive then
+                        lib:RepositionFrame(PaladinPowerBarFrame)
+                        if lib:IsFrameMarkedHidden(PaladinPowerBarFrame) then
+                            PaladinPowerBarFrame:Hide()
+                        end
+                    end
+                end)
             end
             
             -- Totem Frame is used for Consecration

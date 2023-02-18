@@ -557,6 +557,12 @@ f:SetScript("OnEvent", function(__, event, arg1)
         
         if db.EMEOptions.playerFrame then
             lib:RegisterHideable(PlayerFrame)
+            C_Timer.After(4, function()
+                if lib:IsFrameMarkedHidden(PlayerFrame) then
+                    PlayerFrame:Hide()
+                end
+            end)
+            
             local checked = false
             lib:RegisterCustomCheckbox(PlayerFrame, "Hide Resource Bar", 
                 -- on checked

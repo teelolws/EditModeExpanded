@@ -3,7 +3,7 @@
 --
 
 local CURRENT_BUILD = "10.0.5"
-local MAJOR, MINOR = "EditModeExpanded-1.0", 49
+local MAJOR, MINOR = "EditModeExpanded-1.0", 51
 local lib = LibStub:NewLibrary(MAJOR, MINOR)
 if not lib then return end
 

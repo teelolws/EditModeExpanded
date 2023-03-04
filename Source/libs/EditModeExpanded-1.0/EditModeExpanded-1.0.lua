@@ -262,6 +262,8 @@ function lib:RegisterFrame(frame, name, db, anchorTo, anchorPoint)
         frame:SetPoint(anchorPoint, anchorTo, anchorPoint, x, y)
         
         EditModeExpandedSystemSettingsDialog:UpdateSettings(frame)
+	-- Update dialog position after dragstop
+	EditModeExpandedSystemSettingsDialog:UpdateSizeAndAnchors(frame)
     end)
     
     function frame:ClearHighlight()

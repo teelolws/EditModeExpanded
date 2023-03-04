@@ -734,8 +734,8 @@ hooksecurefunc(f, "OnLoad", function()
     function frame:UpdateSizeAndAnchors(systemFrame)
     	if systemFrame == self.attachedToSystem then
             frame:ClearAllPoints()
-            frame:SetPoint("TOPLEFT", UIParent, "BOTTOMLEFT", 400, 500);
-    		self:Layout();
+            frame:SetPoint("TOP", EditModeSystemSettingsDialog, "BOTTOM")
+    		self:Layout()
         else
             frame:Hide()
     	end

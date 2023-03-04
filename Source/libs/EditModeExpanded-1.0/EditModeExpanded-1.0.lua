@@ -3,7 +3,7 @@
 --
 
 local CURRENT_BUILD = "10.0.5"
-local MAJOR, MINOR = "EditModeExpanded-1.0", 48
+local MAJOR, MINOR = "EditModeExpanded-1.0", 49
 local lib = LibStub:NewLibrary(MAJOR, MINOR)
 if not lib then return end
 
@@ -674,7 +674,7 @@ hooksecurefunc(EditModeManagerFrame, "ExitEditMode", function()
 end)
 
 hooksecurefunc(EditModeManagerFrame, "SelectSystem", function(self, systemFrame)
-    if EditModeExpandedSystemSettingsDialog.attachedToSystem ~= systemFrame then
+    if EditModeExpandedSystemSettingsDialog and EditModeExpandedSystemSettingsDialog.attachedToSystem ~= systemFrame then
         EditModeExpandedSystemSettingsDialog:Hide()
     end
     

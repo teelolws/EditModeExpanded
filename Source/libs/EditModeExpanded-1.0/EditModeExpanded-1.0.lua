@@ -731,11 +731,20 @@ hooksecurefunc(f, "OnLoad", function()
     frame:SetScript("OnDragStart", frame.OnDragStart)
     frame:SetScript("OnDragStop", frame.OnDragStop)
     frame:OnLoad()
+		
+    local function IsFramePositionedLeft(frame)
+        local x = frame:GetCenter()
+        return x and x < (GetScreenWidth() * 0.5)
+    end
     function frame:UpdateSizeAndAnchors(systemFrame)
     	if systemFrame == self.attachedToSystem then
             frame:ClearAllPoints()
-            frame:SetPoint("TOPLEFT", UIParent, "BOTTOMLEFT", 400, 500);
-    		self:Layout();
+	    if IsFramePositionedLeft(systemFrame) then
+                frame:SetPoint("BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -250, 250)
+            else
+                frame:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", 250, 250)
+            end
+            self:Layout()
         else
             frame:Hide()
     	end

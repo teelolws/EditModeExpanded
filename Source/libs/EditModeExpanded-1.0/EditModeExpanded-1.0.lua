@@ -238,6 +238,7 @@ function lib:RegisterFrame(frame, name, db, anchorTo, anchorPoint)
             self.Selection:ShowSelected();
             self.isSelected = true;
             if framesDialogs[self.system] then
+		EditModeManagerFrame:ClearSelectedSystem()  -- be aware of taint
                 EditModeExpandedSystemSettingsDialog:AttachToSystemFrame(self)
             else
                 EditModeExpandedSystemSettingsDialog:Hide()

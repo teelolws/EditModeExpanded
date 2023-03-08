@@ -3,7 +3,7 @@
 --
 
 local CURRENT_BUILD = "10.0.5"
-local MAJOR, MINOR = "EditModeExpanded-1.0", 51
+local MAJOR, MINOR = "EditModeExpanded-1.0", 52
 local lib = LibStub:NewLibrary(MAJOR, MINOR)
 if not lib then return end
 
@@ -238,7 +238,7 @@ function lib:RegisterFrame(frame, name, db, anchorTo, anchorPoint)
             self.Selection:ShowSelected();
             self.isSelected = true;
             if framesDialogs[self.system] then
-		EditModeManagerFrame:ClearSelectedSystem()  -- be aware of taint
+                EditModeManagerFrame:ClearSelectedSystem()  -- needs further taint testing; disable if there are issues
                 EditModeExpandedSystemSettingsDialog:AttachToSystemFrame(self)
             else
                 EditModeExpandedSystemSettingsDialog:Hide()

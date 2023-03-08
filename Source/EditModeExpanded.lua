@@ -292,131 +292,6 @@ f:SetScript("OnEvent", function(__, event, arg1)
             end)
         end
         
-        local class = UnitClassBase("player")
-        
-        if class == "PALADIN" then
-            if db.EMEOptions.holyPower then
-                lib:RegisterFrame(PaladinPowerBarFrame, "Holy Power", db.HolyPower)
-                C_Timer.After(4, function() lib:RepositionFrame(PaladinPowerBarFrame) end)
-                lib:RegisterHideable(PaladinPowerBarFrame)
-                hooksecurefunc(PaladinPowerBarFrame, "Setup", function()
-                    if not EditModeManagerFrame.editModeActive then
-                        lib:RepositionFrame(PaladinPowerBarFrame)
-                        if lib:IsFrameMarkedHidden(PaladinPowerBarFrame) then
-                            PaladinPowerBarFrame:Hide()
-                        end
-                    end
-                end)
-            end
-            
-            -- Totem Frame is used for Consecration
-            if db.EMEOptions.totem then
-                registerTotemFrame(db)
-            end
-        elseif class == "WARLOCK" then
-            if db.EMEOptions.soulShards then
-                lib:RegisterFrame(WarlockPowerFrame, "Soul Shards", db.SoulShards)
-                lib:RegisterHideable(WarlockPowerFrame)
-                lib:SetDontResize(WarlockPowerFrame)
-                hooksecurefunc(WarlockPowerFrame, "IsDirty", function()
-                    if not EditModeManagerFrame.editModeActive then
-                        lib:RepositionFrame(WarlockPowerFrame)
-                    end
-                end)
-                lib:RegisterResizable(WarlockPowerFrame)
-            end
-            
-            -- Totem Frame is used for Summon Darkglare
-            if db.EMEOptions.totem then
-                registerTotemFrame(db)
-            end
-        elseif class == "SHAMAN" then
-            if db.EMEOptions.totem then
-                registerTotemFrame(db)
-            end
-        elseif class == "MONK" then
-            -- Summon black ox uses totem frame
-            if db.EMEOptions.totem then
-                registerTotemFrame(db)
-            end
-            
-            if db.EMEOptions.chi then
-                lib:RegisterFrame(MonkHarmonyBarFrame, "Chi", db.Chi)
-                lib:SetDontResize(MonkHarmonyBarFrame)
-                lib:RegisterHideable(MonkHarmonyBarFrame)
-                lib:RegisterResizable(MonkHarmonyBarFrame)
-                hooksecurefunc(PlayerFrameBottomManagedFramesContainer, "Layout", function()
-                    if not EditModeManagerFrame.editModeActive then
-                        lib:RepositionFrame(MonkHarmonyBarFrame)
-                    end
-                end)
-            end
-        elseif class == "DEATHKNIGHT" then
-            if db.EMEOptions.runes then
-                lib:RegisterFrame(RuneFrame, "Runes", db.Runes)
-                lib:RegisterHideable(RuneFrame)
-                lib:SetDontResize(RuneFrame)
-                lib:RegisterResizable(RuneFrame)
-                hooksecurefunc(PlayerFrameBottomManagedFramesContainer, "Layout", function()
-                    if not EditModeManagerFrame.editModeActive then
-                        lib:RepositionFrame(RuneFrame)
-                    end
-                end)
-                lib:RegisterCustomCheckbox(RuneFrame, "Unlink from Player Frame (may require reload)", 
-                    --onChecked
-                    function()
-                        RuneFrame:SetParent(UIParent)
-                    end,
-                    --onUnchecked
-                    function()
-                        RuneFrame:SetParent(PlayerFrameBottomManagedFramesContainer)
-                    end
-                )
-            end
-        elseif class == "MAGE" then
-            if db.EMEOptions.arcaneCharges then
-                lib:RegisterFrame(MageArcaneChargesFrame, "Arcane Charges", db.ArcaneCharges)
-                lib:RegisterHideable(MageArcaneChargesFrame)
-                lib:SetDontResize(MageArcaneChargesFrame)
-                lib:RegisterResizable(MageArcaneChargesFrame)
-                hooksecurefunc(PlayerFrameBottomManagedFramesContainer, "Layout", function()
-                    if not EditModeManagerFrame.editModeActive then
-                        lib:RepositionFrame(MageArcaneChargesFrame)
-                    end
-                end)
-                hooksecurefunc(MageArcaneChargesFrame, "HandleBarSetup", function()
-                    if not EditModeManagerFrame.editModeActive then
-                        lib:RepositionFrame(MageArcaneChargesFrame)
-                    end
-                end)
-            end
-        elseif class == "EVOKER" then
-            if db.EMEOptions.evokerEssences then
-                lib:RegisterFrame(EssencePlayerFrame, "Essences", db.EvokerEssences)
-                lib:SetDontResize(EssencePlayerFrame)
-                lib:RegisterHideable(EssencePlayerFrame)
-                lib:RegisterResizable(EssencePlayerFrame)
-                hooksecurefunc(EssencePowerBar, "UpdatePower", function()
-                    if not EditModeManagerFrame.editModeActive then
-                        lib:RepositionFrame(EssencePlayerFrame)
-                    end
-                end)
-            end
-            
-        elseif class == "ROGUE" then
-            if db.EMEOptions.comboPoints then
-                lib:RegisterFrame(ComboPointPlayerFrame, "Combo Points", db.ComboPoints)
-                lib:SetDontResize(ComboPointPlayerFrame)
-                lib:RegisterHideable(ComboPointPlayerFrame)
-                lib:RegisterResizable(ComboPointPlayerFrame)
-                hooksecurefunc(PlayerFrameBottomManagedFramesContainer, "Layout", function()
-                    if not EditModeManagerFrame.editModeActive then
-                        lib:RepositionFrame(ComboPointPlayerFrame)
-                    end
-                end)
-            end
-        end
-        
         
     elseif (event == "UNIT_PET") and (not petFrameLoaded) and (addonLoaded) then
         f:UnregisterEvent("UNIT_PET")
@@ -645,6 +520,136 @@ f:SetScript("OnEvent", function(__, event, arg1)
             C_Timer.After(1, function()
                 lib:UpdateFrameResize(BagsBar)
             end)
+        end
+        
+                local class = UnitClassBase("player")
+        
+        if class == "PALADIN" then
+            if db.EMEOptions.holyPower then
+                lib:RegisterFrame(PaladinPowerBarFrame, "Holy Power", db.HolyPower)
+                C_Timer.After(4, function() lib:RepositionFrame(PaladinPowerBarFrame) end)
+                lib:RegisterHideable(PaladinPowerBarFrame)
+                hooksecurefunc(PaladinPowerBarFrame, "Setup", function()
+                    if not EditModeManagerFrame.editModeActive then
+                        lib:RepositionFrame(PaladinPowerBarFrame)
+                        if lib:IsFrameMarkedHidden(PaladinPowerBarFrame) then
+                            PaladinPowerBarFrame:Hide()
+                        end
+                    end
+                end)
+            end
+            
+            -- Totem Frame is used for Consecration
+            if db.EMEOptions.totem then
+                registerTotemFrame(db)
+            end
+        elseif class == "WARLOCK" then
+            if db.EMEOptions.soulShards then
+                lib:RegisterFrame(WarlockPowerFrame, "Soul Shards", db.SoulShards)
+                lib:RegisterHideable(WarlockPowerFrame)
+                lib:SetDontResize(WarlockPowerFrame)
+                hooksecurefunc(WarlockPowerFrame, "IsDirty", function()
+                    if not EditModeManagerFrame.editModeActive then
+                        lib:RepositionFrame(WarlockPowerFrame)
+                    end
+                end)
+                lib:RegisterResizable(WarlockPowerFrame)
+            end
+            
+            -- Totem Frame is used for Summon Darkglare
+            if db.EMEOptions.totem then
+                registerTotemFrame(db)
+            end
+        elseif class == "SHAMAN" then
+            if db.EMEOptions.totem then
+                registerTotemFrame(db)
+            end
+        elseif class == "MONK" then
+            -- Summon black ox uses totem frame
+            if db.EMEOptions.totem then
+                registerTotemFrame(db)
+            end
+            
+            if db.EMEOptions.chi then
+                lib:RegisterFrame(MonkHarmonyBarFrame, "Chi", db.Chi)
+                lib:SetDontResize(MonkHarmonyBarFrame)
+                lib:RegisterHideable(MonkHarmonyBarFrame)
+                lib:RegisterResizable(MonkHarmonyBarFrame)
+                hooksecurefunc(PlayerFrameBottomManagedFramesContainer, "Layout", function()
+                    if not EditModeManagerFrame.editModeActive then
+                        lib:RepositionFrame(MonkHarmonyBarFrame)
+                    end
+                end)
+            end
+        elseif class == "DEATHKNIGHT" then
+            if db.EMEOptions.runes then
+                lib:RegisterFrame(RuneFrame, "Runes", db.Runes)
+                lib:RegisterHideable(RuneFrame)
+                lib:SetDontResize(RuneFrame)
+                lib:RegisterResizable(RuneFrame)
+                hooksecurefunc(PlayerFrameBottomManagedFramesContainer, "Layout", function()
+                    if not EditModeManagerFrame.editModeActive then
+                        lib:RepositionFrame(RuneFrame)
+                    end
+                end)
+                lib:RegisterCustomCheckbox(RuneFrame, "Unlink from Player Frame (may require reload)", 
+                    --onChecked
+                    function()
+                        RuneFrame:SetParent(UIParent)
+                    end,
+                    --onUnchecked
+                    function()
+                        RuneFrame:SetParent(PlayerFrameBottomManagedFramesContainer)
+                    end
+                )
+            end
+        elseif class == "MAGE" then
+            if db.EMEOptions.arcaneCharges then
+                lib:RegisterFrame(MageArcaneChargesFrame, "Arcane Charges", db.ArcaneCharges)
+                lib:RegisterHideable(MageArcaneChargesFrame)
+                lib:SetDontResize(MageArcaneChargesFrame)
+                lib:RegisterResizable(MageArcaneChargesFrame)
+                hooksecurefunc(PlayerFrameBottomManagedFramesContainer, "Layout", function()
+                    if not EditModeManagerFrame.editModeActive then
+                        lib:RepositionFrame(MageArcaneChargesFrame)
+                    end
+                end)
+                hooksecurefunc(MageArcaneChargesFrame, "HandleBarSetup", function()
+                    if not EditModeManagerFrame.editModeActive then
+                        lib:RepositionFrame(MageArcaneChargesFrame)
+                    end
+                end)
+            end
+        elseif class == "EVOKER" then
+            if db.EMEOptions.evokerEssences then
+                lib:RegisterFrame(EssencePlayerFrame, "Essences", db.EvokerEssences)
+                lib:SetDontResize(EssencePlayerFrame)
+                lib:RegisterHideable(EssencePlayerFrame)
+                lib:RegisterResizable(EssencePlayerFrame)
+                hooksecurefunc(EssencePowerBar, "UpdatePower", function()
+                    if not EditModeManagerFrame.editModeActive then
+                        lib:RepositionFrame(EssencePlayerFrame)
+                    end
+                end)
+            end
+            
+        elseif class == "ROGUE" then
+            if db.EMEOptions.comboPoints then
+                lib:RegisterFrame(ComboPointPlayerFrame, "Combo Points", db.ComboPoints)
+                lib:SetDontResize(ComboPointPlayerFrame)
+                lib:RegisterHideable(ComboPointPlayerFrame)
+                lib:RegisterResizable(ComboPointPlayerFrame)
+                hooksecurefunc(PlayerFrameBottomManagedFramesContainer, "Layout", function()
+                    if not EditModeManagerFrame.editModeActive then
+                        lib:RepositionFrame(ComboPointPlayerFrame)
+                    end
+                end)
+            end
+        elseif class == "PRIEST" then
+            -- shadowfiend uses totem frame
+            if db.EMEOptions.totem then
+                registerTotemFrame(db)
+            end
         end
     elseif (event == "PLAYER_TOTEM_UPDATE") then
         if totemFrameLoaded then

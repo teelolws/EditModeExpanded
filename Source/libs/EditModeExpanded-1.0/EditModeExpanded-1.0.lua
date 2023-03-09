@@ -565,6 +565,13 @@ if not (GetBuildInfo() == CURRENT_BUILD) then return end
 -- This is a frame that will show checkboxes, to turn on/off all custom frames during Edit Mode
 --
 
+local function clearSelectedSystem(index, systemFrame)
+	-- Only highlight a system if it was already highlighted
+	if systemFrame.isHighlighted then
+		systemFrame:HighlightSystem();
+	end
+end
+
 hooksecurefunc(f, "OnLoad", function()
     CreateFrame("Frame", "EditModeManagerExpandedFrame", nil, UIParent)
     EditModeManagerExpandedFrame:Hide();
@@ -592,7 +599,8 @@ hooksecurefunc(f, "OnLoad", function()
     end)
     
     function EditModeManagerExpandedFrame:ClearSelectedSystem()
-    	EditModeExpandedSystemSettingsDialog:Hide();
+    	secureexecuterange(frames, clearSelectedSystem)
+        EditModeExpandedSystemSettingsDialog:Hide()
     end
 end)
 
@@ -781,10 +789,6 @@ local function ConvertValueDefault(self, value, forDisplay)
 end
 
 hooksecurefunc(f, "OnLoad", function()
-    EditModeExpandedSystemSettingsDialog.CloseButton:SetScript("OnClick", function()                                                                 
-		EditModeManagerExpandedFrame:ClearSelectedSystem();
-	end)
-    
     function EditModeExpandedSystemSettingsDialog:UpdateSettings(systemFrame)
         if systemFrame == self.attachedToSystem then
     		self:ReleaseAllNonSliders();
@@ -936,7 +940,11 @@ hooksecurefunc(f, "OnLoad", function()
     
     function EditModeExpandedSystemSettingsDialog:OnLoad()
     	local function onCloseCallback()
-    		EditModeExpandedManagerFrame:ClearSelectedSystem();
+    		if not EditModeSystemSettingsDialog:IsShown() then
+                EditModeManagerExpandedFrame:ClearSelectedSystem()
+            else
+                EditModeExpandedSystemSettingsDialog:Hide()
+            end
     	end
     
     	self.Buttons.RevertChangesButton:SetOnClickHandler(GenerateClosure(self.RevertChanges, self));

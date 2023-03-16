@@ -1183,10 +1183,6 @@ end
 -- Handle frame being based on a frame other than UIParent
 --
 function getOffsetXY(frame, x, y)
-    if frame.EMEanchorTo == UIParent then
-        return x, y
-    end
-    
     local scale = frame:GetScale()
     
     local anchorPoint = frame.EMEanchorPoint or "BOTTOMLEFT"
@@ -1196,15 +1192,35 @@ function getOffsetXY(frame, x, y)
     elseif anchorPoint == "BOTTOMRIGHT" then
         local targetX, targetY, targetWidth = frame.EMEanchorTo:GetRect()
         local width = frame:GetSize()
-        return (x+width) - (targetX+targetWidth), y - targetY
+        return (x + width) - ((targetX + targetWidth) / scale), y - (targetY / scale)
     elseif anchorPoint == "TOPLEFT" then
         local targetX, targetY, _, targetHeight = frame.EMEanchorTo:GetRect()
         local _, height = frame:GetSize()
-        return x - (targetX/scale), (y+height) - ((targetY+targetHeight)/scale)
-    else -- TOPRIGHT
+        return x - (targetX / scale), (y + height) - ((targetY + targetHeight) / scale)
+    elseif anchorPoint == "TOPRIGHT" then
         local targetX, targetY, targetWidth, targetHeight = frame.EMEanchorTo:GetRect()
         local width, height = frame:GetSize()
-        return (x+width) - (targetX+targetWidth), (y+width) - (targetY+targetWidth)
+        return (x + width) - ((targetX + targetWidth) / scale), (y + height) - ((targetY + targetHeight) / scale)
+    elseif anchorPoint == "CENTER" then
+        local targetX, targetY, targetWidth, targetHeight = frame.EMEanchorTo:GetRect()
+        local width, height = frame:GetSize()
+        return (x + 0.5 * width) - ((targetX + 0.5 * targetWidth) / scale), (y + 0.5 * height) - ((targetY + 0.5 * targetHeight) / scale)
+    elseif anchorPoint == "TOP" then
+        local targetX, targetY, targetWidth, targetHeight = frame.EMEanchorTo:GetRect()
+        local width, height = frame:GetSize()
+        return (x + 0.5 * width) - ((targetX + 0.5 * targetWidth) / scale), (y + height) - ((targetY + targetHeight) / scale)
+    elseif anchorPoint == "BOTTOM" then
+        local targetX, targetY, targetWidth = frame.EMEanchorTo:GetRect()
+        local width = frame:GetSize()
+        return (x + 0.5 * width) - ((targetX + 0.5 * targetWidth) / scale), y - (targetY / scale)
+    elseif anchorPoint == "LEFT" then
+        local targetX, targetY, _, targetHeight = frame.EMEanchorTo:GetRect()
+        local _, height = frame:GetSize()
+        return x - (targetX / scale), (y + 0.5 * height) - ((targetY + 0.5 * targetHeight) / scale)
+    elseif anchorPoint == "RIGHT" then
+        local targetX, targetY, targetWidth, targetHeight = frame.EMEanchorTo:GetRect()
+        local width, height = frame:GetSize()
+        return (x + width) - ((targetX + targetWidth) / scale), (y + 0.5 * height) - ((targetY + 0.5 * targetHeight) / scale)
     end 
 end
 

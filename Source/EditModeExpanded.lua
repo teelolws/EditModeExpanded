@@ -28,6 +28,7 @@ local defaults = {
             showCoordinates = false,
             playerFrame = true,
             mainStatusTrackingBarContainer = true,
+            secondaryStatusTrackingBarContainer = true,
             menu = true,
             menuResizable = false,
             bags = true,
@@ -53,6 +54,7 @@ local defaults = {
         EvokerEssences = {},
         PlayerFrame = {},
         MainStatusTrackingBarContainer = {},
+        SecondaryStatusTrackingBarContainer = {},
         MicroMenu = {},
         ComboPoints = {},
     }
@@ -184,6 +186,11 @@ local options = {
         mainStatusTrackingBarContainer = {
             name = "Experience Bar",
             desc = "Enables / Disables additional options for the Experience Bar",
+            type = "toggle",
+        },
+        secondaryStatusTrackingBarContainer = {
+            name = "Reputation Bar",
+            desc = "Enables / Disables additional options for the Reputation Bar",
             type = "toggle",
         },
         menu = {
@@ -465,6 +472,8 @@ f:SetScript("OnEvent", function(__, event, arg1)
             lib:RegisterResizable(VehicleSeatIndicator)
         end
         
+        -- in StatusTrackingBarManager.bars, [1] is the reputation bar, and [4] is experience.
+        -- Blizzard handles it weirdly, if you're max level they merge the reputation bar into the XP bar
         if db.EMEOptions.mainStatusTrackingBarContainer then
             lib:RegisterResizable(MainStatusTrackingBarContainer)
             lib:RegisterHideable(MainStatusTrackingBarContainer)
@@ -480,6 +489,22 @@ f:SetScript("OnEvent", function(__, event, arg1)
                 if UnitLevel("player") < GetMaxLevelForLatestExpansion() then
                     StatusTrackingBarManager.bars[4]:SetScale(scale)
                 else
+                    StatusTrackingBarManager.bars[1]:SetScale(scale)
+                end
+            end)
+        end
+        
+        if db.EMEOptions.secondaryStatusTrackingBarContainer then
+            lib:RegisterResizable(SecondaryStatusTrackingBarContainer)
+            lib:RegisterHideable(SecondaryStatusTrackingBarContainer)
+            C_Timer.After(1, function() lib:UpdateFrameResize(SecondaryStatusTrackingBarContainer) end)
+            hooksecurefunc(SecondaryStatusTrackingBarContainer, "SetScale", function(frame, scale)
+                if UnitLevel("player") < GetMaxLevelForLatestExpansion() then
+                    StatusTrackingBarManager.bars[1]:SetScale(scale)
+                end
+            end)
+            hooksecurefunc(MainStatusTrackingBarContainer, "SetScaleOverride", function(frame, scale)
+                if UnitLevel("player") < GetMaxLevelForLatestExpansion() then
                     StatusTrackingBarManager.bars[1]:SetScale(scale)
                 end
             end)

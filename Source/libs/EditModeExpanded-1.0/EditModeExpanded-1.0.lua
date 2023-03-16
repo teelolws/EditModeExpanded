@@ -1183,8 +1183,8 @@ end
 -- Handle frame being based on a frame other than UIParent
 --
 function getOffsetXY(frame, x, y)
-    local scale = frame:GetScale()
-    local parentscale = frame.EMEanchorTo == UIParent and 1 or frame.EMEanchorTo:GetScale()
+    local scale = frame:GetEffectiveScale()
+    local parentscale = frame.EMEanchorTo:GetEffectiveScale()
 
     local anchorPoint = frame.EMEanchorPoint or "BOTTOMLEFT"
     if anchorPoint == "BOTTOMLEFT" then

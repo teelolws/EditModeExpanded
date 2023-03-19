@@ -231,6 +231,7 @@ local function registerTotemFrame(db)
     lib:RegisterFrame(TotemFrame, "Totem", db.TotemFrame)
     lib:SetDefaultSize(TotemFrame, 100, 40)
     lib:RegisterHideable(TotemFrame)
+    lib:RegisterResizable(TotemFrame)
     totemFrameLoaded = true
 end
 

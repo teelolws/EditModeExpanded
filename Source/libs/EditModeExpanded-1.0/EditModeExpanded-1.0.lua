@@ -55,6 +55,7 @@ local getOffsetXY
 local registerFrameMovableWithArrowKeys
 
 local function getSystemID(frame)
+    if not frame.system then return false end
     if frame.system < STARTING_INDEX then
         return frame.EMESystemID
     end
@@ -507,9 +508,9 @@ end
 -- a simple check of "has this frame been registered with EME" - maybe you want to test if another addon registered it already?
 function lib:IsRegistered(frame)
     local systemID = getSystemID(frame)
-    if not systemID then return false end
+    if not systemID or not framesDB[systemID] then return false end
     
-    if not framesDB[systemID] then return false end
+    return true
 end
 
 -- Is the Expanded frame checkbox checked for this frame?

@@ -3,7 +3,7 @@
 --
 
 local CURRENT_BUILD = "10.0.5"
-local MAJOR, MINOR = "EditModeExpanded-1.0", 54
+local MAJOR, MINOR = "EditModeExpanded-1.0", 55
 local lib = LibStub:NewLibrary(MAJOR, MINOR)
 if not lib then return end
 
@@ -934,7 +934,7 @@ hooksecurefunc(f, "OnLoad", function()
             db.settings[setting] = value
             if setting == Enum.EditModeUnitFrameSetting.FrameSize then
                 attachedToSystem:SetScaleOverride(value/100)
-                db.x, db.y = self.attachedToSystem:GetRect()
+                db.x, db.y = attachedToSystem:GetRect()
             end
     	end
     end

@@ -934,7 +934,7 @@ hooksecurefunc(f, "OnLoad", function()
             db.settings[setting] = value
             if setting == Enum.EditModeUnitFrameSetting.FrameSize then
                 attachedToSystem:SetScaleOverride(value/100)
-                db.x, db.y = self:GetRect()
+                db.x, db.y = self.attachedToSystem:GetRect()
             end
     	end
     end

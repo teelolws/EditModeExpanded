@@ -2,8 +2,8 @@
 -- Internal variables
 --
 
-local CURRENT_BUILD = "10.0.5"
-local MAJOR, MINOR = "EditModeExpanded-1.0", 55
+local CURRENT_BUILD = "10.0.7"
+local MAJOR, MINOR = "EditModeExpanded-1.0", 56
 local lib = LibStub:NewLibrary(MAJOR, MINOR)
 if not lib then return end
 

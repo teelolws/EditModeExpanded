@@ -596,9 +596,11 @@ f:SetScript("OnEvent", function(__, event, arg1)
                         bar.minButtonPadding = 2
                         bar.buttonPadding = 2
                         bar:UpdateGridLayout()
-                    end
+                    end,
+                    
+                    "OverrideIconPadding"
                 )
-            end 
+            end
         end
         
         local class = UnitClassBase("player")

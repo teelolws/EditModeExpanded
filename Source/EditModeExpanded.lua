@@ -35,6 +35,7 @@ local defaults = {
             bagsResizable = false,
             comboPoints = true,
             bonusRoll = true,
+            actionBars = true,
         },
         QueueStatusButton = {},
         TotemFrame = {},
@@ -59,6 +60,14 @@ local defaults = {
         MicroMenu = {},
         ComboPoints = {},
         BonusRoll = {},
+        MainMenuBar = {},
+        MultiBarBottomLeft = {},
+        MultiBarBottomRight = {},
+        MultiBarRight = {},
+        MultiBarLeft = {},
+        MultiBar5 = {},
+        MultiBar6 = {},
+        MultiBar7 = {},
     }
 }
 
@@ -568,6 +577,28 @@ f:SetScript("OnEvent", function(__, event, arg1)
                 lib:HideByDefault(BonusRollFrame)
                 BonusRollFrame.Selection:SetFrameStrata("TOOLTIP")
             end)
+        end
+        
+        if db.EMEOptions.actionBars then
+            local bars = {MainMenuBar, MultiBarBottomLeft, MultiBarBottomRight, MultiBarRight, MultiBarLeft, MultiBar5, MultiBar6, MultiBar7}
+
+            for _, bar in ipairs(bars) do
+                lib:RegisterCustomCheckbox(bar, "Override Icon Padding to Zero", 
+                    -- on checked
+                    function()
+                        bar.minButtonPadding = 0
+                        bar.buttonPadding = 0
+                        bar:UpdateGridLayout()
+                    end,
+                    
+                    -- on unchecked
+                    function()
+                        bar.minButtonPadding = 2
+                        bar.buttonPadding = 2
+                        bar:UpdateGridLayout()
+                    end
+                )
+            end 
         end
         
         local class = UnitClassBase("player")

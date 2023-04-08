@@ -770,6 +770,15 @@ hooksecurefunc(f, "OnLoad", function()
     		EditModeExpandedSystemSettingsDialog:OnSettingValueChanged(self.setting, value);
     	end
     end
+    
+    -- hide the duplicate buttons we won't ever need
+    frame.Buttons.RevertChangesButton:Hide()
+    function frame:UpdateExtraButtons(systemFrame) -- from EditModeDialogs.lua function EditModeSystemSettingsDialogMixin:UpdateExtraButtons
+    	if systemFrame == self.attachedToSystem then
+    		self.pools:ReleaseAllByTemplate("EditModeSystemSettingsDialogExtraButtonTemplate");
+    		self.Buttons.Divider:SetShown(true)
+    	end
+    end
 end)
 
 local function GetSystemSettingDisplayInfo(dialogs)

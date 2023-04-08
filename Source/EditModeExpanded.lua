@@ -580,7 +580,8 @@ f:SetScript("OnEvent", function(__, event, arg1)
         end
         
         if db.EMEOptions.actionBars then
-            local bars = {MainMenuBar, MultiBarBottomLeft, MultiBarBottomRight, MultiBarRight, MultiBarLeft, MultiBar5, MultiBar6, MultiBar7}
+            -- taint errors if I apply this to MainMenuBar
+            local bars = {MultiBarBottomLeft, MultiBarBottomRight, MultiBarRight, MultiBarLeft, MultiBar5, MultiBar6, MultiBar7}
 
             for _, bar in ipairs(bars) do
                 lib:RegisterCustomCheckbox(bar, "Override Icon Padding to Zero", 

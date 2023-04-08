@@ -34,6 +34,7 @@ local defaults = {
             bags = true,
             bagsResizable = false,
             comboPoints = true,
+            bonusRoll = true,
         },
         QueueStatusButton = {},
         TotemFrame = {},
@@ -57,6 +58,7 @@ local defaults = {
         SecondaryStatusTrackingBarContainer = {},
         MicroMenu = {},
         ComboPoints = {},
+        BonusRoll = {},
     }
 }
 
@@ -216,6 +218,11 @@ local options = {
         comboPoints = {
             name = "Combo Ponts",
             desc = "Enables / Disables Combo Points support",
+            type = "toggle",
+        },
+        bonusRoll = {
+            name = "Bonus Roll",
+            desc = "Enables / Disables Bonus Roll support",
             type = "toggle",
         },
     },
@@ -548,7 +555,19 @@ f:SetScript("OnEvent", function(__, event, arg1)
             end)
         end
         
-                local class = UnitClassBase("player")
+        if db.EMEOptions.bonusRoll then
+            local alreadyInitialized
+            
+            BonusRollFrame:HookScript("OnShow", function()
+                if alreadyInitialized then return end
+                alreadyInitialized = true
+                lib:RegisterFrame(BonusRollFrame, "Bonus Roll", db.BonusRoll)
+                lib:HideByDefault(BonusRollFrame)
+                BonusRollFrame.Selection:SetFrameStrata("TOOLTIP")
+            end)
+        end
+        
+        local class = UnitClassBase("player")
         
         if class == "PALADIN" then
             if db.EMEOptions.holyPower then

@@ -3,7 +3,7 @@
 --
 
 local CURRENT_BUILD = "10.0.7"
-local MAJOR, MINOR = "EditModeExpanded-1.0", 56
+local MAJOR, MINOR = "EditModeExpanded-1.0", 57
 local lib = LibStub:NewLibrary(MAJOR, MINOR)
 if not lib then return end
 
@@ -992,7 +992,11 @@ do
                 db.profiles[profileName] = {}
                 db.profiles[profileName].x = db.x
                 db.profiles[profileName].y = db.y
-                db.profiles[profileName].enabled = db.enabled
+                if frame.EMEdisabledByDefault then
+                    db.profiles[profileName].enabled = false
+                else
+                    db.profiles[profileName].enabled = db.enabled
+                end
                 db.profiles[profileName].settings = db.settings
                 db.profiles[profileName].defaultX = db.defaultX
                 db.profiles[profileName].defaultY = db.defaultY
@@ -1033,7 +1037,13 @@ do
             end
             
             -- the option in the expanded frame
-            if db.enabled == nil then db.enabled = true end
+            if db.enabled == nil then
+                if frame.EMEdisabledByDefault then
+                    db.enabled = false
+                else
+                    db.enabled = true
+                end
+            end
             frame.EMECheckButtonFrame:SetChecked(db.enabled)
             
             -- frame hide option
@@ -1296,4 +1306,12 @@ function registerFrameMovableWithArrowKeys(frame, anchorPoint, anchorTo)
 
         self.Selection:SetPropagateKeyboardInput(true);
     end
+end
+
+-- Will make the frame not shown during edit mode by default
+function lib:HideByDefault(frame)
+    local db = framesDB[frame.system]
+    db.enabled = false
+    frame.EMEdisabledByDefault = true
+    frame.EMECheckButtonFrame:SetChecked(db.enabled)
 end

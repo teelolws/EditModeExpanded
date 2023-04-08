@@ -35,7 +35,7 @@ local defaults = {
             bagsResizable = false,
             comboPoints = true,
             bonusRoll = true,
-            actionBars = true,
+            actionBars = false,
         },
         QueueStatusButton = {},
         TotemFrame = {},
@@ -232,6 +232,11 @@ local options = {
         bonusRoll = {
             name = "Bonus Roll",
             desc = "Enables / Disables Bonus Roll support",
+            type = "toggle",
+        },
+        actionBars = {
+            name = "Action Bars",
+            desc = "Allows the action bars to have their padding set to zero. WARNING: you MUST move all your action bars from their default position, or you will get addon errors. You can even move the bars back to where they were originally!",
             type = "toggle",
         },
     },
@@ -580,28 +585,30 @@ f:SetScript("OnEvent", function(__, event, arg1)
         end
         
         if db.EMEOptions.actionBars then
-            -- taint errors if I apply this to MainMenuBar
-            local bars = {MultiBarBottomLeft, MultiBarBottomRight, MultiBarRight, MultiBarLeft, MultiBar5, MultiBar6, MultiBar7}
+            C_Timer.After(10, function()
+                if InCombatLockdown() then return end 
+                local bars = {MainMenuBar, MultiBarBottomLeft, MultiBarBottomRight, MultiBarRight, MultiBarLeft, MultiBar5, MultiBar6, MultiBar7}
 
-            for _, bar in ipairs(bars) do
-                lib:RegisterCustomCheckbox(bar, "Override Icon Padding to Zero", 
-                    -- on checked
-                    function()
-                        bar.minButtonPadding = 0
-                        bar.buttonPadding = 0
-                        bar:UpdateGridLayout()
-                    end,
-                    
-                    -- on unchecked
-                    function()
-                        bar.minButtonPadding = 2
-                        bar.buttonPadding = 2
-                        bar:UpdateGridLayout()
-                    end,
-                    
-                    "OverrideIconPadding"
-                )
-            end
+                for _, bar in ipairs(bars) do
+                    lib:RegisterCustomCheckbox(bar, "Override Icon Padding to Zero", 
+                        -- on checked
+                        function()
+                            bar.minButtonPadding = 0
+                            bar.buttonPadding = 0
+                            bar:UpdateGridLayout()
+                        end,
+                        
+                        -- on unchecked
+                        function()
+                            bar.minButtonPadding = 2
+                            bar.buttonPadding = 2
+                            bar:UpdateGridLayout()
+                        end,
+                        
+                        "OverrideIconPadding"
+                    )
+                end
+            end)
         end
         
         local class = UnitClassBase("player")

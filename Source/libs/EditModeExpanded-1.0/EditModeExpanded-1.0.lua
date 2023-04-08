@@ -978,7 +978,7 @@ hooksecurefunc(f, "OnLoad", function()
     	self.onCloseCallback = onCloseCallback;
     
     	self.pools = CreateFramePoolCollection();
-    	self.pools:CreatePool("FRAME", self.Settings, "EditModeSettingDropdownTemplate");
+    	--self.pools:CreatePool("FRAME", self.Settings, "EditModeSettingDropdownTemplate") -- trying to use dropdowns causes taint issues, probably because of long-running taint issues with dropdowns in general
     	self.pools:CreatePool("FRAME", self.Settings, "EditModeSettingSliderTemplate");
     	self.pools:CreatePool("FRAME", self.Settings, "EditModeSettingCheckboxTemplate");
     

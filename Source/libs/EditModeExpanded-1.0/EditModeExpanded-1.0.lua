@@ -521,14 +521,20 @@ end
 
 local customCheckboxCallDuringProfileInit = {}
 -- call this to register a custom checkbox where you're providing the handler
--- limit one per frame
-function lib:RegisterCustomCheckbox(frame, name, onChecked, onUnchecked)
+-- internalName is a name to use in the database to identify this checkbox
+-- for backwards compatibility, internalName defaults to "1"
+function lib:RegisterCustomCheckbox(frame, name, onChecked, onUnchecked, internalName)
+    if not internalName then
+        internalName = 1
+    end
+    
     local systemID = getSystemID(frame)
     
     if not framesDialogs[systemID] then framesDialogs[systemID] = {} end
-    if framesDialogsKeys[systemID] and framesDialogsKeys[systemID][ENUM_EDITMODEACTIONBARSETTING_CUSTOM] then return end
     if not framesDialogsKeys[systemID] then framesDialogsKeys[systemID] = {} end
-    framesDialogsKeys[systemID][ENUM_EDITMODEACTIONBARSETTING_CUSTOM] = true
+    if not framesDialogsKeys[systemID][ENUM_EDITMODEACTIONSBARSETTING_CUSTOM] then framesDialogsKeys[systemID][ENUM_EDITMODEACTIONBARSETTING_CUSTOM] = {} end 
+    framesDialogsKeys[systemID][ENUM_EDITMODEACTIONBARSETTING_CUSTOM][internalName] = true
+    
     table.insert(framesDialogs[systemID],
         {
             setting = ENUM_EDITMODEACTIONBARSETTING_CUSTOM,
@@ -536,12 +542,22 @@ function lib:RegisterCustomCheckbox(frame, name, onChecked, onUnchecked)
             type = Enum.EditModeSettingDisplayType.Checkbox,
             onChecked = onChecked,
             onUnchecked = onUnchecked,
+            customCheckBoxID = internalName,
     })
     
     local function callLater()
         local db = framesDB[systemID]
         if not db.settings then db.settings = {} end
-        if db.settings[ENUM_EDITMODEACTIONBARSETTING_CUSTOM] == 1 then
+        if not db.settings[ENUM_EDITMODEACTIONBARSETTING_CUSTOM] then db.settings[ENUM_EDITMODEACTIONBARSETTING_CUSTOM] = {} end
+        
+        -- backward compatibility
+        if type(db.settings[ENUM_EDITMODEACTIONBARSETTING_CUSTOM]) == "number" then
+            local old = db.settings[ENUM_EDITMODEACTIONBARSETTING_CUSTOM]
+            db.settings[ENUM_EDITMODEACTIONBARSETTING_CUSTOM] = {}
+            db.settings[ENUM_EDITMODEACTIONBARSETTING_CUSTOM][internalName] = old
+        end
+        
+        if db.settings[ENUM_EDITMODEACTIONBARSETTING_CUSTOM][internalName] == 1 then
             onChecked()
         else
             onUnchecked()
@@ -879,15 +895,15 @@ hooksecurefunc(f, "OnLoad", function()
                         end
                         
                         if displayInfo.setting == ENUM_EDITMODEACTIONBARSETTING_CUSTOM then
-                            savedValue = framesDB[systemID].settings[displayInfo.setting]
+                            savedValue = framesDB[systemID].settings[displayInfo.setting][displayInfo.customCheckBoxID]
                             if savedValue == nil then savedValue = 0 end
                             settingFrame.Button:SetChecked(savedValue)
                             settingFrame.Button:SetScript("OnClick", function()
                                 if settingFrame.Button:GetChecked() then
-                                    framesDB[systemID].settings[displayInfo.setting] = 1
+                                    framesDB[systemID].settings[displayInfo.setting][displayInfo.customCheckBoxID] = 1
                                     displayInfo.onChecked()
                                 else
-                                    framesDB[systemID].settings[displayInfo.setting] = 0
+                                    framesDB[systemID].settings[displayInfo.setting][displayInfo.customCheckBoxID] = 0
                                     displayInfo.onUnchecked()
                                 end
                             end)

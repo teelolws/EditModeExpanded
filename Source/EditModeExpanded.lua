@@ -559,7 +559,10 @@ f:SetScript("OnEvent", function(__, event, arg1)
             local alreadyInitialized
             
             BonusRollFrame:HookScript("OnShow", function()
-                if alreadyInitialized then return end
+                if alreadyInitialized then
+                    lib:RepositionFrame(BonusRollFrame)
+                    return
+                end
                 alreadyInitialized = true
                 lib:RegisterFrame(BonusRollFrame, "Bonus Roll", db.BonusRoll)
                 lib:HideByDefault(BonusRollFrame)

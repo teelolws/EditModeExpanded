@@ -767,26 +767,6 @@ hooksecurefunc(f, "OnLoad", function()
     	end
     end
     
-    CreateFrame("Frame", "EditModeExpandedSettingSlider", frame)
-    Mixin(EditModeExpandedSettingSlider, EditModeSettingSliderMixin)
-    EditModeExpandedSettingSlider:Hide()
-    EditModeExpandedSettingSlider:SetSize(343, 32)
-    EditModeExpandedSettingSlider.Label = EditModeExpandedSettingSlider:CreateFontString(nil, "ARTWORK", "GameFontHighlightMedium")
-    EditModeExpandedSettingSlider.Label:SetJustifyH("LEFT")
-    EditModeExpandedSettingSlider.Label:SetSize(100, 32)
-    EditModeExpandedSettingSlider.Label:SetPoint("LEFT")
-    EditModeExpandedSettingSlider.Slider = CreateFrame("Frame", nil, EditModeExpandedSettingSlider, "MinimalSliderWithSteppersTemplate")
-    EditModeExpandedSettingSlider.Slider:SetSize(200, 32)
-    EditModeExpandedSettingSlider.Slider:SetPoint("LEFT", EditModeExpandedSettingSlider.Label, "RIGHT", 5, 0)
-    EditModeExpandedSettingSlider:SetScript("OnLoad", EditModeExpandedSettingSlider.OnLoad)
-    EditModeExpandedSettingSlider:OnLoad()
-    
-    function EditModeExpandedSettingSlider:OnSliderValueChanged(value)
-    	if not self.initInProgress then
-    		EditModeExpandedSystemSettingsDialog:OnSettingValueChanged(self.setting, value);
-    	end
-    end
-    
     -- hide the duplicate buttons we won't ever need
     frame.Buttons.RevertChangesButton:Hide()
     function frame:UpdateExtraButtons(systemFrame) -- from EditModeDialogs.lua function EditModeSystemSettingsDialogMixin:UpdateExtraButtons

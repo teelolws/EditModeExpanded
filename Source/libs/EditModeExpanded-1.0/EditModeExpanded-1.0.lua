@@ -828,15 +828,6 @@ hooksecurefunc(f, "OnLoad", function()
                         
                         if displayInfo.setting == Enum.EditModeUnitFrameSetting.FrameSize then
                             savedValue = savedValue or 100
-                            
-                        	local function OnValueChanged(self, value)
-                                if not self.initInProgress then
-                                    EditModeExpandedSystemSettingsDialog:OnSettingValueChanged(self.setting, value);
-                                end
-                            end
-                            
-                            settingFrame.cbrHandles = EventUtil.CreateCallbackHandleContainer();
-                        	settingFrame.cbrHandles:RegisterCallback(settingFrame.Slider, MinimalSliderWithSteppersMixin.Event.OnValueChanged, OnValueChanged, settingFrame);
                         end
                         
                         if displayInfo.setting == ENUM_EDITMODEACTIONBARSETTING_HIDEABLE then
@@ -928,6 +919,37 @@ hooksecurefunc(f, "OnLoad", function()
 end)
 
 hooksecurefunc(f, "OnLoad", function()
+    function EditModeExpandedSystemSettingsDialog:GetSettingPool(settingType)
+    	--if settingType == Enum.EditModeSettingDisplayType.Dropdown then
+    	--	return self.pools:GetPool("EditModeSettingDropdownTemplate");
+    	--else
+        if settingType == Enum.EditModeSettingDisplayType.Slider then
+    		return self.pools:GetPool("EditModeExpandedSettingSliderTemplate")
+    	elseif settingType == Enum.ChrCustomizationOptionType.Checkbox then
+    		return self.pools:GetPool("EditModeSettingCheckboxTemplate");
+    	end
+    end
+
+    function EditModeExpandedSystemSettingsDialog:ReleaseNonDraggingSliders()
+    	local draggingSlider;
+    	local releaseSliders = {};
+
+    	for settingSlider in self.pools:EnumerateActiveByTemplate("EditModeExpandedSettingSliderTemplate") do
+    		if settingSlider.Slider.Slider:IsDraggingThumb() then
+    			draggingSlider = settingSlider;
+    		else
+    			table.insert(releaseSliders, settingSlider);
+    		end
+    	end
+
+    	for _, releaseSlider in ipairs(releaseSliders) do
+    		releaseSlider.Slider:Release();
+    		self.pools:Release(releaseSlider);
+    	end
+
+    	return draggingSlider;
+    end
+    
     function EditModeExpandedSystemSettingsDialog:OnSettingValueChanged(setting, value)
         local attachedToSystem = self.attachedToSystem
     	if attachedToSystem then
@@ -956,7 +978,7 @@ hooksecurefunc(f, "OnLoad", function()
     
     	self.pools = CreateFramePoolCollection();
     	--self.pools:CreatePool("FRAME", self.Settings, "EditModeSettingDropdownTemplate") -- trying to use dropdowns causes taint issues, probably because of long-running taint issues with dropdowns in general
-    	self.pools:CreatePool("FRAME", self.Settings, "EditModeSettingSliderTemplate");
+    	self.pools:CreatePool("FRAME", self.Settings, "EditModeExpandedSettingSliderTemplate");
     	self.pools:CreatePool("FRAME", self.Settings, "EditModeSettingCheckboxTemplate");
     
     	local function resetExtraButton(pool, button)

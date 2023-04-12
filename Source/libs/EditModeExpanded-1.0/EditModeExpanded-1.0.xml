@@ -1,3 +1,38 @@
 <Ui>
 	<Include file="EditModeExpanded-1.0.lua"/>
+    <Frame name="EditModeExpandedSettingSliderTemplate" mixin="EditModeSettingSliderMixin" hidden="true" virtual="true">
+		<Size x="343" y="32"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Label" inherits="GameFontHighlightMedium" justifyH="LEFT">
+					<Size x="100" y="32"/>
+					<Anchors>
+						<Anchor point="LEFT"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="Slider" inherits="MinimalSliderWithSteppersTemplate" >
+				<Size x="200" y="32"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.Label" relativePoint="RIGHT" x="5" />
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+                CallbackRegistryMixin.OnLoad(self)
+                
+              	local function OnValueChanged(self, value)
+                    if not self.initInProgress then
+                        EditModeExpandedSystemSettingsDialog:OnSettingValueChanged(self.setting, value);
+                    end
+                end
+                  
+                self.cbrHandles = EventUtil.CreateCallbackHandleContainer()
+              	self.cbrHandles:RegisterCallback(self.Slider, MinimalSliderWithSteppersMixin.Event.OnValueChanged, OnValueChanged, self)
+            </OnLoad>
+		</Scripts>
+	</Frame>
 </Ui>

@@ -68,19 +68,19 @@ end
 
 -- from FrameXML\MainMenuBarMicroButtons.lua 
 local MICRO_BUTTONS = {
-	"CharacterMicroButton",
-	"SpellbookMicroButton",
-	"TalentMicroButton",
-	"AchievementMicroButton",
-	"QuestLogMicroButton",
-	"GuildMicroButton",
-	"LFDMicroButton",
-	"EJMicroButton",
-	"CollectionsMicroButton",
-	"MainMenuMicroButton",
-	"HelpMicroButton",
-	"StoreMicroButton",
-	}
+    "CharacterMicroButton",
+    "SpellbookMicroButton",
+    "TalentMicroButton",
+    "AchievementMicroButton",
+    "QuestLogMicroButton",
+    "GuildMicroButton",
+    "LFDMicroButton",
+    "EJMicroButton",
+    "CollectionsMicroButton",
+    "MainMenuMicroButton",
+    "HelpMicroButton",
+    "StoreMicroButton",
+    }
 
 --
 -- Public API
@@ -197,16 +197,16 @@ function lib:RegisterFrame(frame, name, db, anchorTo, anchorPoint)
         end
     end
 
-	frame.Selection = CreateFrame("Frame", nil, frame, "EditModeSystemSelectionTemplate")
+    frame.Selection = CreateFrame("Frame", nil, frame, "EditModeSystemSelectionTemplate")
     frame.Selection:SetAllPoints(frame)
     frame.defaultHideSelection = true
     frame.Selection:Hide()
     
     frame.systemNameString = name
     frame.systemName = frame.systemNameString;
-	frame.Selection:SetLabelText(frame.systemName);
-	frame:SetupSettingsDialogAnchor();
-	frame.snappedFrames = {};
+    frame.Selection:SetLabelText(frame.systemName);
+    frame:SetupSettingsDialogAnchor();
+    frame.snappedFrames = {};
     registerFrameMovableWithArrowKeys(frame, anchorPoint, anchorTo)
     
     -- prevent the frame from going outside the screen boundaries
@@ -230,7 +230,7 @@ function lib:RegisterFrame(frame, name, db, anchorTo, anchorPoint)
     function frame.UpdateMagnetismRegistration() end
 
     frame.Selection:SetScript("OnMouseDown", function()
-    	frame:SelectSystem()
+        frame:SelectSystem()
     end)
     
     function frame:SelectSystem()
@@ -244,7 +244,7 @@ function lib:RegisterFrame(frame, name, db, anchorTo, anchorPoint)
             else
                 EditModeExpandedSystemSettingsDialog:Hide()
             end
-    	end
+        end
         for _, f in ipairs(frames) do
             if f ~= frame then
                 f:HighlightSystem()
@@ -345,32 +345,32 @@ function lib:RegisterFrame(frame, name, db, anchorTo, anchorPoint)
     
     function frame:GetSettingValue(setting, useRawValue)
         local db = framesDB[frame.system]
-    	if (not self:IsInitialized()) or (not db.settings) or (not db.settings[setting]) then
-    		return 0;
-    	end
-    	return db.settings[setting]
+        if (not self:IsInitialized()) or (not db.settings) or (not db.settings[setting]) then
+            return 0;
+        end
+        return db.settings[setting]
     end
     
     function frame:SetScaleOverride(newScale)
-    	local oldScale = self:GetScale();
+        local oldScale = self:GetScale();
     
-    	self:SetScale(newScale);
+        self:SetScale(newScale);
     
-    	if oldScale == newScale then
-    		return;
-    	end
+        if oldScale == newScale then
+            return;
+        end
     
-    	-- Update position to try and keep the system frame in the same position since scale changes how offsets work
-    	local numPoints = self:GetNumPoints();
-    	for i = 1, numPoints do
-    		local point, relativeTo, relativePoint, offsetX, offsetY = self:GetPoint(i);
+        -- Update position to try and keep the system frame in the same position since scale changes how offsets work
+        local numPoints = self:GetNumPoints();
+        for i = 1, numPoints do
+            local point, relativeTo, relativePoint, offsetX, offsetY = self:GetPoint(i);
     
-    		-- Undo old scale adjustment so we're working with 1.0 scale offsets
-    		-- Then apply the newScale adjustment
-    		offsetX = offsetX * oldScale / newScale;
-    		offsetY = offsetY * oldScale / newScale;
-    		self:SetPoint(point, relativeTo, relativePoint, offsetX, offsetY);
-    	end
+            -- Undo old scale adjustment so we're working with 1.0 scale offsets
+            -- Then apply the newScale adjustment
+            offsetX = offsetX * oldScale / newScale;
+            offsetY = offsetY * oldScale / newScale;
+            self:SetPoint(point, relativeTo, relativePoint, offsetX, offsetY);
+        end
     end
     
     if db.settings and db.settings[Enum.EditModeUnitFrameSetting.FrameSize] then
@@ -455,16 +455,16 @@ function lib:RegisterResizable(frame)
     if not framesDialogsKeys[systemID] then framesDialogsKeys[systemID] = {} end
     framesDialogsKeys[systemID][Enum.EditModeUnitFrameSetting.FrameSize] = true
     table.insert(framesDialogs[systemID],
-		{
-			setting = Enum.EditModeUnitFrameSetting.FrameSize,
-			name = HUD_EDIT_MODE_SETTING_UNIT_FRAME_FRAME_SIZE,
-			type = Enum.EditModeSettingDisplayType.Slider,
-			minValue = 10,
-			maxValue = 200,
-			stepSize = 5,
-			ConvertValue = ConvertValueDefault,
-			formatter = showAsPercentage,
-		})
+        {
+            setting = Enum.EditModeUnitFrameSetting.FrameSize,
+            name = HUD_EDIT_MODE_SETTING_UNIT_FRAME_FRAME_SIZE,
+            type = Enum.EditModeSettingDisplayType.Slider,
+            minValue = 10,
+            maxValue = 200,
+            stepSize = 5,
+            ConvertValue = ConvertValueDefault,
+            formatter = showAsPercentage,
+        })
 end
 
 function lib:UpdateFrameResize(frame)
@@ -583,10 +583,10 @@ if not (GetBuildInfo() == CURRENT_BUILD) then return end
 --
 
 local function clearSelectedSystem(index, systemFrame)
-	-- Only highlight a system if it was already highlighted
-	if systemFrame.isHighlighted then
-		systemFrame:HighlightSystem();
-	end
+    -- Only highlight a system if it was already highlighted
+    if systemFrame.isHighlighted then
+        systemFrame:HighlightSystem();
+    end
 end
 
 hooksecurefunc(f, "OnLoad", function()
@@ -616,7 +616,7 @@ hooksecurefunc(f, "OnLoad", function()
     end)
     
     function EditModeManagerExpandedFrame:ClearSelectedSystem()
-    	secureexecuterange(frames, clearSelectedSystem)
+        secureexecuterange(frames, clearSelectedSystem)
         EditModeExpandedSystemSettingsDialog:Hide()
     end
 end)
@@ -758,22 +758,22 @@ hooksecurefunc(f, "OnLoad", function()
     frame:SetScript("OnDragStop", frame.OnDragStop)
     frame:OnLoad()
     function frame:UpdateSizeAndAnchors(systemFrame)
-    	if systemFrame == self.attachedToSystem then
+        if systemFrame == self.attachedToSystem then
             frame:ClearAllPoints()
             frame:SetPoint("TOP", EditModeSystemSettingsDialog, "BOTTOM")
-    		self:Layout()
+            self:Layout()
         else
             frame:Hide()
-    	end
+        end
     end
     
     -- hide the duplicate buttons we won't ever need
     frame.Buttons.RevertChangesButton:Hide()
     function frame:UpdateExtraButtons(systemFrame) -- from EditModeDialogs.lua function EditModeSystemSettingsDialogMixin:UpdateExtraButtons
-    	if systemFrame == self.attachedToSystem then
-    		self.pools:ReleaseAllByTemplate("EditModeSystemSettingsDialogExtraButtonTemplate");
-    		self.Buttons.Divider:SetShown(true)
-    	end
+        if systemFrame == self.attachedToSystem then
+            self.pools:ReleaseAllByTemplate("EditModeSystemSettingsDialogExtraButtonTemplate");
+            self.Buttons.Divider:SetShown(true)
+        end
     end
 end)
 
@@ -782,48 +782,48 @@ local function GetSystemSettingDisplayInfo(dialogs)
 end
 
 local function showAsPercentage(value)
-	local roundToNearestInteger = true;
-	return FormatPercentage(value / 100, roundToNearestInteger);
+    local roundToNearestInteger = true;
+    return FormatPercentage(value / 100, roundToNearestInteger);
 end
 
 local function ConvertValueDefault(self, value, forDisplay)
-	if forDisplay then
-		return self:ClampValue((value * self.stepSize) + self.minValue);
-	else
-		return (value - self.minValue) / self.stepSize;
-	end
+    if forDisplay then
+        return self:ClampValue((value * self.stepSize) + self.minValue);
+    else
+        return (value - self.minValue) / self.stepSize;
+    end
 end
 
 hooksecurefunc(f, "OnLoad", function()
     function EditModeExpandedSystemSettingsDialog:UpdateSettings(systemFrame)
         if systemFrame == self.attachedToSystem then
-    		self:ReleaseAllNonSliders();
+            self:ReleaseAllNonSliders();
             local draggingSlider = self:ReleaseNonDraggingSliders();
     
-    		local settingsToSetup = {};
+            local settingsToSetup = {};
             local systemID = getSystemID(self.attachedToSystem)
-    		
+            
             local systemSettingDisplayInfo = GetSystemSettingDisplayInfo(framesDialogs[systemID]);
             if systemSettingDisplayInfo then
-        		for index, displayInfo in ipairs(systemSettingDisplayInfo) do
-      				local settingPool = self:GetSettingPool(displayInfo.type);
-    				if settingPool then
-    					local settingFrame;
+                for index, displayInfo in ipairs(systemSettingDisplayInfo) do
+                      local settingPool = self:GetSettingPool(displayInfo.type);
+                    if settingPool then
+                        local settingFrame;
     
-    					if draggingSlider and draggingSlider.setting == displayInfo.setting then
-    						-- This is a slider that is being interacted with and so was not released.
-    						settingFrame = draggingSlider;
-    					else
-    						settingFrame = settingPool:Acquire();
-    					end
+                        if draggingSlider and draggingSlider.setting == displayInfo.setting then
+                            -- This is a slider that is being interacted with and so was not released.
+                            settingFrame = draggingSlider;
+                        else
+                            settingFrame = settingPool:Acquire();
+                        end
     
-    					settingFrame:SetPoint("TOPLEFT");
-      					settingFrame.layoutIndex = index;
+                        settingFrame:SetPoint("TOPLEFT");
+                          settingFrame.layoutIndex = index;
                         
                         local settingName = (self.attachedToSystem:UseSettingAltName(displayInfo.setting) and displayInfo.altName) and displayInfo.altName or displayInfo.name;
-      					local updatedDisplayInfo = self.attachedToSystem:UpdateDisplayInfoOptions(displayInfo);
+                          local updatedDisplayInfo = self.attachedToSystem:UpdateDisplayInfoOptions(displayInfo);
                         if not framesDB[systemID].settings then framesDB[systemID].settings = {} end
-      					
+                          
                         local savedValue = framesDB[systemID].settings[updatedDisplayInfo.setting]
                         
                         if displayInfo.setting == Enum.EditModeUnitFrameSetting.FrameSize then
@@ -892,67 +892,67 @@ hooksecurefunc(f, "OnLoad", function()
                             end)
                         end
                         
-      					settingsToSetup[settingFrame] = { displayInfo = updatedDisplayInfo, currentValue = savedValue, settingName = settingName }
-      					settingFrame:Show();
-      				end
-        		end
+                          settingsToSetup[settingFrame] = { displayInfo = updatedDisplayInfo, currentValue = savedValue, settingName = settingName }
+                          settingFrame:Show();
+                      end
+                end
         
-        		self.Buttons:ClearAllPoints();
+                self.Buttons:ClearAllPoints();
         
-        		if not next(settingsToSetup) then
-        			self.Settings:Hide();
-        			self.Buttons:SetPoint("TOP", self.Title, "BOTTOM", 0, -12);
-        		else
-        			self.Settings:Show();
-        			self.Settings:Layout();
-        			for settingFrame, settingData in pairs(settingsToSetup) do
-        				settingFrame:SetupSetting(settingData);
-        			end
-        			self.Buttons:SetPoint("TOPLEFT", self.Settings, "BOTTOMLEFT", 0, -12);
-        		end
+                if not next(settingsToSetup) then
+                    self.Settings:Hide();
+                    self.Buttons:SetPoint("TOP", self.Title, "BOTTOM", 0, -12);
+                else
+                    self.Settings:Show();
+                    self.Settings:Layout();
+                    for settingFrame, settingData in pairs(settingsToSetup) do
+                        settingFrame:SetupSetting(settingData);
+                    end
+                    self.Buttons:SetPoint("TOPLEFT", self.Settings, "BOTTOMLEFT", 0, -12);
+                end
             else
                 self.attachedToSystem = nil
                 EditModeExpandedSystemSettingsDialog:Hide()
             end
-    	end
+        end
     end
 end)
 
 hooksecurefunc(f, "OnLoad", function()
     function EditModeExpandedSystemSettingsDialog:GetSettingPool(settingType)
-    	--if settingType == Enum.EditModeSettingDisplayType.Dropdown then
-    	--	return self.pools:GetPool("EditModeSettingDropdownTemplate");
-    	--else
+        --if settingType == Enum.EditModeSettingDisplayType.Dropdown then
+        --    return self.pools:GetPool("EditModeSettingDropdownTemplate");
+        --else
         if settingType == Enum.EditModeSettingDisplayType.Slider then
-    		return self.pools:GetPool("EditModeExpandedSettingSliderTemplate")
-    	elseif settingType == Enum.ChrCustomizationOptionType.Checkbox then
-    		return self.pools:GetPool("EditModeSettingCheckboxTemplate");
-    	end
+            return self.pools:GetPool("EditModeExpandedSettingSliderTemplate")
+        elseif settingType == Enum.ChrCustomizationOptionType.Checkbox then
+            return self.pools:GetPool("EditModeSettingCheckboxTemplate");
+        end
     end
 
     function EditModeExpandedSystemSettingsDialog:ReleaseNonDraggingSliders()
-    	local draggingSlider;
-    	local releaseSliders = {};
+        local draggingSlider;
+        local releaseSliders = {};
 
-    	for settingSlider in self.pools:EnumerateActiveByTemplate("EditModeExpandedSettingSliderTemplate") do
-    		if settingSlider.Slider.Slider:IsDraggingThumb() then
-    			draggingSlider = settingSlider;
-    		else
-    			table.insert(releaseSliders, settingSlider);
-    		end
-    	end
+        for settingSlider in self.pools:EnumerateActiveByTemplate("EditModeExpandedSettingSliderTemplate") do
+            if settingSlider.Slider.Slider:IsDraggingThumb() then
+                draggingSlider = settingSlider;
+            else
+                table.insert(releaseSliders, settingSlider);
+            end
+        end
 
-    	for _, releaseSlider in ipairs(releaseSliders) do
-    		releaseSlider.Slider:Release();
-    		self.pools:Release(releaseSlider);
-    	end
+        for _, releaseSlider in ipairs(releaseSliders) do
+            releaseSlider.Slider:Release();
+            self.pools:Release(releaseSlider);
+        end
 
-    	return draggingSlider;
+        return draggingSlider;
     end
     
     function EditModeExpandedSystemSettingsDialog:OnSettingValueChanged(setting, value)
         local attachedToSystem = self.attachedToSystem
-    	if attachedToSystem then
+        if attachedToSystem then
             local db = framesDB[getSystemID(attachedToSystem)]
             if not db.settings then db.settings = {} end
             db.settings[setting] = value
@@ -960,32 +960,32 @@ hooksecurefunc(f, "OnLoad", function()
                 attachedToSystem:SetScaleOverride(value/100)
                 db.x, db.y = attachedToSystem:GetRect()
             end
-    	end
+        end
     end
     
     function EditModeExpandedSystemSettingsDialog:OnLoad()
-    	local function onCloseCallback()
-    		if not EditModeSystemSettingsDialog:IsShown() then
+        local function onCloseCallback()
+            if not EditModeSystemSettingsDialog:IsShown() then
                 EditModeManagerExpandedFrame:ClearSelectedSystem()
             else
                 EditModeExpandedSystemSettingsDialog:Hide()
             end
-    	end
+        end
     
-    	self.Buttons.RevertChangesButton:SetOnClickHandler(GenerateClosure(self.RevertChanges, self));
+        self.Buttons.RevertChangesButton:SetOnClickHandler(GenerateClosure(self.RevertChanges, self));
     
-    	self.onCloseCallback = onCloseCallback;
+        self.onCloseCallback = onCloseCallback;
     
-    	self.pools = CreateFramePoolCollection();
-    	--self.pools:CreatePool("FRAME", self.Settings, "EditModeSettingDropdownTemplate") -- trying to use dropdowns causes taint issues, probably because of long-running taint issues with dropdowns in general
-    	self.pools:CreatePool("FRAME", self.Settings, "EditModeExpandedSettingSliderTemplate");
-    	self.pools:CreatePool("FRAME", self.Settings, "EditModeSettingCheckboxTemplate");
+        self.pools = CreateFramePoolCollection();
+        --self.pools:CreatePool("FRAME", self.Settings, "EditModeSettingDropdownTemplate") -- trying to use dropdowns causes taint issues, probably because of long-running taint issues with dropdowns in general
+        self.pools:CreatePool("FRAME", self.Settings, "EditModeExpandedSettingSliderTemplate");
+        self.pools:CreatePool("FRAME", self.Settings, "EditModeSettingCheckboxTemplate");
     
-    	local function resetExtraButton(pool, button)
-    		FramePool_HideAndClearAnchors(pool, button);
-    		button:Enable();
-    	end
-    	self.pools:CreatePool("BUTTON", self.Buttons, "EditModeSystemSettingsDialogExtraButtonTemplate", resetExtraButton);
+        local function resetExtraButton(pool, button)
+            FramePool_HideAndClearAnchors(pool, button);
+            button:Enable();
+        end
+        self.pools:CreatePool("BUTTON", self.Buttons, "EditModeSystemSettingsDialogExtraButtonTemplate", resetExtraButton);
     end
     EditModeExpandedSystemSettingsDialog:OnLoad()
 end)

@@ -828,10 +828,7 @@ hooksecurefunc(f, "OnLoad", function()
                         
                         if displayInfo.setting == Enum.EditModeUnitFrameSetting.FrameSize then
                             savedValue = savedValue or 100
-                            settingFrame:OnLoad()
                             
-                            CallbackRegistryMixin.OnLoad(settingFrame);
-    
                         	local function OnValueChanged(self, value)
                                 if not self.initInProgress then
                                     EditModeExpandedSystemSettingsDialog:OnSettingValueChanged(self.setting, value);

@@ -715,7 +715,7 @@ f:SetScript("OnEvent", function(__, event, arg1)
                 lib:SetDontResize(EssencePlayerFrame)
                 lib:RegisterHideable(EssencePlayerFrame)
                 lib:RegisterResizable(EssencePlayerFrame)
-                hooksecurefunc(EssencePowerBar, "UpdatePower", function()
+                hooksecurefunc(EssencePlayerFrame, "UpdatePower", function()
                     if not EditModeManagerFrame.editModeActive then
                         lib:RepositionFrame(EssencePlayerFrame)
                     end

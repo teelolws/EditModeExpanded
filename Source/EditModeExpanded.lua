@@ -711,14 +711,23 @@ f:SetScript("OnEvent", function(__, event, arg1)
             end
         elseif class == "EVOKER" then
             if db.EMEOptions.evokerEssences then
+                local a = 0
                 lib:RegisterFrame(EssencePlayerFrame, "Essences", db.EvokerEssences)
                 lib:SetDontResize(EssencePlayerFrame)
                 lib:RegisterHideable(EssencePlayerFrame)
                 lib:RegisterResizable(EssencePlayerFrame)
                 hooksecurefunc(EssencePlayerFrame, "UpdatePower", function()
                     if not EditModeManagerFrame.editModeActive then
+                        a = a + 1
                         lib:RepositionFrame(EssencePlayerFrame)
+                        a = a - 1
                     end
+                end)
+                hooksecurefunc(EssencePlayerFrame, "SetPoint", function()
+                    if a > 0 then return end
+                    a = a + 1
+                    lib:RepositionFrame(EssencePlayerFrame)
+                    a = a - 1
                 end)
             end
             

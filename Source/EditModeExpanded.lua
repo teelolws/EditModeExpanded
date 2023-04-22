@@ -391,10 +391,17 @@ f:SetScript("OnEvent", function(__, event, arg1)
         end
         
         if db.EMEOptions.focusTargetOfTarget then
-            lib:RegisterFrame(FocusFrameToT, "Focus Target of Target", f.db.global.FocusToT)
+            FocusFrameToT:SetUserPlaced(false) -- bug with frame being saved in layout cache leading to errors in TargetFrame.lua
+            lib:RegisterFrame(FocusFrameToT, "Focus Target of Target", f.db.global.FocusToT, FocusFrame, "TOPRIGHT")
+            lib:RegisterResizable(FocusFrameToT)
             FocusFrameToT:HookScript("OnHide", function()
                 if (not InCombatLockdown()) and EditModeManagerFrame.editModeActive and lib:IsFrameEnabled(FocusFrameToT) then
                     FocusFrameToT:Show()
+                end
+            end)
+            hooksecurefunc(FocusFrameToT, "SetPoint", function()
+                if FocusFrameToT:IsUserPlaced() then
+                    FocusFrameToT:SetUserPlaced(false)
                 end
             end)
         end

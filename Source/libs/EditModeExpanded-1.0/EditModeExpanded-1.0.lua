@@ -560,7 +560,7 @@ function lib:RegisterCustomCheckbox(frame, name, onChecked, onUnchecked, interna
         if db.settings[ENUM_EDITMODEACTIONBARSETTING_CUSTOM][internalName] == 1 then
             onChecked()
         else
-            onUnchecked()
+            onUnchecked(true)
         end
     end
     
@@ -872,7 +872,7 @@ hooksecurefunc(f, "OnLoad", function()
                                     displayInfo.onChecked()
                                 else
                                     framesDB[systemID].settings[displayInfo.setting][displayInfo.customCheckBoxID] = 0
-                                    displayInfo.onUnchecked()
+                                    displayInfo.onUnchecked(false)
                                 end
                             end)
                         end

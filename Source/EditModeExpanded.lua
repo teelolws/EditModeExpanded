@@ -546,6 +546,53 @@ f:SetScript("OnEvent", function(__, event, arg1)
                     MicroMenu:Hide()
                 end
             end)
+            local enabled = false
+            local padding
+            lib:RegisterCustomCheckbox(MicroMenu, "Set padding to zero",
+                function()
+                    enabled = true
+                    for key, button in ipairs(MicroMenu:GetLayoutChildren()) do
+                        if key ~= 1 then
+                            local a, b, c, d, e = button:GetPoint(1)
+                            if (key == 2) and (not padding) then
+                                padding = d
+                            end
+                            button:ClearAllPoints()
+                            button:SetPoint(a, b, c, d-(3*(key-1)), e)
+                        end
+                    end
+                    MicroMenu:SetWidth(MicroMenu:GetWidth() - 30)
+                end,
+                
+                function(init)
+                    if not init then
+                        enabled = false
+                        for key, button in ipairs(MicroMenu:GetLayoutChildren()) do
+                            if key ~= 1 then
+                                local a, b, c, d, e = button:GetPoint(1)
+                                button:ClearAllPoints()
+                                button:SetPoint(a, b, c, d+(3*(key-1)), e)
+                            end
+                        end
+                        MicroMenu:SetWidth(MicroMenu:GetWidth() + 30)
+                    end
+                end
+            )
+            hooksecurefunc(MicroMenu, "Layout", function(...)
+                if OverrideActionBar.isShown then return end
+                if PetBattleFrame and PetBattleFrame:IsShown() then return end
+
+                if enabled and padding and ((math.floor((select(4, MicroMenu:GetLayoutChildren()[2]:GetPoint(1))*100) + 0.5)/100) == (math.floor((padding*100) + 0.5)/100)) then
+                    for key, button in ipairs(MicroMenu:GetLayoutChildren()) do
+                        if key ~= 1 then
+                            local a, b, c, d, e = button:GetPoint(1)
+                            button:ClearAllPoints()
+                            button:SetPoint(a, b, c, d-(3*(key-1)), e)
+                        end
+                    end
+                    MicroMenu:SetWidth(MicroMenu:GetWidth() - 30)
+                end
+            end)
         end
         
         if db.EMEOptions.menuResizable then

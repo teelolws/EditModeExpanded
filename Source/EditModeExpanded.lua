@@ -508,17 +508,28 @@ f:SetScript("OnEvent", function(__, event, arg1)
             lib:RegisterHideable(MainStatusTrackingBarContainer)
             C_Timer.After(1, function() lib:UpdateFrameResize(MainStatusTrackingBarContainer) end)
             hooksecurefunc(MainStatusTrackingBarContainer, "SetScale", function(frame, scale)
-                if UnitLevel("player") < GetMaxLevelForLatestExpansion() then
-                    StatusTrackingBarManager.bars[4]:SetScale(scale)
-                else
-                    StatusTrackingBarManager.bars[1]:SetScale(scale)
+                for _, bar in ipairs(StatusTrackingBarManager.bars) do
+                    local _, anchor = bar:GetPoint(1)
+                    if anchor == MainStatusTrackingBarContainer then
+                        bar:SetScale(scale) 
+                    end
                 end
             end)
             hooksecurefunc(MainStatusTrackingBarContainer, "SetScaleOverride", function(frame, scale)
-                if UnitLevel("player") < GetMaxLevelForLatestExpansion() then
-                    StatusTrackingBarManager.bars[4]:SetScale(scale)
-                else
-                    StatusTrackingBarManager.bars[1]:SetScale(scale)
+                for _, bar in ipairs(StatusTrackingBarManager.bars) do
+                    local _, anchor = bar:GetPoint(1)
+                    if anchor == MainStatusTrackingBarContainer then
+                        bar:SetScale(scale) 
+                    end
+                end
+            end)
+            
+            hooksecurefunc(StatusTrackingBarManager, "UpdateBarsShown", function()
+                for _, bar in ipairs(StatusTrackingBarManager.bars) do
+                    local _, anchor = bar:GetPoint(1)
+                    if anchor == MainStatusTrackingBarContainer then
+                        bar:SetScale(MainStatusTrackingBarContainer:GetScale()) 
+                    end
                 end
             end)
         end
@@ -528,13 +539,28 @@ f:SetScript("OnEvent", function(__, event, arg1)
             lib:RegisterHideable(SecondaryStatusTrackingBarContainer)
             C_Timer.After(1, function() lib:UpdateFrameResize(SecondaryStatusTrackingBarContainer) end)
             hooksecurefunc(SecondaryStatusTrackingBarContainer, "SetScale", function(frame, scale)
-                if UnitLevel("player") < GetMaxLevelForLatestExpansion() then
-                    StatusTrackingBarManager.bars[1]:SetScale(scale)
+                for _, bar in ipairs(StatusTrackingBarManager.bars) do
+                    local _, anchor = bar:GetPoint(1)
+                    if anchor == SecondaryStatusTrackingBarContainer then
+                        bar:SetScale(scale) 
+                    end
                 end
             end)
-            hooksecurefunc(MainStatusTrackingBarContainer, "SetScaleOverride", function(frame, scale)
-                if UnitLevel("player") < GetMaxLevelForLatestExpansion() then
-                    StatusTrackingBarManager.bars[1]:SetScale(scale)
+            hooksecurefunc(SecondaryStatusTrackingBarContainer, "SetScaleOverride", function(frame, scale)
+                for _, bar in ipairs(StatusTrackingBarManager.bars) do
+                    local _, anchor = bar:GetPoint(1)
+                    if anchor == SecondaryStatusTrackingBarContainer then
+                        bar:SetScale(scale) 
+                    end
+                end
+            end)
+            
+            hooksecurefunc(StatusTrackingBarManager, "UpdateBarsShown", function()
+                for _, bar in ipairs(StatusTrackingBarManager.bars) do
+                    local _, anchor = bar:GetPoint(1)
+                    if anchor == SecondaryStatusTrackingBarContainer then
+                        bar:SetScale(SecondaryStatusTrackingBarContainer:GetScale()) 
+                    end
                 end
             end)
         end

@@ -269,6 +269,12 @@ f:SetScript("OnEvent", function(__, event, arg1)
         
         for _, frame in ipairs(EditModeManagerFrame.registeredSystemFrames) do
             local name = frame:GetName()
+            
+            -- was changed from MicroMenu to MicroMenuContainer in 10.1
+            if name == "MicroMenuContainer" then
+                name = "MicroMenu"
+            end
+            
             if not db[name] then db[name] = {} end
             lib:RegisterFrame(frame, "", db[name])
         end
@@ -525,7 +531,7 @@ f:SetScript("OnEvent", function(__, event, arg1)
             end)
             
             hooksecurefunc(StatusTrackingBarManager, "UpdateBarsShown", function()
-                for _, bar in ipairs(StatusTrackingBarManager.bars) do
+                for _, bar in ipairs(StatusTrackingBarManager.barContainers) do
                     local _, anchor = bar:GetPoint(1)
                     if anchor == MainStatusTrackingBarContainer then
                         bar:SetScale(MainStatusTrackingBarContainer:GetScale()) 
@@ -539,7 +545,7 @@ f:SetScript("OnEvent", function(__, event, arg1)
             lib:RegisterHideable(SecondaryStatusTrackingBarContainer)
             C_Timer.After(1, function() lib:UpdateFrameResize(SecondaryStatusTrackingBarContainer) end)
             hooksecurefunc(SecondaryStatusTrackingBarContainer, "SetScale", function(frame, scale)
-                for _, bar in ipairs(StatusTrackingBarManager.bars) do
+                for _, bar in ipairs(StatusTrackingBarManager.barContainers) do
                     local _, anchor = bar:GetPoint(1)
                     if anchor == SecondaryStatusTrackingBarContainer then
                         bar:SetScale(scale) 
@@ -547,7 +553,7 @@ f:SetScript("OnEvent", function(__, event, arg1)
                 end
             end)
             hooksecurefunc(SecondaryStatusTrackingBarContainer, "SetScaleOverride", function(frame, scale)
-                for _, bar in ipairs(StatusTrackingBarManager.bars) do
+                for _, bar in ipairs(StatusTrackingBarManager.barContainers) do
                     local _, anchor = bar:GetPoint(1)
                     if anchor == SecondaryStatusTrackingBarContainer then
                         bar:SetScale(scale) 
@@ -556,7 +562,7 @@ f:SetScript("OnEvent", function(__, event, arg1)
             end)
             
             hooksecurefunc(StatusTrackingBarManager, "UpdateBarsShown", function()
-                for _, bar in ipairs(StatusTrackingBarManager.bars) do
+                for _, bar in ipairs(StatusTrackingBarManager.barContainers) do
                     local _, anchor = bar:GetPoint(1)
                     if anchor == SecondaryStatusTrackingBarContainer then
                         bar:SetScale(SecondaryStatusTrackingBarContainer:GetScale()) 
@@ -566,18 +572,18 @@ f:SetScript("OnEvent", function(__, event, arg1)
         end
         
         if db.EMEOptions.menu then
-            lib:RegisterHideable(MicroMenu)
+            lib:RegisterHideable(MicroMenuContainer)
             C_Timer.After(1, function()
-                if lib:IsFrameMarkedHidden(MicroMenu) then
-                    MicroMenu:Hide()
+                if lib:IsFrameMarkedHidden(MicroMenuContainer) then
+                    MicroMenuContainer:Hide()
                 end
             end)
             local enabled = false
             local padding
-            lib:RegisterCustomCheckbox(MicroMenu, "Set padding to zero",
+            lib:RegisterCustomCheckbox(MicroMenuContainer, "Set padding to zero",
                 function()
                     enabled = true
-                    for key, button in ipairs(MicroMenu:GetLayoutChildren()) do
+                    for key, button in ipairs(MicroMenuContainer:GetLayoutChildren()) do
                         if key ~= 1 then
                             local a, b, c, d, e = button:GetPoint(1)
                             if (key == 2) and (not padding) then
@@ -587,49 +593,49 @@ f:SetScript("OnEvent", function(__, event, arg1)
                             button:SetPoint(a, b, c, d-(3*(key-1)), e)
                         end
                     end
-                    MicroMenu:SetWidth(MicroMenu:GetWidth() - 30)
+                    MicroMenuContainer:SetWidth(MicroMenuContainer:GetWidth() - 30)
                 end,
                 
                 function(init)
                     if not init then
                         enabled = false
-                        for key, button in ipairs(MicroMenu:GetLayoutChildren()) do
+                        for key, button in ipairs(MicroMenuContainer:GetLayoutChildren()) do
                             if key ~= 1 then
                                 local a, b, c, d, e = button:GetPoint(1)
                                 button:ClearAllPoints()
                                 button:SetPoint(a, b, c, d+(3*(key-1)), e)
                             end
                         end
-                        MicroMenu:SetWidth(MicroMenu:GetWidth() + 30)
+                        MicroMenuContainer:SetWidth(MicroMenuContainer:GetWidth() + 30)
                     end
                 end
             )
-            hooksecurefunc(MicroMenu, "Layout", function(...)
+            hooksecurefunc(MicroMenuContainer, "Layout", function(...)
                 if OverrideActionBar.isShown then return end
                 if PetBattleFrame and PetBattleFrame:IsShown() then return end
 
-                if enabled and padding and ((math.floor((select(4, MicroMenu:GetLayoutChildren()[2]:GetPoint(1))*100) + 0.5)/100) == (math.floor((padding*100) + 0.5)/100)) then
-                    for key, button in ipairs(MicroMenu:GetLayoutChildren()) do
+                if enabled and padding and ((math.floor((select(4, MicroMenuContainer:GetLayoutChildren()[2]:GetPoint(1))*100) + 0.5)/100) == (math.floor((padding*100) + 0.5)/100)) then
+                    for key, button in ipairs(MicroMenuContainer:GetLayoutChildren()) do
                         if key ~= 1 then
                             local a, b, c, d, e = button:GetPoint(1)
                             button:ClearAllPoints()
                             button:SetPoint(a, b, c, d-(3*(key-1)), e)
                         end
                     end
-                    MicroMenu:SetWidth(MicroMenu:GetWidth() - 30)
+                    MicroMenuContainer:SetWidth(MicroMenuContainer:GetWidth() - 30)
                 end
             end)
         end
         
         if db.EMEOptions.menuResizable then
-            lib:RegisterResizable(MicroMenu)
+            lib:RegisterResizable(MicroMenuContainer)
             C_Timer.After(1, function()
-                lib:UpdateFrameResize(MicroMenu)
+                lib:UpdateFrameResize(MicroMenuContainer)
             end)
             
             -- triggers when player leaves a vehicle or pet battle
             hooksecurefunc("ResetMicroMenuPosition", function(...)
-                lib:UpdateFrameResize(MicroMenu)
+                lib:UpdateFrameResize(MicroMenuContainer)
             end)
         end
         
@@ -829,7 +835,7 @@ f:SetScript("OnEvent", function(__, event, arg1)
                 registerTotemFrame(db)
             end
         end
-    elseif (event == "PLAYER_TOTEM_UPDATE") then
+    elseif (event == "PLAYER_TOTEM_UPDATE") and addonLoaded then
         if totemFrameLoaded then
             lib:RepositionFrame(TotemFrame)
         end

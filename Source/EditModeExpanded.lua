@@ -507,14 +507,12 @@ f:SetScript("OnEvent", function(__, event, arg1)
             lib:RegisterResizable(VehicleSeatIndicator)
         end
         
-        -- in StatusTrackingBarManager.bars, [1] is the reputation bar, and [4] is experience.
-        -- Blizzard handles it weirdly, if you're max level they merge the reputation bar into the XP bar
         if db.EMEOptions.mainStatusTrackingBarContainer then
             lib:RegisterResizable(MainStatusTrackingBarContainer)
             lib:RegisterHideable(MainStatusTrackingBarContainer)
             C_Timer.After(1, function() lib:UpdateFrameResize(MainStatusTrackingBarContainer) end)
             hooksecurefunc(MainStatusTrackingBarContainer, "SetScale", function(frame, scale)
-                for _, bar in ipairs(StatusTrackingBarManager.bars) do
+                for _, bar in ipairs(StatusTrackingBarManager.barContainers) do
                     local _, anchor = bar:GetPoint(1)
                     if anchor == MainStatusTrackingBarContainer then
                         bar:SetScale(scale) 
@@ -522,7 +520,7 @@ f:SetScript("OnEvent", function(__, event, arg1)
                 end
             end)
             hooksecurefunc(MainStatusTrackingBarContainer, "SetScaleOverride", function(frame, scale)
-                for _, bar in ipairs(StatusTrackingBarManager.bars) do
+                for _, bar in ipairs(StatusTrackingBarManager.barContainers) do
                     local _, anchor = bar:GetPoint(1)
                     if anchor == MainStatusTrackingBarContainer then
                         bar:SetScale(scale) 
@@ -583,7 +581,7 @@ f:SetScript("OnEvent", function(__, event, arg1)
             lib:RegisterCustomCheckbox(MicroMenuContainer, "Set padding to zero",
                 function()
                     enabled = true
-                    for key, button in ipairs(MicroMenuContainer:GetLayoutChildren()) do
+                    for key, button in ipairs(MicroMenu:GetLayoutChildren()) do
                         if key ~= 1 then
                             local a, b, c, d, e = button:GetPoint(1)
                             if (key == 2) and (not padding) then
@@ -593,20 +591,20 @@ f:SetScript("OnEvent", function(__, event, arg1)
                             button:SetPoint(a, b, c, d-(3*(key-1)), e)
                         end
                     end
-                    MicroMenuContainer:SetWidth(MicroMenuContainer:GetWidth() - 30)
+                    MicroMenu:SetWidth(MicroMenu:GetWidth() - 30)
                 end,
                 
                 function(init)
                     if not init then
                         enabled = false
-                        for key, button in ipairs(MicroMenuContainer:GetLayoutChildren()) do
+                        for key, button in ipairs(MicroMenu:GetLayoutChildren()) do
                             if key ~= 1 then
                                 local a, b, c, d, e = button:GetPoint(1)
                                 button:ClearAllPoints()
                                 button:SetPoint(a, b, c, d+(3*(key-1)), e)
                             end
                         end
-                        MicroMenuContainer:SetWidth(MicroMenuContainer:GetWidth() + 30)
+                        MicroMenu:SetWidth(MicroMenu:GetWidth() + 30)
                     end
                 end
             )
@@ -614,15 +612,15 @@ f:SetScript("OnEvent", function(__, event, arg1)
                 if OverrideActionBar.isShown then return end
                 if PetBattleFrame and PetBattleFrame:IsShown() then return end
 
-                if enabled and padding and ((math.floor((select(4, MicroMenuContainer:GetLayoutChildren()[2]:GetPoint(1))*100) + 0.5)/100) == (math.floor((padding*100) + 0.5)/100)) then
-                    for key, button in ipairs(MicroMenuContainer:GetLayoutChildren()) do
+                if enabled and padding and ((math.floor((select(4, MicroMenu:GetLayoutChildren()[2]:GetPoint(1))*100) + 0.5)/100) == (math.floor((padding*100) + 0.5)/100)) then
+                    for key, button in ipairs(MicroMenu:GetLayoutChildren()) do
                         if key ~= 1 then
                             local a, b, c, d, e = button:GetPoint(1)
                             button:ClearAllPoints()
                             button:SetPoint(a, b, c, d-(3*(key-1)), e)
                         end
                     end
-                    MicroMenuContainer:SetWidth(MicroMenuContainer:GetWidth() - 30)
+                    MicroMenu:SetWidth(MicroMenu:GetWidth() - 30)
                 end
             end)
         end

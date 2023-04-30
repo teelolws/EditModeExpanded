@@ -200,7 +200,7 @@ function lib:RegisterFrame(frame, name, db, anchorTo, anchorPoint)
     
     frame.systemNameString = name
     frame.systemName = frame.systemNameString;
-    frame.Selection:SetLabelText(frame.systemName);
+    frame.Selection:SetGetLabelTextFunction(function() return frame.systemName end)
     frame:SetupSettingsDialogAnchor();
     frame.snappedFrames = {};
     registerFrameMovableWithArrowKeys(frame, anchorPoint, anchorTo)
@@ -706,7 +706,8 @@ end)
 --
 
 hooksecurefunc(f, "OnLoad", function()
-    local frame = CreateFrame("Frame", "EditModeExpandedSystemSettingsDialog", UIParent, "ResizeLayoutFrame")
+    local frame = CreateFrame("Frame", nil, UIParent, "ResizeLayoutFrame")
+    EditModeExpandedSystemSettingsDialog = frame
     Mixin(frame, EditModeSystemSettingsDialogMixin)
     frame:SetMovable(true)
     frame:SetClampedToScreen(true)

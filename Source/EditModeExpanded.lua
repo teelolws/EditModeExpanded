@@ -828,6 +828,18 @@ f:SetScript("OnEvent", function(__, event, arg1)
             if db.EMEOptions.totem then
                 registerTotemFrame(db)
             end
+        elseif class == "DRUID" then
+            if db.EMEOptions.comboPoints then
+                lib:RegisterFrame(ComboPointDruidPlayerFrame, "Combo Points", db.ComboPoints)
+                lib:SetDontResize(ComboPointDruidPlayerFrame)
+                lib:RegisterHideable(ComboPointDruidPlayerFrame)
+                lib:RegisterResizable(ComboPointDruidPlayerFrame)
+                hooksecurefunc(PlayerFrameBottomManagedFramesContainer, "Layout", function()
+                    if not EditModeManagerFrame.editModeActive then
+                        lib:RepositionFrame(ComboPointDruidPlayerFrame)
+                    end
+                end)
+            end
         end
     elseif (event == "PLAYER_TOTEM_UPDATE") then
         if totemFrameLoaded then

@@ -2,7 +2,6 @@
 -- Internal variables
 --
 
-local CURRENT_BUILD = "10.0.7"
 local MAJOR, MINOR = "EditModeExpanded-1.0", 60
 local lib = LibStub:NewLibrary(MAJOR, MINOR)
 if not lib then return end
@@ -101,9 +100,6 @@ function lib:RegisterFrame(frame, name, db, anchorTo, anchorPoint)
     if not anchorPoint then anchorPoint = "BOTTOMLEFT" end
     frame.EMEanchorTo = anchorTo
     frame.EMEanchorPoint = anchorPoint
-    
-    -- IMPORTANT: force update every patch incase of UI changes that cause problems and/or make this library redundant!
-    if GetBuildInfo() ~= CURRENT_BUILD then return end
     
     -- if this is the first frame being registered, load the other parts of this library
     if f.OnLoad then f.OnLoad() end
@@ -204,7 +200,7 @@ function lib:RegisterFrame(frame, name, db, anchorTo, anchorPoint)
     
     frame.systemNameString = name
     frame.systemName = frame.systemNameString;
-    frame.Selection:SetLabelText(frame.systemName);
+    frame.Selection:SetGetLabelTextFunction(function() return frame.systemName end)
     frame:SetupSettingsDialogAnchor();
     frame.snappedFrames = {};
     registerFrameMovableWithArrowKeys(frame, anchorPoint, anchorTo)
@@ -572,12 +568,6 @@ function lib:RegisterCustomCheckbox(frame, name, onChecked, onUnchecked, interna
 end
 
 --
--- Require update on game patch
---
-
-if not (GetBuildInfo() == CURRENT_BUILD) then return end
-
---
 -- Code for Expanded Manager Frame here
 -- This is a frame that will show checkboxes, to turn on/off all custom frames during Edit Mode
 --
@@ -716,7 +706,8 @@ end)
 --
 
 hooksecurefunc(f, "OnLoad", function()
-    local frame = CreateFrame("Frame", "EditModeExpandedSystemSettingsDialog", UIParent, "ResizeLayoutFrame")
+    local frame = CreateFrame("Frame", nil, UIParent, "ResizeLayoutFrame")
+    EditModeExpandedSystemSettingsDialog = frame
     Mixin(frame, EditModeSystemSettingsDialogMixin)
     frame:SetMovable(true)
     frame:SetClampedToScreen(true)

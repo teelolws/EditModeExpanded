@@ -1,10 +1,11 @@
-## Interface: 100007
+## Interface: 100100
 ## Title: Edit Mode Expanded
-## Version: 10.0-063
+## Version: 10.1-001
 ## Notes: Expands Edit Mode to apply to other frames
 ## Author: Teelo
 ## SavedVariables: EditModeExpandedADB
 ## X-Curse-Project-ID: 695703
+## IconTexture: 4555600
 
 libs\LibStub.lua
 libs\CallbackHandler-1.0\CallbackHandler-1.0.lua

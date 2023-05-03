@@ -431,6 +431,12 @@ f:SetScript("OnEvent", function(__, event, arg1)
             lib:RegisterFrame(QueueStatusButton, "LFG", db.QueueStatusButton)
             lib:RegisterResizable(QueueStatusButton)
             lib:RegisterMinimapPinnable(QueueStatusButton)
+            hooksecurefunc(MicroMenu, "UpdateQueueStatusAnchors", function()
+                lib:RepositionFrame(QueueStatusButton)
+            end)
+            hooksecurefunc(MicroMenuContainer, "Layout", function()
+                MicroMenuContainer:SetWidth(MicroMenu:GetWidth()*MicroMenu:GetScale())
+            end)
         end
         
         if db.EMEOptions.minimap then

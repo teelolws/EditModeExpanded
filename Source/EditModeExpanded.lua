@@ -10,7 +10,6 @@ local defaults = {
             holyPower = true,
             totem = true,
             soulShards = true,
-            pet = true,
             achievementAlert = true,
             targetOfTarget = true,
             targetCast = true,
@@ -39,7 +38,6 @@ local defaults = {
         },
         QueueStatusButton = {},
         TotemFrame = {},
-        PetFrame = {},
         VehicleSeatIndicator = {},
         HolyPower = {},
         Achievements = {},
@@ -107,11 +105,6 @@ local options = {
         soulShards = {
             name = "Soul Shards",
             desc = "Enables / Disables Soul Shards support",
-            type = "toggle",
-        },
-        pet = {
-            name = "Pet Frame",
-            desc = "Enables / Disables Pet Frame support",
             type = "toggle",
         },
         achievementAlert = {
@@ -243,7 +236,6 @@ local options = {
 }
 
 local achievementFrameLoaded
-local petFrameLoaded
 local addonLoaded
 local totemFrameLoaded
 
@@ -327,31 +319,6 @@ f:SetScript("OnEvent", function(__, event, arg1)
             end)
         end
         
-        
-    elseif (event == "UNIT_PET") and (not petFrameLoaded) and (addonLoaded) then
-        f:UnregisterEvent("UNIT_PET")
-        if f.db.global.EMEOptions.pet then
-            local function init()
-                PetFrame:SetParent(UIParent)
-                lib:RegisterFrame(PetFrame, "Pet", f.db.global.PetFrame)
-            end
-            
-            if InCombatLockdown() then
-                -- delay registering until combat ends
-                local tempFrame = CreateFrame("Frame")
-                tempFrame:RegisterEvent("PLAYER_REGEN_ENABLED")
-                local doOnce
-                tempFrame:SetScript("OnEvent", function()
-                    if doOnce then return end
-                    doOnce = true
-                    init()
-                    tempFrame:UnregisterEvent("PLAYER_REGEN_ENABLED")
-                    lib:RepositionFrame(PetFrame)
-                end)
-            else
-                init()
-            end
-        end
     elseif (event == "PLAYER_ENTERING_WORLD") and (not achievementFrameLoaded) and (addonLoaded) then
         f:UnregisterEvent("PLAYER_ENTERING_WORLD")
         achievementFrameLoaded = true
@@ -859,6 +826,5 @@ f:SetScript("OnEvent", function(__, event, arg1)
 end)
 
 f:RegisterEvent("ADDON_LOADED")
-f:RegisterEvent("UNIT_PET")
 f:RegisterEvent("PLAYER_ENTERING_WORLD")
 f:RegisterEvent("PLAYER_TOTEM_UPDATE")

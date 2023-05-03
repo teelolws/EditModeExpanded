@@ -199,8 +199,7 @@ function lib:RegisterFrame(frame, name, db, anchorTo, anchorPoint)
     frame.Selection:Hide()
     
     frame.systemNameString = name
-    frame.systemName = frame.systemNameString;
-    frame.Selection:SetGetLabelTextFunction(function() return frame.systemName end)
+    frame.Selection:SetGetLabelTextFunction(function() return name end)
     frame:SetupSettingsDialogAnchor();
     frame.snappedFrames = {};
     registerFrameMovableWithArrowKeys(frame, anchorPoint, anchorTo)

@@ -465,10 +465,10 @@ f:SetScript("OnEvent", function(__, event, arg1)
         
         if db.EMEOptions.showCoordinates then 
             hooksecurefunc(EditModeExpandedSystemSettingsDialog, "AttachToSystemFrame", function(self, frame)
-                self.Title:SetText(frame.systemName.." ("..math.floor(frame:GetLeft())..","..math.floor(frame:GetBottom())..")")
+                self.Title:SetText(frame:GetSystemName().." ("..math.floor(frame:GetLeft())..","..math.floor(frame:GetBottom())..")")
             end)
             hooksecurefunc(EditModeExpandedSystemSettingsDialog, "UpdateSettings", function(self, frame)
-                self.Title:SetText(frame.systemName.." ("..math.floor(frame:GetLeft())..","..math.floor(frame:GetBottom())..")")
+                self.Title:SetText(frame:GetSystemName().." ("..math.floor(frame:GetLeft())..","..math.floor(frame:GetBottom())..")")
             end)
         end
         

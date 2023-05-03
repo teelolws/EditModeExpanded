@@ -823,13 +823,13 @@ f:SetScript("OnEvent", function(__, event, arg1)
             
         elseif class == "ROGUE" then
             if db.EMEOptions.comboPoints then
-                lib:RegisterFrame(ComboPointPlayerFrame, "Combo Points", db.ComboPoints)
-                lib:SetDontResize(ComboPointPlayerFrame)
-                lib:RegisterHideable(ComboPointPlayerFrame)
-                lib:RegisterResizable(ComboPointPlayerFrame)
+                lib:RegisterFrame(RogueComboPointBarFrame, "Combo Points", db.ComboPoints)
+                lib:SetDontResize(RogueComboPointBarFrame)
+                lib:RegisterHideable(RogueComboPointBarFrame)
+                lib:RegisterResizable(RogueComboPointBarFrame)
                 hooksecurefunc(PlayerFrameBottomManagedFramesContainer, "Layout", function()
                     if not EditModeManagerFrame.editModeActive then
-                        lib:RepositionFrame(ComboPointPlayerFrame)
+                        lib:RepositionFrame(RogueComboPointBarFrame)
                     end
                 end)
             end
@@ -840,13 +840,13 @@ f:SetScript("OnEvent", function(__, event, arg1)
             end
         elseif class == "DRUID" then
             if db.EMEOptions.comboPoints then
-                lib:RegisterFrame(ComboPointDruidPlayerFrame, "Combo Points", db.ComboPoints)
-                lib:SetDontResize(ComboPointDruidPlayerFrame)
-                lib:RegisterHideable(ComboPointDruidPlayerFrame)
-                lib:RegisterResizable(ComboPointDruidPlayerFrame)
+                lib:RegisterFrame(DruidComboPointBarFrame, "Combo Points", db.ComboPoints)
+                lib:SetDontResize(DruidComboPointBarFrame)
+                lib:RegisterHideable(DruidComboPointBarFrame)
+                lib:RegisterResizable(DruidComboPointBarFrame)
                 hooksecurefunc(PlayerFrameBottomManagedFramesContainer, "Layout", function()
                     if not EditModeManagerFrame.editModeActive then
-                        lib:RepositionFrame(ComboPointDruidPlayerFrame)
+                        lib:RepositionFrame(DruidComboPointBarFrame)
                     end
                 end)
             end

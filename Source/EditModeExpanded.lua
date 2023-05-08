@@ -303,7 +303,7 @@ f:SetScript("OnEvent", function(__, event, arg1)
                     CompactRaidFrameContainer:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", x, y)
                 end
             )
-            lib:RegisterFrame(CompactRaidFrameManager, "", db.CompactRaidFrameManager)
+            lib:RegisterFrame(CompactRaidFrameManager, "Raid Manager", db.CompactRaidFrameManager)
         end
         
         if db.EMEOptions.talkingHead then

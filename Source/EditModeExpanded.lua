@@ -477,9 +477,13 @@ f:SetScript("OnEvent", function(__, event, arg1)
         end
         
         if db.EMEOptions.vehicle then
+            VehicleSeatIndicator:SetParent(UIParent)
             VehicleSeatIndicator:SetPoint("TOPLEFT", DurabilityFrame, "TOPLEFT")
             lib:RegisterFrame(VehicleSeatIndicator, "Vehicle Seats", db.VehicleSeatIndicator)
             lib:RegisterResizable(VehicleSeatIndicator)
+            VehicleSeatIndicator:HookScript("OnEvent", function()
+                lib:RepositionFrame(VehicleSeatIndicator)
+            end)
         end
         
         if db.EMEOptions.mainStatusTrackingBarContainer then

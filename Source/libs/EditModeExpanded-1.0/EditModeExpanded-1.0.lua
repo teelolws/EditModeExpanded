@@ -2,7 +2,7 @@
 -- Internal variables
 --
 
-local MAJOR, MINOR = "EditModeExpanded-1.0", 62
+local MAJOR, MINOR = "EditModeExpanded-1.0", 63
 local lib = LibStub:NewLibrary(MAJOR, MINOR)
 if not lib then return end
 
@@ -818,6 +818,17 @@ hooksecurefunc(f, "OnLoad", function()
                         
                         if displayInfo.setting == Enum.EditModeUnitFrameSetting.FrameSize then
                             savedValue = savedValue or 100
+                            
+                            CallbackRegistryMixin.OnLoad(settingFrame)
+                
+                          	local function OnValueChanged(self, value)
+                                if not self.initInProgress then
+                                    EditModeExpandedSystemSettingsDialog:OnSettingValueChanged(self.setting, value);
+                                end
+                            end
+                              
+                            settingFrame.cbrHandles = EventUtil.CreateCallbackHandleContainer()
+                          	settingFrame.cbrHandles:RegisterCallback(settingFrame.Slider, MinimalSliderWithSteppersMixin.Event.OnValueChanged, OnValueChanged, settingFrame)
                         end
                         
                         if displayInfo.setting == ENUM_EDITMODEACTIONBARSETTING_HIDEABLE then
@@ -914,7 +925,7 @@ hooksecurefunc(f, "OnLoad", function()
         --    return self.pools:GetPool("EditModeSettingDropdownTemplate");
         --else
         if settingType == Enum.EditModeSettingDisplayType.Slider then
-            return self.pools:GetPool("EditModeExpandedSettingSliderTemplate")
+            return self.pools:GetPool("EditModeSettingSliderTemplate")
         elseif settingType == Enum.ChrCustomizationOptionType.Checkbox then
             return self.pools:GetPool("EditModeSettingCheckboxTemplate");
         end
@@ -924,7 +935,7 @@ hooksecurefunc(f, "OnLoad", function()
         local draggingSlider;
         local releaseSliders = {};
 
-        for settingSlider in self.pools:EnumerateActiveByTemplate("EditModeExpandedSettingSliderTemplate") do
+        for settingSlider in self.pools:EnumerateActiveByTemplate("EditModeSettingSliderTemplate") do
             if settingSlider.Slider.Slider:IsDraggingThumb() then
                 draggingSlider = settingSlider;
             else
@@ -968,7 +979,7 @@ hooksecurefunc(f, "OnLoad", function()
     
         self.pools = CreateFramePoolCollection();
         --self.pools:CreatePool("FRAME", self.Settings, "EditModeSettingDropdownTemplate") -- trying to use dropdowns causes taint issues, probably because of long-running taint issues with dropdowns in general
-        self.pools:CreatePool("FRAME", self.Settings, "EditModeExpandedSettingSliderTemplate");
+        self.pools:CreatePool("FRAME", self.Settings, "EditModeSettingSliderTemplate");
         self.pools:CreatePool("FRAME", self.Settings, "EditModeSettingCheckboxTemplate");
     
         local function resetExtraButton(pool, button)

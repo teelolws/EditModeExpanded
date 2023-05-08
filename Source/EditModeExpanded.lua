@@ -66,6 +66,7 @@ local defaults = {
         MultiBar5 = {},
         MultiBar6 = {},
         MultiBar7 = {},
+        CompactRaidFrameManager = {},
     }
 }
 
@@ -302,6 +303,7 @@ f:SetScript("OnEvent", function(__, event, arg1)
                     CompactRaidFrameContainer:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", x, y)
                 end
             )
+            lib:RegisterFrame(CompactRaidFrameManager, "", db.CompactRaidFrameManager)
         end
         
         if db.EMEOptions.talkingHead then

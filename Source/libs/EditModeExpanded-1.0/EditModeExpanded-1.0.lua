@@ -1062,12 +1062,11 @@ do
             end
             
             -- the option in the expanded frame
+            if frame.EMEdisabledByDefault then
+                db.enabled = false
+            end
             if db.enabled == nil then
-                if frame.EMEdisabledByDefault then
-                    db.enabled = false
-                else
-                    db.enabled = true
-                end
+                db.enabled = true
             end
             frame.EMECheckButtonFrame:SetChecked(db.enabled)
             

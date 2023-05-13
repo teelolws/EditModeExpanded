@@ -304,6 +304,24 @@ f:SetScript("OnEvent", function(__, event, arg1)
                 end
             )
             lib:RegisterFrame(CompactRaidFrameManager, "Raid Manager", db.CompactRaidFrameManager)
+            local expanded
+            hooksecurefunc("CompactRaidFrameManager_Expand", function()
+                if expanded then return end
+                expanded = true
+                CompactRaidFrameManager:ClearPoint("TOPLEFT")
+                lib:RepositionFrame(CompactRaidFrameManager)
+                for i = 1, CompactRaidFrameManager:GetNumPoints() do
+                    local a, b, c, x, e = CompactRaidFrameManager:GetPoint(i)
+                    x = x + 175
+                    CompactRaidFrameManager:SetPoint(a,b,c,x,e)
+                end
+            end)
+            hooksecurefunc("CompactRaidFrameManager_Collapse", function()
+                if not expanded then return end
+                expanded = false
+                CompactRaidFrameManager:ClearPoint("TOPLEFT")
+                lib:RepositionFrame(CompactRaidFrameManager)
+            end)
         end
         
         if db.EMEOptions.talkingHead then

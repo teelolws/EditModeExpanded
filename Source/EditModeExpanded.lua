@@ -273,36 +273,6 @@ f:SetScript("OnEvent", function(__, event, arg1)
         end
         
         if db.EMEOptions.compactRaidFrameContainer then
-            local originalFrameManagerX, originalFrameManagerY = CompactRaidFrameManager:GetRect()
-            local wasMoved = false
-            lib:RegisterCustomCheckbox(CompactRaidFrameContainer, "Hide Frame Manager", 
-                -- on checked
-                function()
-                    if wasMoved then return end
-                    wasMoved = true
-                    
-                    -- this frame cannot be :Hide() hidden, as other frames are parented to it. Cannot change the parenting either, without causing other problems.
-                    -- So, instead, lets shove it off the screen.
-                    --local x, y = CompactRaidFrameContainer:GetRect()
-                    originalFrameManagerX, originalFrameManagerY = CompactRaidFrameManager:GetRect()
-                    CompactRaidFrameManager:ClearAllPoints()
-                    CompactRaidFrameManager:SetPoint("TOPRIGHT", UIParent, "BOTTOMLEFT", 0, 0)
-                    --CompactRaidFrameContainer:ClearAllPoints()
-                    --CompactRaidFrameContainer:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", x, y)
-                end,
-                
-                -- on unchecked
-                function()
-                    if not wasMoved then return end
-                    wasMoved = false
-                    
-                    local x, y = CompactRaidFrameContainer:GetRect()
-                    CompactRaidFrameManager:ClearAllPoints()
-                    CompactRaidFrameManager:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", originalFrameManagerX, originalFrameManagerY)
-                    CompactRaidFrameContainer:ClearAllPoints()
-                    CompactRaidFrameContainer:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", x, y)
-                end
-            )
             lib:RegisterFrame(CompactRaidFrameManager, "Raid Manager", db.CompactRaidFrameManager)
             local expanded
             hooksecurefunc("CompactRaidFrameManager_Expand", function()
@@ -322,6 +292,27 @@ f:SetScript("OnEvent", function(__, event, arg1)
                 CompactRaidFrameManager:ClearPoint("TOPLEFT")
                 lib:RepositionFrame(CompactRaidFrameManager)
             end)
+            lib:RegisterHideable(CompactRaidFrameManager)
+            
+            -- the wasVisible saved in the library when entering Edit Mode cannot be relied upon, as entering Edit Mode shows the raid manager in some situations, before we can detect if it was already visible
+            hooksecurefunc(EditModeManagerFrame, "ExitEditMode", function()
+                CompactRaidFrameManager:SetShown(IsInGroup() or IsInRaid())
+            end)
+            
+            do
+                local noInfinite
+                hooksecurefunc(CompactRaidFrameManager, "SetShown", function()
+                    if noInfinite then return end
+                    if EditModeManagerFrame.editModeActive then
+                        CompactRaidFrameManager:Show()
+                    else
+                        noInfinite = true
+                        lib:RepositionFrame(CompactRaidFrameManager)
+                        noInfinite = false
+                    end
+                end)
+            end
+                
         end
         
         if db.EMEOptions.talkingHead then

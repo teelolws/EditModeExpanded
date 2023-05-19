@@ -67,6 +67,7 @@ local defaults = {
         MultiBar6 = {},
         MultiBar7 = {},
         CompactRaidFrameManager = {},
+        ExpansionLandingPageMinimapButton = {},
     }
 }
 
@@ -422,15 +423,11 @@ f:SetScript("OnEvent", function(__, event, arg1)
             C_Timer.After(1, function() lib:UpdateFrameResize(MinimapCluster) end)
             
             local isDefault = true
-            local elpA, elpB, elpC, elpD, elpE = ExpansionLandingPageMinimapButton:GetPoint(1)
             lib:RegisterCustomCheckbox(MinimapCluster, "Square",
                 function()
                     isDefault = false
                     Minimap:SetMaskTexture("Interface\\BUTTONS\\WHITE8X8")
-                    ExpansionLandingPageMinimapButton:SetParent(MinimapCluster.MinimapContainer)
                     MinimapBackdrop:Hide()
-                    ExpansionLandingPageMinimapButton:ClearAllPoints()
-                    ExpansionLandingPageMinimapButton:SetPoint("BOTTOMLEFT", MinimapCluster.MinimapContainer, "BOTTOMLEFT", -10, 0)
                 end,
                 
                 function()
@@ -438,11 +435,15 @@ f:SetScript("OnEvent", function(__, event, arg1)
                     if isDefault then return end
                     Minimap:SetMaskTexture("Interface\\Masks\\CircleMask")
                     MinimapBackdrop:Show()
-                    ExpansionLandingPageMinimapButton:SetParent(MinimapBackdrop)
-                    ExpansionLandingPageMinimapButton:ClearAllPoints()
-                    ExpansionLandingPageMinimapButton:SetPoint(elpA, elpB, elpC, elpD, elpE)
                 end
             )
+            
+            if ExpansionLandingPageMinimapButton then
+                ExpansionLandingPageMinimapButton:SetParent(UIParent)
+                ExpansionLandingPageMinimapButton:SetFrameStrata("MEDIUM")
+                lib:RegisterFrame(ExpansionLandingPageMinimapButton, "Expansion Button", db.ExpansionLandingPageMinimapButton)
+                lib:RegisterResizable(ExpansionLandingPageMinimapButton)
+            end
         end
         
         if db.EMEOptions.uiWidgetTopCenterContainerFrame then

@@ -419,9 +419,6 @@ f:SetScript("OnEvent", function(__, event, arg1)
         end
         
         if db.EMEOptions.minimap then
-            lib:RegisterResizable(MinimapCluster)
-            C_Timer.After(1, function() lib:UpdateFrameResize(MinimapCluster) end)
-            
             local isDefault = true
             lib:RegisterCustomCheckbox(MinimapCluster, "Square",
                 function()

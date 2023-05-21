@@ -2,7 +2,7 @@
 -- Internal variables
 --
 
-local MAJOR, MINOR = "EditModeExpanded-1.0", 64
+local MAJOR, MINOR = "EditModeExpanded-1.0", 65
 local lib = LibStub:NewLibrary(MAJOR, MINOR)
 if not lib then return end
 
@@ -24,7 +24,8 @@ local ENUM_EDITMODEACTIONBARSETTING_CLAMPED = 13
 local ENUM_EDITMODEACTIONBARSETTING_HIDDENINCOMBAT = 14
 
 -- run OnLoad the first time RegisterFrame is called by an addon
-local f = {}
+local f = lib.internalOnLoadFrame or {}
+lib.internalOnLoadFrame = f
 function f.OnLoad() f.OnLoad = nil end
 
 -- some caching tables, save the state of frames just before entering Edit Mode
@@ -614,103 +615,100 @@ hooksecurefunc(f, "OnLoad", function()
         secureexecuterange(frames, clearSelectedSystem)
         EditModeExpandedSystemSettingsDialog:Hide()
     end
-end)
 
-hooksecurefunc(EditModeManagerFrame, "EnterEditMode", function(self)
-    -- can cause errors if the player is in combat - eg trying to move or show/hide protected frames
-    if InCombatLockdown() then return end
-    if not EditModeManagerExpandedFrame then return end -- happens if library is embedded but nothing has been registered
-    
-    if #frames <= 0 then EditModeManagerExpandedFrame:Hide() end
-    for _, frame in ipairs(frames) do
-        frame:SetHasActiveChanges(false)
-        frame:HighlightSystem();
-        wasVisible[frame.system] = frame:IsShown()
-        frame:SetShown(framesDB[frame.system].enabled)
-        local x, y = frame:GetSize()
-        if (not frame.EMEDontResize) and ((x < 40) or (y < 40)) then
-            originalSize[frame.system] = {["x"] = x, ["y"] = y}
-            if defaultSize[frame.system] then
-                frame:SetSize(defaultSize[frame.system].x, defaultSize[frame.system].y)
-            elseif (x < 40) and (y > 0) then
-                frame:SetSize(40, y)
-            elseif (x > 0) and (y < 40) then
-                frame:SetSize(x, 40)
-            else
-                frame:SetSize(40, 40)
-            end
-        end
-    end
-    
-    for frameName in pairs(existingFrames) do
-        local frame = _G[frameName]
-        local systemID = getSystemID(frame)
-        if framesDB[systemID] and framesDB[systemID].settings and (framesDB[systemID].settings[ENUM_EDITMODEACTIONBARSETTING_HIDEABLE] ~= nil) then
-            if (framesDB[systemID].settings[ENUM_EDITMODEACTIONBARSETTING_HIDEABLE] == 1) then
-                frame:Show()
-            end
-        end
-    end
-end)
-
-hooksecurefunc(EditModeManagerFrame, "ExitEditMode", function()
-    if InCombatLockdown() then
-        print("EditModeExpanded Error: could not hide Edit Mode properly - you were in combat!")
-        return
-    end
-    if not EditModeManagerExpandedFrame then return end -- happens if library is embedded but nothing has been registered
-    
-    for _, frame in ipairs(frames) do
-        frame:ClearHighlight();
-        frame:StopMovingOrSizing();
+    hooksecurefunc(EditModeManagerFrame, "EnterEditMode", function(self)
+        -- can cause errors if the player is in combat - eg trying to move or show/hide protected frames
+        if InCombatLockdown() then return end
+        if not EditModeManagerExpandedFrame then return end -- happens if library is embedded but nothing has been registered
         
-        if framesDB[frame.system] and framesDB[frame.system].settings and (framesDB[frame.system].settings[ENUM_EDITMODEACTIONBARSETTING_HIDEABLE] ~= nil) then
-            if (framesDB[frame.system].settings[ENUM_EDITMODEACTIONBARSETTING_HIDEABLE] == 1) then
-                frame:Hide()
+        if #frames <= 0 then EditModeManagerExpandedFrame:Hide() end
+        for _, frame in ipairs(frames) do
+            frame:SetHasActiveChanges(false)
+            frame:HighlightSystem();
+            wasVisible[frame.system] = frame:IsShown()
+            frame:SetShown(framesDB[frame.system].enabled)
+            local x, y = frame:GetSize()
+            if (not frame.EMEDontResize) and ((x < 40) or (y < 40)) then
+                originalSize[frame.system] = {["x"] = x, ["y"] = y}
+                if defaultSize[frame.system] then
+                    frame:SetSize(defaultSize[frame.system].x, defaultSize[frame.system].y)
+                elseif (x < 40) and (y > 0) then
+                    frame:SetSize(40, y)
+                elseif (x > 0) and (y < 40) then
+                    frame:SetSize(x, 40)
+                else
+                    frame:SetSize(40, 40)
+                end
+            end
+        end
+        
+        for frameName in pairs(existingFrames) do
+            local frame = _G[frameName]
+            local systemID = getSystemID(frame)
+            if framesDB[systemID] and framesDB[systemID].settings and (framesDB[systemID].settings[ENUM_EDITMODEACTIONBARSETTING_HIDEABLE] ~= nil) then
+                if (framesDB[systemID].settings[ENUM_EDITMODEACTIONBARSETTING_HIDEABLE] == 1) then
+                    frame:Show()
+                end
+            end
+        end
+    end)
+
+    hooksecurefunc(EditModeManagerFrame, "ExitEditMode", function()
+        if InCombatLockdown() then
+            print("EditModeExpanded Error: could not hide Edit Mode properly - you were in combat!")
+            return
+        end
+        if not EditModeManagerExpandedFrame then return end -- happens if library is embedded but nothing has been registered
+        
+        for _, frame in ipairs(frames) do
+            frame:ClearHighlight();
+            frame:StopMovingOrSizing();
+            
+            if framesDB[frame.system] and framesDB[frame.system].settings and (framesDB[frame.system].settings[ENUM_EDITMODEACTIONBARSETTING_HIDEABLE] ~= nil) then
+                if (framesDB[frame.system].settings[ENUM_EDITMODEACTIONBARSETTING_HIDEABLE] == 1) then
+                    frame:Hide()
+                else
+                    frame:SetShown(wasVisible[frame.system])
+                end
             else
                 frame:SetShown(wasVisible[frame.system])
             end
-        else
-            frame:SetShown(wasVisible[frame.system])
-        end
-        
-        if originalSize[frame.system] then
-            frame:SetSize(originalSize[frame.system].x, originalSize[frame.system].y)
-        end
-    end
-    
-    for frameName in pairs(existingFrames) do
-        local frame = _G[frameName]
-        local systemID = getSystemID(frame)
-        if framesDB[systemID] and framesDB[systemID].settings and (framesDB[systemID].settings[ENUM_EDITMODEACTIONBARSETTING_HIDEABLE] ~= nil) then
-            if (framesDB[systemID].settings[ENUM_EDITMODEACTIONBARSETTING_HIDEABLE] == 1) then
-                frame:Hide()
+            
+            if originalSize[frame.system] then
+                frame:SetSize(originalSize[frame.system].x, originalSize[frame.system].y)
             end
         end
-    end
-    
-    wipe(wasVisible)
-    wipe(originalSize)
-    EditModeExpandedSystemSettingsDialog:Hide()
-end)
-
-hooksecurefunc(EditModeManagerFrame, "SelectSystem", function(self, systemFrame)
-    if EditModeExpandedSystemSettingsDialog and EditModeExpandedSystemSettingsDialog.attachedToSystem ~= systemFrame then
-        EditModeExpandedSystemSettingsDialog:Hide()
-    end
-    
-    for _, frame in ipairs(frames) do
-        if systemFrame ~= frame then
-            frame:HighlightSystem()
+        
+        for frameName in pairs(existingFrames) do
+            local frame = _G[frameName]
+            local systemID = getSystemID(frame)
+            if framesDB[systemID] and framesDB[systemID].settings and (framesDB[systemID].settings[ENUM_EDITMODEACTIONBARSETTING_HIDEABLE] ~= nil) then
+                if (framesDB[systemID].settings[ENUM_EDITMODEACTIONBARSETTING_HIDEABLE] == 1) then
+                    frame:Hide()
+                end
+            end
         end
-    end
-end)
+        
+        wipe(wasVisible)
+        wipe(originalSize)
+        EditModeExpandedSystemSettingsDialog:Hide()
+    end)
 
---
--- Edit Mode Dialog Box code
---
+    hooksecurefunc(EditModeManagerFrame, "SelectSystem", function(self, systemFrame)
+        if EditModeExpandedSystemSettingsDialog and EditModeExpandedSystemSettingsDialog.attachedToSystem ~= systemFrame then
+            EditModeExpandedSystemSettingsDialog:Hide()
+        end
+        
+        for _, frame in ipairs(frames) do
+            if systemFrame ~= frame then
+                frame:HighlightSystem()
+            end
+        end
+    end)
 
-hooksecurefunc(f, "OnLoad", function()
+    --
+    -- Edit Mode Dialog Box code
+    --
     local frame = CreateFrame("Frame", nil, UIParent, "ResizeLayoutFrame")
     EditModeExpandedSystemSettingsDialog = frame
     Mixin(frame, EditModeSystemSettingsDialogMixin)
@@ -1014,9 +1012,11 @@ end)
 -- Profile handling
 --
 do
-    local f = CreateFrame("Frame")
-    f:RegisterEvent("EDIT_MODE_LAYOUTS_UPDATED")
-    f:SetScript("OnEvent", function()
+    local lf = CreateFrame("Frame")
+    hooksecurefunc(f, "OnLoad", function()
+        lf:RegisterEvent("EDIT_MODE_LAYOUTS_UPDATED")
+    end)
+    lf:SetScript("OnEvent", function()
         profilesInitialised = true
         
         for _, frames in pairs({frames, existingFrames}) do
@@ -1386,10 +1386,12 @@ function lib:RegisterHideInCombat(frame)
 end
 
 do
-    local f = CreateFrame("Frame")
-    f:RegisterEvent("PLAYER_REGEN_DISABLED")
-    f:RegisterEvent("PLAYER_REGEN_ENABLED")
-    f:SetScript("OnEvent", function(self, event, ...)
+    local lf = CreateFrame("Frame")
+    hooksecurefunc(f, "OnLoad", function()
+        lf:RegisterEvent("PLAYER_REGEN_DISABLED")
+        lf:RegisterEvent("PLAYER_REGEN_ENABLED")
+    end)
+    lf:SetScript("OnEvent", function(self, event, ...)
         if event == "PLAYER_REGEN_DISABLED" then
             -- entering combat
             for _, frames in pairs({frames, existingFrames}) do

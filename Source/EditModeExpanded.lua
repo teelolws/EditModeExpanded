@@ -274,50 +274,6 @@ f:SetScript("OnEvent", function(__, event, arg1)
             lib:RegisterFrame(frame, "", db[name])
         end
         
-        if db.EMEOptions.compactRaidFrameContainer then
-            lib:RegisterFrame(CompactRaidFrameManager, "Raid Manager", db.CompactRaidFrameManager)
-            local expanded
-            hooksecurefunc("CompactRaidFrameManager_Expand", function()
-                if expanded then return end
-                expanded = true
-                CompactRaidFrameManager:ClearPoint("TOPLEFT")
-                lib:RepositionFrame(CompactRaidFrameManager)
-                for i = 1, CompactRaidFrameManager:GetNumPoints() do
-                    local a, b, c, x, e = CompactRaidFrameManager:GetPoint(i)
-                    x = x + 175
-                    CompactRaidFrameManager:SetPoint(a,b,c,x,e)
-                end
-            end)
-            hooksecurefunc("CompactRaidFrameManager_Collapse", function()
-                if not expanded then return end
-                expanded = false
-                CompactRaidFrameManager:ClearPoint("TOPLEFT")
-                lib:RepositionFrame(CompactRaidFrameManager)
-            end)
-            lib:RegisterHideable(CompactRaidFrameManager)
-            lib:RegisterToggleInCombat(CompactRaidFrameManager)
-            
-            -- the wasVisible saved in the library when entering Edit Mode cannot be relied upon, as entering Edit Mode shows the raid manager in some situations, before we can detect if it was already visible
-            hooksecurefunc(EditModeManagerFrame, "ExitEditMode", function()
-                CompactRaidFrameManager:SetShown(IsInGroup() or IsInRaid())
-            end)
-            
-            do
-                local noInfinite
-                hooksecurefunc(CompactRaidFrameManager, "SetShown", function()
-                    if noInfinite then return end
-                    if EditModeManagerFrame.editModeActive then
-                        CompactRaidFrameManager:Show()
-                    else
-                        noInfinite = true
-                        lib:RepositionFrame(CompactRaidFrameManager)
-                        noInfinite = false
-                    end
-                end)
-            end
-                
-        end
-        
         if db.EMEOptions.talkingHead then
             lib:RegisterHideable(TalkingHeadFrame)
             lib:RegisterToggleInCombat(TalkingHeadFrame)
@@ -874,9 +830,65 @@ f:SetScript("OnEvent", function(__, event, arg1)
         if totemFrameLoaded then
             lib:RepositionFrame(TotemFrame)
         end
+    elseif event == "EDIT_MODE_LAYOUTS_UPDATED" then
+        local db = f.db.global
+        if db.EMEOptions.compactRaidFrameContainer then
+            local layoutInfo = EditModeManagerFrame:GetActiveLayoutInfo()
+            if layoutInfo.layoutType == 0 then return end
+            f:UnregisterEvent("EDIT_MODE_LAYOUTS_UPDATED")
+            
+            lib:RegisterFrame(CompactRaidFrameManager, "Raid Manager", db.CompactRaidFrameManager)
+            local expanded
+            hooksecurefunc("CompactRaidFrameManager_Expand", function()
+                if expanded then return end
+                expanded = true
+                CompactRaidFrameManager:ClearPoint("TOPLEFT")
+                lib:RepositionFrame(CompactRaidFrameManager)
+                for i = 1, CompactRaidFrameManager:GetNumPoints() do
+                    local a, b, c, x, e = CompactRaidFrameManager:GetPoint(i)
+                    x = x + 175
+                    CompactRaidFrameManager:SetPoint(a,b,c,x,e)
+                end
+            end)
+            hooksecurefunc("CompactRaidFrameManager_Collapse", function()
+                if not expanded then return end
+                expanded = false
+                CompactRaidFrameManager:ClearPoint("TOPLEFT")
+                lib:RepositionFrame(CompactRaidFrameManager)
+            end)
+            lib:RegisterHideable(CompactRaidFrameManager)
+            lib:RegisterToggleInCombat(CompactRaidFrameManager)
+            
+            -- the wasVisible saved in the library when entering Edit Mode cannot be relied upon, as entering Edit Mode shows the raid manager in some situations, before we can detect if it was already visible
+            hooksecurefunc(EditModeManagerFrame, "ExitEditMode", function()
+                CompactRaidFrameManager:SetShown(IsInGroup() or IsInRaid())
+            end)
+            
+            do
+                local noInfinite
+                hooksecurefunc(CompactRaidFrameManager, "SetShown", function()
+                    if noInfinite then return end
+                    if InCombatLockdown() then
+                        local _, anchor = CompactRaidFrameContainer:GetPoint(1)
+                        if anchor == CompactRaidFrameManager then return end
+                    end
+                    if EditModeManagerFrame.editModeActive then
+                        CompactRaidFrameManager:Show()
+                    else
+                        noInfinite = true
+                        lib:RepositionFrame(CompactRaidFrameManager)
+                        if not (IsInGroup() or IsInRaid()) then
+                            CompactRaidFrameManager:Hide()
+                        end
+                        noInfinite = false
+                    end
+                end)
+            end
+        end
     end
 end)
 
 f:RegisterEvent("ADDON_LOADED")
 f:RegisterEvent("PLAYER_ENTERING_WORLD")
 f:RegisterEvent("PLAYER_TOTEM_UPDATE")
+f:RegisterEvent("EDIT_MODE_LAYOUTS_UPDATED")

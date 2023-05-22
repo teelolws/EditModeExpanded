@@ -246,7 +246,7 @@ local function registerTotemFrame(db)
     lib:RegisterFrame(TotemFrame, "Totem", db.TotemFrame)
     lib:SetDefaultSize(TotemFrame, 100, 40)
     lib:RegisterHideable(TotemFrame)
-    lib:RegisterHideInCombat(TotemFrame)
+    lib:RegisterToggleInCombat(TotemFrame)
     lib:RegisterResizable(TotemFrame)
     totemFrameLoaded = true
 end
@@ -295,7 +295,7 @@ f:SetScript("OnEvent", function(__, event, arg1)
                 lib:RepositionFrame(CompactRaidFrameManager)
             end)
             lib:RegisterHideable(CompactRaidFrameManager)
-            lib:RegisterHideInCombat(CompactRaidFrameManager)
+            lib:RegisterToggleInCombat(CompactRaidFrameManager)
             
             -- the wasVisible saved in the library when entering Edit Mode cannot be relied upon, as entering Edit Mode shows the raid manager in some situations, before we can detect if it was already visible
             hooksecurefunc(EditModeManagerFrame, "ExitEditMode", function()
@@ -320,7 +320,7 @@ f:SetScript("OnEvent", function(__, event, arg1)
         
         if db.EMEOptions.talkingHead then
             lib:RegisterHideable(TalkingHeadFrame)
-            lib:RegisterHideInCombat(TalkingHeadFrame)
+            lib:RegisterToggleInCombat(TalkingHeadFrame)
             TalkingHeadFrame:HookScript("OnEvent", function(...)
                 if lib:IsFrameMarkedHidden(TalkingHeadFrame) then
                     TalkingHeadFrame:Close()
@@ -452,7 +452,7 @@ f:SetScript("OnEvent", function(__, event, arg1)
         
         if db.EMEOptions.stanceBar then
             lib:RegisterHideable(StanceBar)
-            lib:RegisterHideInCombat(StanceBar)
+            lib:RegisterToggleInCombat(StanceBar)
             hooksecurefunc(StanceBar, "Show", function()
                 if lib:IsFrameMarkedHidden(StanceBar) then
                     StanceBar:Hide()
@@ -482,7 +482,7 @@ f:SetScript("OnEvent", function(__, event, arg1)
         
         if db.EMEOptions.playerFrame then
             lib:RegisterHideable(PlayerFrame)
-            lib:RegisterHideInCombat(PlayerFrame)
+            lib:RegisterToggleInCombat(PlayerFrame)
             C_Timer.After(4, function()
                 if lib:IsFrameMarkedHidden(PlayerFrame) then
                     PlayerFrame:Hide()
@@ -523,7 +523,7 @@ f:SetScript("OnEvent", function(__, event, arg1)
         if db.EMEOptions.mainStatusTrackingBarContainer then
             lib:RegisterResizable(MainStatusTrackingBarContainer)
             lib:RegisterHideable(MainStatusTrackingBarContainer)
-            lib:RegisterHideInCombat(MainStatusTrackingBarContainer)
+            lib:RegisterToggleInCombat(MainStatusTrackingBarContainer)
             C_Timer.After(1, function() lib:UpdateFrameResize(MainStatusTrackingBarContainer) end)
             hooksecurefunc(MainStatusTrackingBarContainer, "SetScale", function(frame, scale)
                 for _, bar in ipairs(StatusTrackingBarManager.barContainers) do
@@ -555,7 +555,7 @@ f:SetScript("OnEvent", function(__, event, arg1)
         if db.EMEOptions.secondaryStatusTrackingBarContainer then
             lib:RegisterResizable(SecondaryStatusTrackingBarContainer)
             lib:RegisterHideable(SecondaryStatusTrackingBarContainer)
-            lib:RegisterHideInCombat(SecondaryStatusTrackingBarContainer)
+            lib:RegisterToggleInCombat(SecondaryStatusTrackingBarContainer)
             C_Timer.After(1, function() lib:UpdateFrameResize(SecondaryStatusTrackingBarContainer) end)
             hooksecurefunc(SecondaryStatusTrackingBarContainer, "SetScale", function(frame, scale)
                 for _, bar in ipairs(StatusTrackingBarManager.barContainers) do
@@ -586,7 +586,7 @@ f:SetScript("OnEvent", function(__, event, arg1)
         
         if db.EMEOptions.menu then
             lib:RegisterHideable(MicroMenuContainer)
-            lib:RegisterHideInCombat(MicroMenuContainer)
+            lib:RegisterToggleInCombat(MicroMenuContainer)
             C_Timer.After(1, function()
                 if lib:IsFrameMarkedHidden(MicroMenuContainer) then
                     MicroMenuContainer:Hide()
@@ -655,7 +655,7 @@ f:SetScript("OnEvent", function(__, event, arg1)
         
         if db.EMEOptions.bags then
             lib:RegisterHideable(BagsBar)
-            lib:RegisterHideInCombat(BagsBar)
+            lib:RegisterToggleInCombat(BagsBar)
             C_Timer.After(1, function()
                 if lib:IsFrameMarkedHidden(BagsBar) then
                     BagsBar:Hide()
@@ -719,7 +719,7 @@ f:SetScript("OnEvent", function(__, event, arg1)
                 lib:RegisterFrame(PaladinPowerBarFrame, "Holy Power", db.HolyPower)
                 C_Timer.After(4, function() lib:RepositionFrame(PaladinPowerBarFrame) end)
                 lib:RegisterHideable(PaladinPowerBarFrame)
-                lib:RegisterHideInCombat(PaladinPowerBarFrame)
+                lib:RegisterToggleInCombat(PaladinPowerBarFrame)
                 hooksecurefunc(PaladinPowerBarFrame, "Setup", function()
                     if not EditModeManagerFrame.editModeActive then
                         lib:RepositionFrame(PaladinPowerBarFrame)
@@ -738,7 +738,7 @@ f:SetScript("OnEvent", function(__, event, arg1)
             if db.EMEOptions.soulShards then
                 lib:RegisterFrame(WarlockPowerFrame, "Soul Shards", db.SoulShards)
                 lib:RegisterHideable(WarlockPowerFrame)
-                lib:RegisterHideInCombat(WarlockPowerFrame)
+                lib:RegisterToggleInCombat(WarlockPowerFrame)
                 lib:SetDontResize(WarlockPowerFrame)
                 hooksecurefunc(WarlockPowerFrame, "IsDirty", function()
                     if not EditModeManagerFrame.editModeActive then
@@ -766,7 +766,7 @@ f:SetScript("OnEvent", function(__, event, arg1)
                 lib:RegisterFrame(MonkHarmonyBarFrame, "Chi", db.Chi)
                 lib:SetDontResize(MonkHarmonyBarFrame)
                 lib:RegisterHideable(MonkHarmonyBarFrame)
-                lib:RegisterHideInCombat(MonkHarmonyBarFrame)
+                lib:RegisterToggleInCombat(MonkHarmonyBarFrame)
                 lib:RegisterResizable(MonkHarmonyBarFrame)
                 hooksecurefunc(PlayerFrameBottomManagedFramesContainer, "Layout", function()
                     if not EditModeManagerFrame.editModeActive then
@@ -778,7 +778,7 @@ f:SetScript("OnEvent", function(__, event, arg1)
             if db.EMEOptions.runes then
                 lib:RegisterFrame(RuneFrame, "Runes", db.Runes)
                 lib:RegisterHideable(RuneFrame)
-                lib:RegisterHideInCombat(RuneFrame)
+                lib:RegisterToggleInCombat(RuneFrame)
                 lib:SetDontResize(RuneFrame)
                 lib:RegisterResizable(RuneFrame)
                 hooksecurefunc(PlayerFrameBottomManagedFramesContainer, "Layout", function()
@@ -801,7 +801,7 @@ f:SetScript("OnEvent", function(__, event, arg1)
             if db.EMEOptions.arcaneCharges then
                 lib:RegisterFrame(MageArcaneChargesFrame, "Arcane Charges", db.ArcaneCharges)
                 lib:RegisterHideable(MageArcaneChargesFrame)
-                lib:RegisterHideInCombat(MageArcaneChargesFrame)
+                lib:RegisterToggleInCombat(MageArcaneChargesFrame)
                 lib:SetDontResize(MageArcaneChargesFrame)
                 lib:RegisterResizable(MageArcaneChargesFrame)
                 hooksecurefunc(PlayerFrameBottomManagedFramesContainer, "Layout", function()
@@ -821,7 +821,7 @@ f:SetScript("OnEvent", function(__, event, arg1)
                 lib:RegisterFrame(EssencePlayerFrame, "Essences", db.EvokerEssences)
                 lib:SetDontResize(EssencePlayerFrame)
                 lib:RegisterHideable(EssencePlayerFrame)
-                lib:RegisterHideInCombat(EssencePlayerFrame)
+                lib:RegisterToggleInCombat(EssencePlayerFrame)
                 lib:RegisterResizable(EssencePlayerFrame)
                 hooksecurefunc(EssencePlayerFrame, "UpdatePower", function()
                     if not EditModeManagerFrame.editModeActive then
@@ -843,7 +843,7 @@ f:SetScript("OnEvent", function(__, event, arg1)
                 lib:RegisterFrame(RogueComboPointBarFrame, "Combo Points", db.ComboPoints)
                 lib:SetDontResize(RogueComboPointBarFrame)
                 lib:RegisterHideable(RogueComboPointBarFrame)
-                lib:RegisterHideInCombat(RogueComboPointBarFrame)
+                lib:RegisterToggleInCombat(RogueComboPointBarFrame)
                 lib:RegisterResizable(RogueComboPointBarFrame)
                 hooksecurefunc(PlayerFrameBottomManagedFramesContainer, "Layout", function()
                     if not EditModeManagerFrame.editModeActive then
@@ -861,7 +861,7 @@ f:SetScript("OnEvent", function(__, event, arg1)
                 lib:RegisterFrame(DruidComboPointBarFrame, "Combo Points", db.ComboPoints)
                 lib:SetDontResize(DruidComboPointBarFrame)
                 lib:RegisterHideable(DruidComboPointBarFrame)
-                lib:RegisterHideInCombat(DruidComboPointBarFrame)
+                lib:RegisterToggleInCombat(DruidComboPointBarFrame)
                 lib:RegisterResizable(DruidComboPointBarFrame)
                 hooksecurefunc(PlayerFrameBottomManagedFramesContainer, "Layout", function()
                     if not EditModeManagerFrame.editModeActive then

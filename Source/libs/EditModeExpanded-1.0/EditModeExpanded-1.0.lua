@@ -2,7 +2,7 @@
 -- Internal variables
 --
 
-local MAJOR, MINOR = "EditModeExpanded-1.0", 65
+local MAJOR, MINOR = "EditModeExpanded-1.0", 66
 local lib = LibStub:NewLibrary(MAJOR, MINOR)
 if not lib then return end
 
@@ -1370,7 +1370,8 @@ function lib:HideByDefault(frame)
 end
 
 -- Adds an option to hide the frame during combat
-function lib:RegisterHideInCombat(frame)
+-- Frame must be already have had :RegisterHideable called on it for this to work
+function lib:RegisterToggleInCombat(frame)
     local systemID = getSystemID(frame)
     
     if not framesDialogs[systemID] then framesDialogs[systemID] = {} end
@@ -1380,7 +1381,7 @@ function lib:RegisterHideInCombat(frame)
     table.insert(framesDialogs[systemID],
         {
             setting = ENUM_EDITMODEACTIONBARSETTING_HIDDENINCOMBAT,
-            name = "Hide in Combat",
+            name = "Toggle Visibility in Combat",
             type = Enum.EditModeSettingDisplayType.Checkbox,
     })
 end
@@ -1404,12 +1405,12 @@ do
                     local settings = db.settings
                     local dialogs = framesDialogsKeys[systemID]
                     
-                    if dialogs and (dialogs[ENUM_EDITMODEACTIONBARSETTING_HIDDENINCOMBAT]) then
-                        if settings and ((not dialogs[ENUM_EDITMODEACTIONBARSETTING_HIDEABLE]) or (settings[ENUM_EDITMODEACTIONBARSETTING_HIDEABLE] ~= 1)) then
-                            -- Option "Hide" has priority
-                            if settings[ENUM_EDITMODEACTIONBARSETTING_HIDDENINCOMBAT] == 1 then
-                                frame:Hide()
-                            end
+                    if dialogs and dialogs[ENUM_EDITMODEACTIONBARSETTING_HIDDENINCOMBAT] and settings and (settings[ENUM_EDITMODEACTIONBARSETTING_HIDDENINCOMBAT] == 1) and dialogs[ENUM_EDITMODEACTIONBARSETTING_HIDEABLE] then
+                        if settings[ENUM_EDITMODEACTIONBARSETTING_HIDEABLE] == 1 then
+                            -- if "Hide" in enabled and this option too, then hide it while out of combat, show it while in combat
+                            frame:Show()
+                        else
+                            frame:Hide()
                         end
                     end
                 end
@@ -1426,12 +1427,11 @@ do
                     local settings = db.settings
                     local dialogs = framesDialogsKeys[systemID]
                     
-                    if dialogs and (dialogs[ENUM_EDITMODEACTIONBARSETTING_HIDDENINCOMBAT]) then
-                        if settings and ((not dialogs[ENUM_EDITMODEACTIONBARSETTING_HIDEABLE]) or (settings[ENUM_EDITMODEACTIONBARSETTING_HIDEABLE] ~= 1)) then
-                            -- Option "Hide" has priority
-                            if settings[ENUM_EDITMODEACTIONBARSETTING_HIDDENINCOMBAT] == 1 then
-                                frame:Show()
-                            end
+                    if dialogs and settings and dialogs[ENUM_EDITMODEACTIONBARSETTING_HIDDENINCOMBAT] and (settings[ENUM_EDITMODEACTIONBARSETTING_HIDDENINCOMBAT] == 1) and dialogs[ENUM_EDITMODEACTIONBARSETTING_HIDEABLE] then
+                        if settings[ENUM_EDITMODEACTIONBARSETTING_HIDEABLE] == 1 then
+                            frame:Hide()
+                        else
+                            frame:Show()
                         end
                     end
                 end

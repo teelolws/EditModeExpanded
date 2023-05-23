@@ -35,6 +35,7 @@ local defaults = {
             comboPoints = true,
             bonusRoll = true,
             actionBars = false,
+            groupLootContainer = true,
         },
         QueueStatusButton = {},
         TotemFrame = {},
@@ -68,6 +69,7 @@ local defaults = {
         MultiBar7 = {},
         CompactRaidFrameManager = {},
         ExpansionLandingPageMinimapButton = {},
+        GroupLootContainer = {},
     }
 }
 
@@ -232,6 +234,11 @@ local options = {
         actionBars = {
             name = "Action Bars",
             desc = "Allows the action bars to have their padding set to zero. WARNING: you MUST move all your action bars from their default position, or you will get addon errors. You can even move the bars back to where they were originally!",
+            type = "toggle",
+        },
+        groupLootContainer = {
+            name = "Group Loot Container",
+            desc = "Enables / Disables Group Loot Container support",
             type = "toggle",
         },
     },
@@ -638,6 +645,31 @@ f:SetScript("OnEvent", function(__, event, arg1)
                 lib:RegisterFrame(BonusRollFrame, "Bonus Roll", db.BonusRoll)
                 lib:HideByDefault(BonusRollFrame)
                 BonusRollFrame.Selection:SetFrameStrata("TOOLTIP")
+            end)
+        end
+        
+        if db.EMEOptions.groupLootContainer then
+            local alreadyInitialized
+            GroupLootContainer:HookScript("OnShow", function()
+                if alreadyInitialized then
+                    lib:RepositionFrame(GroupLootContainer)
+                    return
+                end
+                alreadyInitialized = true
+                lib:RegisterFrame(GroupLootContainer, "Group Loot Container", db.GroupLootContainer)
+                local noInfinite
+                hooksecurefunc(GroupLootContainer, "SetPoint", function()
+                    if noInfinite then return end
+                    noInfinite = true
+                    lib:RepositionFrame(GroupLootContainer)
+                    noFinite = nil
+                end)
+                hooksecurefunc("GroupLootContainer_Update", function()
+                    lib:RepositionFrame(GroupLootContainer)
+                end)
+                hooksecurefunc(UIParentBottomManagedFrameContainer, "Layout", function()
+                    lib:RepositionFrame(GroupLootContainer)
+                end)
             end)
         end
         

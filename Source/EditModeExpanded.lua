@@ -36,6 +36,7 @@ local defaults = {
             bonusRoll = true,
             actionBars = false,
             groupLootContainer = true,
+            auctionMultisell = true,
         },
         QueueStatusButton = {},
         TotemFrame = {},
@@ -70,6 +71,7 @@ local defaults = {
         CompactRaidFrameManager = {},
         ExpansionLandingPageMinimapButton = {},
         GroupLootContainer = {},
+        AuctionHouseMultisellProgressFrame = {},
     }
 }
 
@@ -241,12 +243,18 @@ local options = {
             desc = "Enables / Disables Group Loot Container support",
             type = "toggle",
         },
+        auctionMultisell = {
+            name = "Auction Multisell",
+            desc = "Enables / Disables Auction Multisell support",
+            type = "toggle",
+        },
     },
 }
 
 local achievementFrameLoaded
 local addonLoaded
 local totemFrameLoaded
+local ahLoaded
 
 local function registerTotemFrame(db)
     TotemFrame:SetParent(UIParent)
@@ -260,7 +268,6 @@ end
 
 f:SetScript("OnEvent", function(__, event, arg1)
     if (event == "ADDON_LOADED") and (arg1 == "EditModeExpanded") and (not addonLoaded) then
-        f:UnregisterEvent("ADDON_LOADED")
         addonLoaded = true
         f.db = LibStub("AceDB-3.0"):New("EditModeExpandedADB", defaults)
         
@@ -916,6 +923,24 @@ f:SetScript("OnEvent", function(__, event, arg1)
                     end
                 end)
             end
+        end
+    elseif (event == "ADDON_LOADED") and (arg1 == "Blizzard_AuctionHouseUI") and (not ahLoaded) then
+        ahLoaded = true
+        local db = f.db.global
+        
+        if db.EMEOptions.auctionMultisell then
+            local alreadyInitialized
+            AuctionHouseMultisellProgressFrame:HookScript("OnShow", function()
+                if alreadyInitialized then
+                    lib:RepositionFrame(AuctionHouseMultisellProgressFrame)
+                    return
+                end
+                alreadyInitialized = true
+                lib:RegisterFrame(AuctionHouseMultisellProgressFrame, "Auction Multisell", db.AuctionHouseMultisellProgressFrame)
+                hooksecurefunc(UIParentBottomManagedFrameContainer, "Layout", function()
+                    lib:RepositionFrame(AuctionHouseMultisellProgressFrame)
+                end)
+            end)
         end
     end
 end)

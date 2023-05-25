@@ -370,10 +370,6 @@ function lib:RegisterFrame(frame, name, db, anchorTo, anchorPoint)
         end
     end
     
-    if db.settings and db.settings[Enum.EditModeUnitFrameSetting.FrameSize] then
-        frame:SetScaleOverride(db.settings[Enum.EditModeUnitFrameSetting.FrameSize]/100)
-    end
-    
     if db.x and db.y then
         if (frame:GetScale() == 1) and (anchorTo == UIParent) and (anchorPoint == "TOPLEFT") then
             -- if stored coordinates are outside the screen resolution, reset them back to defaults
@@ -467,6 +463,28 @@ function lib:RegisterResizable(frame)
             ConvertValue = ConvertValueDefault,
             formatter = showAsPercentage,
         })
+    
+    local db = framesDB[systemID]
+    if db.settings and db.settings[Enum.EditModeUnitFrameSetting.FrameSize] then
+        frame:SetScaleOverride(db.settings[Enum.EditModeUnitFrameSetting.FrameSize]/100)
+    end
+    
+    if db.x and db.y then 
+        if frame.system >= STARTING_INDEX then
+            -- only reposition if its a custom frame - frames handled by base edit mode already correctly deal with scaling
+            if (frame:GetScale() == 1) and (frame.EMEanchorTo == UIParent) and (frame.EMEanchorPoint == "TOPLEFT") then
+                local _, _, screenX, screenY = UIParent:GetRect()
+                if (db.x < 0) or (db.x >= screenX) or (db.y < 0) or (db.y > screenY) then
+                    db.x, db.y = frame:GetRect()
+                end
+            end
+            frame:ClearAllPoints()
+            local x, y = getOffsetXY(frame, db.x, db.y)
+            frame:SetPoint(frame.EMEanchorPoint, frame.EMEanchorTo, frame.EMEanchorPoint, x, y)
+        end
+    else
+        db.x, db.y = frame:GetRect()
+    end
 end
 
 function lib:UpdateFrameResize(frame)
@@ -1073,7 +1091,7 @@ do
                 if not frame.EMESystemID then
                     
                     -- update scale
-                    if db.settings and db.settings[Enum.EditModeUnitFrameSetting.FrameSize] then
+                    if framesDialogsKeys[systemID] and framesDialogsKeys[systemID][Enum.EditModeUnitFrameSetting.FrameSize] and db.settings and db.settings[Enum.EditModeUnitFrameSetting.FrameSize] then
                         frame:SetScaleOverride(db.settings[Enum.EditModeUnitFrameSetting.FrameSize]/100)
                     end
                     

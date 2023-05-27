@@ -376,6 +376,7 @@ f:SetScript("OnEvent", function(__, event, arg1)
             hooksecurefunc(MicroMenuContainer, "Layout", function()
                 MicroMenuContainer:SetWidth(MicroMenu:GetWidth()*MicroMenu:GetScale())
             end)
+            MicroMenuContainer:SetWidth(MicroMenu:GetWidth()*MicroMenu:GetScale())
         end
         
         if db.EMEOptions.minimap then
@@ -566,6 +567,7 @@ f:SetScript("OnEvent", function(__, event, arg1)
                         end
                     end
                     MicroMenu:SetWidth(MicroMenu:GetWidth() - 30)
+                    MicroMenuContainer:SetWidth(MicroMenu:GetWidth()*MicroMenu:GetScale())
                 end,
                 
                 function(init)
@@ -579,6 +581,7 @@ f:SetScript("OnEvent", function(__, event, arg1)
                             end
                         end
                         MicroMenu:SetWidth(MicroMenu:GetWidth() + 30)
+                        MicroMenuContainer:SetWidth(MicroMenu:GetWidth()*MicroMenu:GetScale())
                     end
                 end
             )

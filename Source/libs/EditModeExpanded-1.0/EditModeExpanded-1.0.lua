@@ -16,12 +16,13 @@ local framesDialogs = {}
 local framesDialogsKeys = {}
 local existingFrames = {} -- frames already part of Edit Mode where we are adding more options
 local firstCheckButtonPlaced = false
+local enteringCombat = InCombatLockdown()
 
 local ENUM_EDITMODEACTIONBARSETTING_HIDEABLE = 10 -- Enum.EditModeActionBarSetting.Hideable = 10
 local ENUM_EDITMODEACTIONBARSETTING_MINIMAPPINNED = 11
 local ENUM_EDITMODEACTIONBARSETTING_CUSTOM = 12
 local ENUM_EDITMODEACTIONBARSETTING_CLAMPED = 13
-local ENUM_EDITMODEACTIONBARSETTING_HIDDENINCOMBAT = 14
+local ENUM_EDITMODEACTIONBARSETTING_TOGGLEHIDEINCOMBAT = 14
 
 -- run OnLoad the first time RegisterFrame is called by an addon
 local f = lib.internalOnLoadFrame or {}
@@ -426,14 +427,35 @@ function lib:RepositionFrame(frame)
     
     frame:ClearAllPoints()
     
-    if db.settings and (db.settings[ENUM_EDITMODEACTIONBARSETTING_HIDEABLE] == 1) then
-        frame:Hide()
-        return
-    end
+    local dialogs = framesDialogsKeys[systemID]
     
-    if db.settings and (db.settings[ENUM_EDITMODEACTIONBARSETTING_HIDDENINCOMBAT] == 1) and InCombatLockdown() then
-        frame:Hide()
-        return
+    if (not EditModeManagerFrame.editModeActive) and db.settings and dialogs and dialogs[ENUM_EDITMODEACTIONBARSETTING_HIDEABLE] then
+        if dialogs[ENUM_EDITMODEACTIONBARSETTING_TOGGLEHIDEINCOMBAT] then
+            if (db.settings[ENUM_EDITMODEACTIONBARSETTING_HIDEABLE] == 1) and (db.settings[ENUM_EDITMODEACTIONBARSETTING_TOGGLEHIDEINCOMBAT] == 1) and (enteringCombat or InCombatLockdown()) then
+                frame:Show()
+            elseif (db.settings[ENUM_EDITMODEACTIONBARSETTING_HIDEABLE] == 1) and (db.settings[ENUM_EDITMODEACTIONBARSETTING_TOGGLEHIDEINCOMBAT] ~= 1) then
+                frame:Hide()
+                return
+            elseif (db.settings[ENUM_EDITMODEACTIONBARSETTING_HIDEABLE] == 1) and (db.settings[ENUM_EDITMODEACTIONBARSETTING_TOGGLEHIDEINCOMBAT] == 1) and (not (enteringCombat or InCombatLockdown())) then
+                frame:Hide()
+                return
+            elseif (db.settings[ENUM_EDITMODEACTIONBARSETTING_HIDEABLE] ~= 1) and (db.settings[ENUM_EDITMODEACTIONBARSETTING_TOGGLEHIDEINCOMBAT] == 1) and (enteringCombat or InCombatLockdown()) then
+                frame:Hide()
+                return
+            elseif (db.settings[ENUM_EDITMODEACTIONBARSETTING_HIDEABLE] ~= 1) and (db.settings[ENUM_EDITMODEACTIONBARSETTING_TOGGLEHIDEINCOMBAT] == 1) and (not (enteringCombat or InCombatLockdown())) then
+                frame:Show()
+            elseif (db.settings[ENUM_EDITMODEACTIONBARSETTING_HIDEABLE] ~= 1) and (db.settings[ENUM_EDITMODEACTIONBARSETTING_TOGGLEHIDEINCOMBAT] ~= 1) then
+                frame:Show()
+            else
+                -- should not get to here
+                -- print("error 37")
+            end
+        else
+            if db.settings[ENUM_EDITMODEACTIONBARSETTING_HIDEABLE] == 1 then
+                frame:Hide()
+                return
+            end
+        end
     end
     
     local x, y = getOffsetXY(frame, db.x or db.defaultX, db.y or db.defaultY)
@@ -915,7 +937,7 @@ hooksecurefunc(f, "OnLoad", function()
                             end)
                         end
                         
-                        if displayInfo.setting == ENUM_EDITMODEACTIONBARSETTING_HIDDENINCOMBAT then
+                        if displayInfo.setting == ENUM_EDITMODEACTIONBARSETTING_TOGGLEHIDEINCOMBAT then
                             savedValue = framesDB[systemID].settings[displayInfo.setting]
                             if savedValue == nil then savedValue = 0 end
                             settingFrame.Button:SetChecked(savedValue)
@@ -1393,12 +1415,12 @@ function lib:RegisterToggleInCombat(frame)
     local systemID = getSystemID(frame)
     
     if not framesDialogs[systemID] then framesDialogs[systemID] = {} end
-    if framesDialogsKeys[systemID] and framesDialogsKeys[systemID][ENUM_EDITMODEACTIONBARSETTING_HIDDENINCOMBAT] then return end
+    if framesDialogsKeys[systemID] and framesDialogsKeys[systemID][ENUM_EDITMODEACTIONBARSETTING_TOGGLEHIDEINCOMBAT] then return end
     if not framesDialogsKeys[systemID] then framesDialogsKeys[systemID] = {} end
-    framesDialogsKeys[systemID][ENUM_EDITMODEACTIONBARSETTING_HIDDENINCOMBAT] = true
+    framesDialogsKeys[systemID][ENUM_EDITMODEACTIONBARSETTING_TOGGLEHIDEINCOMBAT] = true
     table.insert(framesDialogs[systemID],
         {
-            setting = ENUM_EDITMODEACTIONBARSETTING_HIDDENINCOMBAT,
+            setting = ENUM_EDITMODEACTIONBARSETTING_TOGGLEHIDEINCOMBAT,
             name = "Toggle Visibility in Combat",
             type = Enum.EditModeSettingDisplayType.Checkbox,
     })
@@ -1412,18 +1434,20 @@ do
     end)
     lf:SetScript("OnEvent", function(self, event, ...)
         if event == "PLAYER_REGEN_DISABLED" then
+            enteringCombat = true
             -- entering combat
             for _, frames in pairs({frames, existingFrames}) do
                 for name, frame in pairs(frames) do
                     if type(frame) == "boolean" then
                         frame = _G[name]
                     end
+                    
                     local systemID = getSystemID(frame)
                     local db = framesDB[systemID]
                     local settings = db.settings
                     local dialogs = framesDialogsKeys[systemID]
                     
-                    if dialogs and dialogs[ENUM_EDITMODEACTIONBARSETTING_HIDDENINCOMBAT] and settings and (settings[ENUM_EDITMODEACTIONBARSETTING_HIDDENINCOMBAT] == 1) and dialogs[ENUM_EDITMODEACTIONBARSETTING_HIDEABLE] then
+                    if dialogs and dialogs[ENUM_EDITMODEACTIONBARSETTING_TOGGLEHIDEINCOMBAT] and settings and (settings[ENUM_EDITMODEACTIONBARSETTING_TOGGLEHIDEINCOMBAT] == 1) and dialogs[ENUM_EDITMODEACTIONBARSETTING_HIDEABLE] then
                         if settings[ENUM_EDITMODEACTIONBARSETTING_HIDEABLE] == 1 then
                             -- if "Hide" in enabled and this option too, then hide it while out of combat, show it while in combat
                             frame:Show()
@@ -1434,6 +1458,7 @@ do
                 end
             end
         elseif event == "PLAYER_REGEN_ENABLED" then
+            enteringCombat = false
             -- exiting combat
             for _, frames in pairs({frames, existingFrames}) do
                 for name, frame in pairs(frames) do
@@ -1445,7 +1470,7 @@ do
                     local settings = db.settings
                     local dialogs = framesDialogsKeys[systemID]
                     
-                    if dialogs and settings and dialogs[ENUM_EDITMODEACTIONBARSETTING_HIDDENINCOMBAT] and (settings[ENUM_EDITMODEACTIONBARSETTING_HIDDENINCOMBAT] == 1) and dialogs[ENUM_EDITMODEACTIONBARSETTING_HIDEABLE] then
+                    if dialogs and settings and dialogs[ENUM_EDITMODEACTIONBARSETTING_TOGGLEHIDEINCOMBAT] and (settings[ENUM_EDITMODEACTIONBARSETTING_TOGGLEHIDEINCOMBAT] == 1) and dialogs[ENUM_EDITMODEACTIONBARSETTING_HIDEABLE] then
                         if settings[ENUM_EDITMODEACTIONBARSETTING_HIDEABLE] == 1 then
                             frame:Hide()
                         else
@@ -1457,3 +1482,37 @@ do
         end
     end)
 end
+
+--[[
+do
+    local sides = {
+    	"TopRightCorner",
+    	"TopLeftCorner",
+    	"BottomLeftCorner",
+    	"BottomRightCorner",
+    	"TopEdge",
+    	"BottomEdge",
+    	"LeftEdge",
+    	"RightEdge",
+    	"Center",
+    }
+
+    function hideSelectionTextures()                                   
+        for _, frame in pairs(frames) do
+            local selection = frame.Selection
+            for _, side in pairs(sides) do
+                selection[side]:Hide()
+            end
+        end
+        
+        for frame in pairs(existingFrames) do
+            local selection = _G[frame].Selection
+            for _, side in pairs(sides) do
+                if selection[side] then
+                    selection[side]:Hide()
+                end
+            end
+        end
+    end
+end
+--]]

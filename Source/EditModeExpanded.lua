@@ -35,6 +35,7 @@ local defaults = {
             actionBars = false,
             groupLootContainer = true,
             auctionMultisell = true,
+            chatButtons = true,
         },
         QueueStatusButton = {},
         TotemFrame = {},
@@ -70,6 +71,9 @@ local defaults = {
         ExpansionLandingPageMinimapButton = {},
         GroupLootContainer = {},
         AuctionHouseMultisellProgressFrame = {},
+        QuickJoinToastButton = {},
+        ChatFrameChannelButton = {},
+        ChatFrameMenuButton = {},
     }
 }
 
@@ -234,6 +238,11 @@ local options = {
         auctionMultisell = {
             name = "Auction Multisell",
             desc = "Enables / Disables Auction Multisell support",
+            type = "toggle",
+        },
+        chatButtons = {
+            name = "Chat Buttons",
+            desc = "Enables / Disables Chat Buttons support",
             type = "toggle",
         },
     },
@@ -677,6 +686,22 @@ f:SetScript("OnEvent", function(__, event, arg1)
                     )
                 end
             end)
+        end
+        
+        if db.EMEOptions.chatButtons then
+            lib:RegisterFrame(QuickJoinToastButton, "Social", db.QuickJoinToastButton)
+            lib:SetDontResize(QuickJoinToastButton)
+            lib:RegisterHideable(QuickJoinToastButton)
+            
+            lib:RegisterFrame(ChatFrameChannelButton, "Channels", db.ChatFrameChannelButton)
+            lib:SetDontResize(ChatFrameChannelButton)
+            lib:RegisterHideable(ChatFrameChannelButton)
+            
+            lib:RegisterFrame(ChatFrameMenuButton, "Chat Menu", db.ChatFrameMenuButton)
+            lib:SetDontResize(ChatFrameMenuButton)
+            lib:RegisterHideable(ChatFrameMenuButton)
+            
+            lib:GroupOptions({QuickJoinToastButton, ChatFrameChannelButton, ChatFrameMenuButton}, "Chat Buttons")
         end
         
         local class = UnitClassBase("player")

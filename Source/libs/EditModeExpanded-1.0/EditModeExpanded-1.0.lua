@@ -320,12 +320,12 @@ function lib:RegisterFrame(frame, name, db, anchorTo, anchorPoint)
     
     checkButtonFrame.Text:SetText(name)
     checkButtonFrame.Text:SetFontObject(GameFontHighlightMedium)
+    checkButtonFrame:SetSize(32, 32)
     
     checkButtonFrame.index = frame.system
     if not firstCheckButtonPlaced then
         firstCheckButtonPlaced = true
-        checkButtonFrame:SetPoint("TOPLEFT", EditModeManagerExpandedFrame.AccountSettings, "TOPLEFT", 20, 0)
-        checkButtonFrame:SetSize(32, 32)
+        checkButtonFrame:SetPoint("TOPLEFT", EditModeManagerExpandedFrame.AccountSettings.disableHighlightTexturesOption, "BOTTOMLEFT", 0, 10)
     else
         -- some system IDs may be existing edit mode frames which were not assigned a checkbox
         local previousSystemID = frame.system - 1
@@ -335,7 +335,6 @@ function lib:RegisterFrame(frame, name, db, anchorTo, anchorPoint)
             previousSystemID = frame.system - i
         end
         checkButtonFrame:SetPoint("TOPLEFT", EditModeManagerExpandedFrame.AccountSettings[previousSystemID], "BOTTOMLEFT", 0, 10)
-        checkButtonFrame:SetSize(32, 32)
     end
     
     if db.enabled == nil then db.enabled = true end
@@ -540,6 +539,17 @@ function lib:IsFrameMarkedHidden(frame)
     local systemID = getSystemID(frame)
     
     if not framesDB[systemID].settings then framesDB[systemID].settings = {} end
+    
+    local settings = framesDB[systemID].settings
+    local dialogs = framesDialogsKeys[systemID]
+    
+    if dialogs and settings and dialogs[ENUM_EDITMODEACTIONBARSETTING_HIDDENINCOMBAT] and (settings[ENUM_EDITMODEACTIONBARSETTING_HIDDENINCOMBAT] == 1) then
+        if settings[ENUM_EDITMODEACTIONBARSETTING_HIDEABLE] == 1 then
+            return not InCombatLockdown()
+        else
+            return InCombatLockdown()
+        end
+    end
     return framesDB[systemID].settings[ENUM_EDITMODEACTIONBARSETTING_HIDEABLE] == 1
 end
 
@@ -809,6 +819,46 @@ hooksecurefunc(f, "OnLoad", function()
             self.Buttons.Divider:SetShown(true)
         end
     end
+    
+    -- Add the option to hide the highlight textures
+    EditModeManagerExpandedFrame.AccountSettings.disableHighlightTexturesOption = CreateFrame("CheckButton", nil, EditModeManagerExpandedFrame.AccountSettings, "UICheckButtonTemplate")
+    local checkButtonFrame = EditModeManagerExpandedFrame.AccountSettings.disableHighlightTexturesOption
+    
+    checkButtonFrame:SetScript("OnClick", function(self)
+        local isChecked = self:GetChecked()
+        local sides = {
+        	"TopRightCorner",
+        	"TopLeftCorner",
+        	"BottomLeftCorner",
+        	"BottomRightCorner",
+        	"TopEdge",
+        	"BottomEdge",
+        	"LeftEdge",
+        	"RightEdge",
+        	"Center",
+        }
+                                   
+        for _, frame in pairs(frames) do
+            local selection = frame.Selection
+            for _, side in pairs(sides) do
+                selection[side]:SetShown(not isChecked)
+            end
+        end
+        
+        for frame in pairs(existingFrames) do
+            local selection = _G[frame].Selection
+            for _, side in pairs(sides) do
+                if selection[side] then
+                    selection[side]:SetShown(not isChecked)
+                end
+            end
+        end
+    end)
+    
+    checkButtonFrame.Text:SetText("Disable highlighting")
+    checkButtonFrame.Text:SetFontObject(GameFontHighlightMedium)
+    checkButtonFrame:SetSize(32, 32)
+    checkButtonFrame:SetPoint("TOPLEFT", EditModeManagerExpandedFrame.AccountSettings, "TOPLEFT", 20, 0)
 end)
 
 local function GetSystemSettingDisplayInfo(dialogs)
@@ -1482,37 +1532,3 @@ do
         end
     end)
 end
-
---[[
-do
-    local sides = {
-    	"TopRightCorner",
-    	"TopLeftCorner",
-    	"BottomLeftCorner",
-    	"BottomRightCorner",
-    	"TopEdge",
-    	"BottomEdge",
-    	"LeftEdge",
-    	"RightEdge",
-    	"Center",
-    }
-
-    function hideSelectionTextures()                                   
-        for _, frame in pairs(frames) do
-            local selection = frame.Selection
-            for _, side in pairs(sides) do
-                selection[side]:Hide()
-            end
-        end
-        
-        for frame in pairs(existingFrames) do
-            local selection = _G[frame].Selection
-            for _, side in pairs(sides) do
-                if selection[side] then
-                    selection[side]:Hide()
-                end
-            end
-        end
-    end
-end
---]]

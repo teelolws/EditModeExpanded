@@ -2,7 +2,7 @@
 -- Internal variables
 --
 
-local MAJOR, MINOR = "EditModeExpanded-1.0", 67
+local MAJOR, MINOR = "EditModeExpanded-1.0", 68
 local lib = LibStub:NewLibrary(MAJOR, MINOR)
 if not lib then return end
 
@@ -281,6 +281,7 @@ function lib:RegisterFrame(frame, name, db, anchorTo, anchorPoint)
     local checkButtonFrame = EditModeManagerExpandedFrame.AccountSettings[frame.system]
     frame.EMECheckButtonFrame = checkButtonFrame
     local resetButton = CreateFrame("Button", nil, EditModeManagerFrame, "UIPanelButtonTemplate")
+    frame.EMEResetButton = resetButton
     resetButton:SetText(RESET)
     resetButton:SetPoint("TOPLEFT", checkButtonFrame.Text, "TOPRIGHT", 20, 2)
     resetButton:SetScript("OnClick", function()
@@ -308,6 +309,7 @@ function lib:RegisterFrame(frame, name, db, anchorTo, anchorPoint)
     end)
     
     EditModeManagerExpandedFrame:HookScript("OnShow", function()
+        if resetButton.hiddenByGrouping then return end
         resetButton:Show()
     end)
     
@@ -330,7 +332,7 @@ function lib:RegisterFrame(frame, name, db, anchorTo, anchorPoint)
         -- some system IDs may be existing edit mode frames which were not assigned a checkbox
         local previousSystemID = frame.system - 1
         local i = 1
-        while not EditModeManagerExpandedFrame.AccountSettings[previousSystemID] do
+        while (not EditModeManagerExpandedFrame.AccountSettings[previousSystemID]) or (EditModeManagerExpandedFrame.AccountSettings[previousSystemID].hiddenByGrouping) do
             i = i + 1
             previousSystemID = frame.system - i
         end
@@ -1531,4 +1533,42 @@ do
             end
         end
     end)
+end
+
+-- Allows frames to be grouped into a single option on the Expanded frame
+function lib:GroupOptions(frames, name)
+    assert(type(frames) == "table")
+    assert(table.getn(frames) > 0)
+    assert(type(name) == "string")
+    
+    local defaultFrame = frames[1]
+    local checkButtonFrame = defaultFrame.EMECheckButtonFrame
+    local resetButton = defaultFrame.EMEResetButton
+
+    resetButton:HookScript("OnClick", function()
+        for i, frame in ipairs(frames) do
+            if i > 1 then
+                frame.EMEResetButton:Click()
+            end
+        end
+    end)
+    
+    checkButtonFrame:HookScript("OnClick", function(self)
+        for i, frame in ipairs(frames) do
+            if i > 1 then
+                frame.EMECheckButtonFrame:Click()
+            end
+        end
+    end)
+    
+    checkButtonFrame.Text:SetText(name)
+    
+    for i, frame in ipairs(frames) do
+        if i > 1 then
+            frame.EMECheckButtonFrame.hiddenByGrouping = true
+            frame.EMECheckButtonFrame:Hide()
+            frame.EMEResetButton.hiddenByGrouping = true
+            frame.EMEResetButton:Hide()
+        end
+    end
 end

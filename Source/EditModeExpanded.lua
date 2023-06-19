@@ -934,6 +934,21 @@ f:SetScript("OnEvent", function(__, event, arg1)
                         noInfinite = false
                     end
                 end)
+                hooksecurefunc(CompactRaidFrameManager, "Show", function()
+                    if noInfinite then return end
+                    if InCombatLockdown() then return end
+                    if EditModeManagerFrame.editModeActive then
+                        CompactRaidFrameManager:Show()
+                    else
+                        noInfinite = true
+                        lib:RepositionFrame(CompactRaidFrameManager)
+                        if not (IsInGroup() or IsInRaid()) then
+                            CompactRaidFrameManager:Hide()
+                        end
+                        noInfinite = false
+                    end
+                end)
+                
             end
         end
     elseif (event == "ADDON_LOADED") and (arg1 == "Blizzard_AuctionHouseUI") and (not ahLoaded) then

@@ -37,6 +37,7 @@ local defaults = {
             auctionMultisell = true,
             chatButtons = true,
             archaeology = true,
+            backpack = true,
         },
         QueueStatusButton = {},
         TotemFrame = {},
@@ -76,6 +77,8 @@ local defaults = {
         ChatFrameChannelButton = {},
         ChatFrameMenuButton = {},
         ArcheologyDigsiteProgressBar = {},
+        ContainerFrame1 = {},
+        ContainerFrameCombinedBags = {},
     }
 }
 
@@ -245,6 +248,11 @@ local options = {
         chatButtons = {
             name = "Chat Buttons",
             desc = "Enables / Disables Chat Buttons support",
+            type = "toggle",
+        },
+        backpack = {
+            name = "Backpack",
+            desc = "Enables / Disabled Backpack support",
             type = "toggle",
         },
     },
@@ -704,6 +712,38 @@ f:SetScript("OnEvent", function(__, event, arg1)
             lib:RegisterHideable(ChatFrameMenuButton)
             
             lib:GroupOptions({QuickJoinToastButton, ChatFrameChannelButton, ChatFrameMenuButton}, "Chat Buttons")
+        end
+        
+        do
+            local alreadyInit, noInfinite
+            ContainerFrame1:HookScript("OnShow", function()
+                if alreadyInit then return end
+                alreadyInit = true
+                lib:RegisterFrame(ContainerFrame1, "Main Bag", db.ContainerFrame1)
+                hooksecurefunc("UpdateContainerFrameAnchors", function()
+                    if noInfinite then return end
+                    if InCombatLockdown() then return end
+                    noInfinite = true
+                    lib:RepositionFrame(ContainerFrame1)
+                    noInfinite = false
+                end)
+            end)
+        end
+        
+        do
+            local alreadyInit, noInfinite
+            ContainerFrameCombinedBags:HookScript("OnShow", function()
+                if alreadyInit then return end
+                alreadyInit = true
+                lib:RegisterFrame(ContainerFrameCombinedBags, "Combined Bags", db.ContainerFrameCombinedBags)
+                hooksecurefunc("UpdateContainerFrameAnchors", function()
+                    if noInfinite then return end
+                    if InCombatLockdown() then return end
+                    noInfinite = true
+                    lib:RepositionFrame(ContainerFrameCombinedBags)
+                    noInfinite = false
+                end)
+            end)
         end
         
         local class = UnitClassBase("player")

@@ -396,6 +396,12 @@ f:SetScript("OnEvent", function(__, event, arg1)
                 MicroMenuContainer:SetWidth(MicroMenu:GetWidth()*MicroMenu:GetScale())
             end)
             MicroMenuContainer:SetWidth(MicroMenu:GetWidth()*MicroMenu:GetScale())
+            
+            -- the wasVisible saved in the library when entering Edit Mode cannot be relied upon, as entering Edit Mode shows the queue status button even if its hidden
+            hooksecurefunc(EditModeManagerFrame, "ExitEditMode", function()
+                if InCombatLockdown() then return end
+                QueueStatusFrame:Update()
+            end)
         end
         
         if db.EMEOptions.minimap then

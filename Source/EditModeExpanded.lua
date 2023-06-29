@@ -426,6 +426,9 @@ f:SetScript("OnEvent", function(__, event, arg1)
                 ExpansionLandingPageMinimapButton:SetFrameStrata("MEDIUM")
                 lib:RegisterFrame(ExpansionLandingPageMinimapButton, "Expansion Button", db.ExpansionLandingPageMinimapButton)
                 lib:RegisterResizable(ExpansionLandingPageMinimapButton)
+                hooksecurefunc(ExpansionLandingPageMinimapButton, "UpdateIcon", function()
+                    lib:RepositionFrame(ExpansionLandingPageMinimapButton)
+                end)
             end
         end
         

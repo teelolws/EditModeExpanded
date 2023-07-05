@@ -35,7 +35,6 @@ local defaults = {
             groupLootContainer = true,
             auctionMultisell = true,
             chatButtons = true,
-            archaeology = true,
             backpack = true,
         },
         QueueStatusButton = {},
@@ -74,7 +73,6 @@ local defaults = {
         QuickJoinToastButton = {},
         ChatFrameChannelButton = {},
         ChatFrameMenuButton = {},
-        ArcheologyDigsiteProgressBar = {},
         ContainerFrame1 = {},
         ContainerFrameCombinedBags = {},
     }
@@ -998,12 +996,6 @@ f:SetScript("OnEvent", function(__, event, arg1)
                     lib:RepositionFrame(AuctionHouseMultisellProgressFrame)
                 end)
             end)
-        end
-    elseif (event == "ADDON_LOADED") and (arg1 == "Blizzard_ArchaeologyUI") then
-        local db = f.db.global
-        if db.EMEOptions.archaeology then
-            lib:RegisterFrame(ArcheologyDigsiteProgressBar, "Archaeology", db.ArcheologyDigsiteProgressBar)
-            lib:HideByDefault(ArcheologyDigsiteProgressBar)
         end
     end
 end)

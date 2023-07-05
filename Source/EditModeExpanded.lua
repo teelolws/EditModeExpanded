@@ -6,7 +6,6 @@ local defaults = {
     global = {
         EMEOptions = {
             lfg = true,
-            vehicle = true,
             holyPower = true,
             totem = true,
             soulShards = true,
@@ -41,7 +40,6 @@ local defaults = {
         },
         QueueStatusButton = {},
         TotemFrame = {},
-        VehicleSeatIndicator = {},
         HolyPower = {},
         Achievements = {},
         SoulShards = {},
@@ -99,11 +97,6 @@ local options = {
             name = "LFG Button",
             desc = "Enables / Disables LFG Button support",
             type = "toggle", 
-        },
-        vehicle = {
-            name = "Vehicle",
-            desc = "Enables / Disables Vehicle Frame support",
-            type = "toggle",
         },
         holyPower = {
             name = "Holy Power",
@@ -494,16 +487,6 @@ f:SetScript("OnEvent", function(__, event, arg1)
                 if checked then
                     PlayerFrame.manabar:Hide()
                 end
-            end)
-        end
-        
-        if db.EMEOptions.vehicle then
-            VehicleSeatIndicator:SetParent(UIParent)
-            VehicleSeatIndicator:SetPoint("TOPLEFT", DurabilityFrame, "TOPLEFT")
-            lib:RegisterFrame(VehicleSeatIndicator, "Vehicle Seats", db.VehicleSeatIndicator)
-            lib:RegisterResizable(VehicleSeatIndicator)
-            VehicleSeatIndicator:HookScript("OnEvent", function()
-                lib:RepositionFrame(VehicleSeatIndicator)
             end)
         end
         

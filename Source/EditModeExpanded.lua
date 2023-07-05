@@ -379,7 +379,6 @@ f:SetScript("OnEvent", function(__, event, arg1)
         if db.EMEOptions.lfg then
             QueueStatusButton:SetParent(UIParent)
             lib:RegisterFrame(QueueStatusButton, "LFG", db.QueueStatusButton)
-            lib:RegisterMinimapPinnable(QueueStatusButton)
             hooksecurefunc(MicroMenu, "UpdateQueueStatusAnchors", function()
                 lib:RepositionFrame(QueueStatusButton)
             end)

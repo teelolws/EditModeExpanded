@@ -6,7 +6,6 @@ local defaults = {
     global = {
         EMEOptions = {
             lfg = true,
-            vehicle = true,
             holyPower = true,
             totem = true,
             soulShards = true,
@@ -36,12 +35,10 @@ local defaults = {
             groupLootContainer = true,
             auctionMultisell = true,
             chatButtons = true,
-            archaeology = true,
             backpack = true,
         },
         QueueStatusButton = {},
         TotemFrame = {},
-        VehicleSeatIndicator = {},
         HolyPower = {},
         Achievements = {},
         SoulShards = {},
@@ -76,7 +73,6 @@ local defaults = {
         QuickJoinToastButton = {},
         ChatFrameChannelButton = {},
         ChatFrameMenuButton = {},
-        ArcheologyDigsiteProgressBar = {},
         ContainerFrame1 = {},
         ContainerFrameCombinedBags = {},
     }
@@ -99,11 +95,6 @@ local options = {
             name = "LFG Button",
             desc = "Enables / Disables LFG Button support",
             type = "toggle", 
-        },
-        vehicle = {
-            name = "Vehicle",
-            desc = "Enables / Disables Vehicle Frame support",
-            type = "toggle",
         },
         holyPower = {
             name = "Holy Power",
@@ -388,7 +379,6 @@ f:SetScript("OnEvent", function(__, event, arg1)
         if db.EMEOptions.lfg then
             QueueStatusButton:SetParent(UIParent)
             lib:RegisterFrame(QueueStatusButton, "LFG", db.QueueStatusButton)
-            lib:RegisterMinimapPinnable(QueueStatusButton)
             hooksecurefunc(MicroMenu, "UpdateQueueStatusAnchors", function()
                 lib:RepositionFrame(QueueStatusButton)
             end)
@@ -494,16 +484,6 @@ f:SetScript("OnEvent", function(__, event, arg1)
                 if checked then
                     PlayerFrame.manabar:Hide()
                 end
-            end)
-        end
-        
-        if db.EMEOptions.vehicle then
-            VehicleSeatIndicator:SetParent(UIParent)
-            VehicleSeatIndicator:SetPoint("TOPLEFT", DurabilityFrame, "TOPLEFT")
-            lib:RegisterFrame(VehicleSeatIndicator, "Vehicle Seats", db.VehicleSeatIndicator)
-            lib:RegisterResizable(VehicleSeatIndicator)
-            VehicleSeatIndicator:HookScript("OnEvent", function()
-                lib:RepositionFrame(VehicleSeatIndicator)
             end)
         end
         
@@ -1015,12 +995,6 @@ f:SetScript("OnEvent", function(__, event, arg1)
                     lib:RepositionFrame(AuctionHouseMultisellProgressFrame)
                 end)
             end)
-        end
-    elseif (event == "ADDON_LOADED") and (arg1 == "Blizzard_ArchaeologyUI") then
-        local db = f.db.global
-        if db.EMEOptions.archaeology then
-            lib:RegisterFrame(ArcheologyDigsiteProgressBar, "Archaeology", db.ArcheologyDigsiteProgressBar)
-            lib:HideByDefault(ArcheologyDigsiteProgressBar)
         end
     end
 end)

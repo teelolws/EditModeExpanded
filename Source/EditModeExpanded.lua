@@ -28,6 +28,7 @@ local defaults = {
             mainStatusTrackingBarContainer = true,
             secondaryStatusTrackingBarContainer = true,
             menu = true,
+            menuResizable = false,
             bags = true,
             comboPoints = true,
             bonusRoll = true,
@@ -209,6 +210,11 @@ local options = {
         bags = {
             name = "Bag Bar",
             desc = "Enables / Disables additional options for the Bag Bag",
+            type = "toggle",
+        },
+        menuResizable = {
+            name = "Resize Menu Bar",
+            desc = "Allows the Menu Bar to be resized, with more options than the default options. WARNING: this will override the resize slider provided by the base UI. If you try to use both sliders, unexpected things could happen!",
             type = "toggle",
         },
         comboPoints = {
@@ -607,6 +613,18 @@ f:SetScript("OnEvent", function(__, event, arg1)
                     end
                     MicroMenu:SetWidth(MicroMenu:GetWidth() - 30)
                 end
+            end)
+        end
+        
+        if db.EMEOptions.menuResizable then
+            lib:RegisterResizable(MicroMenuContainer)
+            C_Timer.After(1, function()
+                lib:UpdateFrameResize(MicroMenuContainer)
+            end)
+            
+            -- triggers when player leaves a vehicle or pet battle
+            hooksecurefunc("ResetMicroMenuPosition", function(...)
+                lib:UpdateFrameResize(MicroMenuContainer)
             end)
         end
         

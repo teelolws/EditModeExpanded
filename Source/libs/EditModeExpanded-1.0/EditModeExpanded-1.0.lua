@@ -2,7 +2,7 @@
 -- Internal variables
 --
 
-local MAJOR, MINOR = "EditModeExpanded-1.0", 68
+local MAJOR, MINOR = "EditModeExpanded-1.0", 69
 local lib = LibStub:NewLibrary(MAJOR, MINOR)
 if not lib then return end
 

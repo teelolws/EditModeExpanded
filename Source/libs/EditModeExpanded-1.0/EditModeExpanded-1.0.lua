@@ -94,7 +94,8 @@ local MICRO_BUTTONS = {
 -- param3: db, a table in your saved variables to save the frame position in
 -- param4: frame to anchor to, default is UIParent
 -- param5: point to anchor, default is BOTTOMLEFT
-function lib:RegisterFrame(frame, name, db, anchorTo, anchorPoint)
+-- param6: whether to enable "clamped to screen". default is TRUE
+function lib:RegisterFrame(frame, name, db, anchorTo, anchorPoint, clamped)
     assert(type(frame) == "table")
     assert(type(name) == "string")
     assert(type(db) == "table")
@@ -103,6 +104,8 @@ function lib:RegisterFrame(frame, name, db, anchorTo, anchorPoint)
     if not anchorPoint then anchorPoint = "BOTTOMLEFT" end
     frame.EMEanchorTo = anchorTo
     frame.EMEanchorPoint = anchorPoint
+    
+    if clamped == nil then clamped = true end
     
     -- if this is the first frame being registered, load the other parts of this library
     if f.OnLoad then f.OnLoad() end
@@ -208,7 +211,7 @@ function lib:RegisterFrame(frame, name, db, anchorTo, anchorPoint)
     registerFrameMovableWithArrowKeys(frame, anchorPoint, anchorTo)
     
     -- prevent the frame from going outside the screen boundaries
-    if db.clamped == nil then db.clamped = 1 end
+    if db.clamped == nil then db.clamped = (clamped and 1 or 0) end
     if profilesInitialised and (db.clamped == 1) then
         frame:SetClampedToScreen(true)
     elseif profilesInitialised then
@@ -216,7 +219,7 @@ function lib:RegisterFrame(frame, name, db, anchorTo, anchorPoint)
     end
     if not framesDialogs[frame.system] then framesDialogs[frame.system] = {} end
     if not framesDialogsKeys[frame.system] then framesDialogsKeys[frame.system] = {} end
-    framesDialogsKeys[frame.system][ENUM_EDITMODEACTIONBARSETTING_CLAMPED] = true
+    framesDialogsKeys[frame.system][ENUM_EDITMODEACTIONBARSETTING_CLAMPED] = clamped
     table.insert(framesDialogs[frame.system],
         {
             setting = ENUM_EDITMODEACTIONBARSETTING_CLAMPED,

@@ -1,3 +1,5 @@
+local addonName, addon = ...
+
 local lib = LibStub:GetLibrary("EditModeExpanded-1.0")
 local AceConfigDialog = LibStub("AceConfigDialog-3.0")
 local AceConfigRegistry = LibStub("AceConfigRegistry-3.0")
@@ -935,7 +937,8 @@ f:SetScript("OnEvent", function(__, event, arg1)
             if layoutInfo.layoutType == 0 then return end
             f:UnregisterEvent("EDIT_MODE_LAYOUTS_UPDATED")
             
-            lib:RegisterFrame(CompactRaidFrameManager, "Raid Manager", db.CompactRaidFrameManager)
+            lib:RegisterFrame(CompactRaidFrameManager, "Raid Manager", db.CompactRaidFrameManager, nil, nil, false)
+            
             local expanded
             hooksecurefunc("CompactRaidFrameManager_Expand", function()
                 if InCombatLockdown() then return end

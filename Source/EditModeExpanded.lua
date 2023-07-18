@@ -272,6 +272,42 @@ local function registerTotemFrame(db)
     totemFrameLoaded = true
 end
 
+local continueAfterCombatEndsHandlers = {}
+local function continueAfterCombatEnds(handler)
+    if InCombatLockdown() then
+        table.insert(continueAfterCombatEndsHandlers, handler)
+    else
+        handler()
+    end
+end
+
+local function registerGroupLootContainer()
+    local alreadyInitialized
+    GroupLootContainer:HookScript("OnShow", function()
+        continueAfterCombatEnds(function()
+            if alreadyInitialized then
+                lib:RepositionFrame(GroupLootContainer)
+                return
+            end
+            alreadyInitialized = true
+            lib:RegisterFrame(GroupLootContainer, "Group Loot Container", db.GroupLootContainer)
+            local noInfinite
+            hooksecurefunc(GroupLootContainer, "SetPoint", function()
+                if noInfinite then return end
+                noInfinite = true
+                lib:RepositionFrame(GroupLootContainer)
+                noFinite = nil
+            end)
+            hooksecurefunc("GroupLootContainer_Update", function()
+                lib:RepositionFrame(GroupLootContainer)
+            end)
+            hooksecurefunc(UIParentBottomManagedFrameContainer, "Layout", function()
+                lib:RepositionFrame(GroupLootContainer)
+            end)
+        end)
+    end)
+end
+
 f:SetScript("OnEvent", function(__, event, arg1)
     if (event == "ADDON_LOADED") and (arg1 == "EditModeExpanded") and (not addonLoaded) then
         addonLoaded = true
@@ -656,28 +692,7 @@ f:SetScript("OnEvent", function(__, event, arg1)
         end
         
         if db.EMEOptions.groupLootContainer then
-            local alreadyInitialized
-            GroupLootContainer:HookScript("OnShow", function()
-                if alreadyInitialized then
-                    lib:RepositionFrame(GroupLootContainer)
-                    return
-                end
-                alreadyInitialized = true
-                lib:RegisterFrame(GroupLootContainer, "Group Loot Container", db.GroupLootContainer)
-                local noInfinite
-                hooksecurefunc(GroupLootContainer, "SetPoint", function()
-                    if noInfinite then return end
-                    noInfinite = true
-                    lib:RepositionFrame(GroupLootContainer)
-                    noFinite = nil
-                end)
-                hooksecurefunc("GroupLootContainer_Update", function()
-                    lib:RepositionFrame(GroupLootContainer)
-                end)
-                hooksecurefunc(UIParentBottomManagedFrameContainer, "Layout", function()
-                    lib:RepositionFrame(GroupLootContainer)
-                end)
-            end)
+            registerGroupLootContainer()
         end
         
         if db.EMEOptions.actionBars then
@@ -1051,6 +1066,11 @@ f:SetScript("OnEvent", function(__, event, arg1)
                 end)
             end)
         end
+    elseif event == PLAYER_REGEN_ENABLED then
+        for _, handler in ipairs(continueAfterCombatEndsHandlers) do
+            handler()
+        end
+        wipe(continueAfterCombatEndsHandlers)
     end
 end)
 
@@ -1058,3 +1078,4 @@ f:RegisterEvent("ADDON_LOADED")
 f:RegisterEvent("PLAYER_ENTERING_WORLD")
 f:RegisterEvent("PLAYER_TOTEM_UPDATE")
 f:RegisterEvent("EDIT_MODE_LAYOUTS_UPDATED")
+f:RegisterEvent("PLAYER_REGEN_ENABLED")

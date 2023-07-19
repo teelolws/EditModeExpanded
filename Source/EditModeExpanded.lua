@@ -282,6 +282,8 @@ local function continueAfterCombatEnds(handler)
 end
 
 local function registerGroupLootContainer()
+    local db = f.db.global
+    
     local alreadyInitialized
     GroupLootContainer:HookScript("OnShow", function()
         continueAfterCombatEnds(function()

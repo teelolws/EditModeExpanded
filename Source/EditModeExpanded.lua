@@ -744,14 +744,16 @@ f:SetScript("OnEvent", function(__, event, arg1)
             local alreadyInit, noInfinite
             ContainerFrame1:HookScript("OnShow", function()
                 if alreadyInit then return end
-                alreadyInit = true
-                lib:RegisterFrame(ContainerFrame1, "Main Bag", db.ContainerFrame1)
-                hooksecurefunc("UpdateContainerFrameAnchors", function()
-                    if noInfinite then return end
-                    if InCombatLockdown() then return end
-                    noInfinite = true
-                    lib:RepositionFrame(ContainerFrame1)
-                    noInfinite = false
+                continueAfterCombatEnds(function()
+                    alreadyInit = true
+                    lib:RegisterFrame(ContainerFrame1, "Main Bag", db.ContainerFrame1)
+                    hooksecurefunc("UpdateContainerFrameAnchors", function()
+                        if noInfinite then return end
+                        if InCombatLockdown() then return end
+                        noInfinite = true
+                        lib:RepositionFrame(ContainerFrame1)
+                        noInfinite = false
+                    end)
                 end)
             end)
         end
@@ -760,14 +762,16 @@ f:SetScript("OnEvent", function(__, event, arg1)
             local alreadyInit, noInfinite
             ContainerFrameCombinedBags:HookScript("OnShow", function()
                 if alreadyInit then return end
-                alreadyInit = true
-                lib:RegisterFrame(ContainerFrameCombinedBags, "Combined Bags", db.ContainerFrameCombinedBags)
-                hooksecurefunc("UpdateContainerFrameAnchors", function()
-                    if noInfinite then return end
-                    if InCombatLockdown() then return end
-                    noInfinite = true
-                    lib:RepositionFrame(ContainerFrameCombinedBags)
-                    noInfinite = false
+                continueAfterCombatEnds(function()
+                    alreadyInit = true
+                    lib:RegisterFrame(ContainerFrameCombinedBags, "Combined Bags", db.ContainerFrameCombinedBags)
+                    hooksecurefunc("UpdateContainerFrameAnchors", function()
+                        if noInfinite then return end
+                        if InCombatLockdown() then return end
+                        noInfinite = true
+                        lib:RepositionFrame(ContainerFrameCombinedBags)
+                        noInfinite = false
+                    end)
                 end)
             end)
         end

@@ -639,6 +639,7 @@ f:SetScript("OnEvent", function(__, event, arg1)
                     end
                 end
             )
+            
             hooksecurefunc(MicroMenuContainer, "Layout", function(...)
                 if OverrideActionBar.isShown then return end
                 if PetBattleFrame and PetBattleFrame:IsShown() then return end
@@ -654,6 +655,9 @@ f:SetScript("OnEvent", function(__, event, arg1)
                     MicroMenu:SetWidth(MicroMenu:GetWidth() - 30)
                 end
             end)
+            
+            lib:RegisterCustomCheckbox(MicroMenuContainer, "Use 10.0 style buttons (requires reload)", addon.EnableSkinMicroMenuBW, addon.DisableSkinMicroMenuBW, "10.0Style")
+            lib:RegisterCustomCheckbox(MicroMenuContainer, "Use Shadowlands style buttons (requires reload)", addon.EnableSkinMicroMenuSL, addon.DisableSkinMicroMenuSL, "SLStyle")
         end
         
         if db.EMEOptions.menuResizable then

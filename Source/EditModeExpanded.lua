@@ -288,7 +288,9 @@ local function registerGroupLootContainer()
     GroupLootContainer:HookScript("OnShow", function()
         continueAfterCombatEnds(function()
             if alreadyInitialized then
-                lib:RepositionFrame(GroupLootContainer)
+                if GroupLootContainer.system then
+                    lib:RepositionFrame(GroupLootContainer)
+                end
                 return
             end
             alreadyInitialized = true
@@ -687,13 +689,17 @@ f:SetScript("OnEvent", function(__, event, arg1)
             
             BonusRollFrame:HookScript("OnShow", function()
                 if alreadyInitialized then
-                    lib:RepositionFrame(BonusRollFrame)
+                    if BonusRollFrame.system then
+                        lib:RepositionFrame(BonusRollFrame)
+                    end
                     return
                 end
                 alreadyInitialized = true
-                lib:RegisterFrame(BonusRollFrame, "Bonus Roll", db.BonusRoll)
-                lib:HideByDefault(BonusRollFrame)
-                BonusRollFrame.Selection:SetFrameStrata("TOOLTIP")
+                continueAfterCombatEnds(function()
+                    lib:RegisterFrame(BonusRollFrame, "Bonus Roll", db.BonusRoll)
+                    lib:HideByDefault(BonusRollFrame)
+                    BonusRollFrame.Selection:SetFrameStrata("TOOLTIP")
+                end)
             end)
         end
         

@@ -685,7 +685,7 @@ f:SetScript("OnEvent", function(__, event, arg1)
         end
         
         if db.EMEOptions.bonusRoll then
-            local alreadyInitialized
+            local alreadyInitialized = false
             
             BonusRollFrame:HookScript("OnShow", function()
                 if alreadyInitialized then
@@ -1082,7 +1082,7 @@ f:SetScript("OnEvent", function(__, event, arg1)
                 end)
             end)
         end
-    elseif event == PLAYER_REGEN_ENABLED then
+    elseif event == "PLAYER_REGEN_ENABLED" then
         for _, handler in ipairs(continueAfterCombatEndsHandlers) do
             handler()
         end

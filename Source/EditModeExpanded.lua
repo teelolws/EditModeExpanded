@@ -899,6 +899,11 @@ f:SetScript("OnEvent", function(__, event, arg1)
                     end
                 )
             end
+            
+            if db.EMEOptions.totem then
+                -- Ghoul
+                registerTotemFrame(db)
+            end
         elseif class == "MAGE" then
             if db.EMEOptions.arcaneCharges then
                 lib:RegisterFrame(MageArcaneChargesFrame, "Arcane Charges", db.ArcaneCharges)

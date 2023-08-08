@@ -20,6 +20,7 @@ local defaults = {
             talkingHead = true,
             minimap = true,
             uiWidgetTopCenterContainerFrame = false,
+            UIWidgetBelowMinimapContainerFrame = false,
             stanceBar = true,
             runes = true,
             arcaneCharges = true,
@@ -50,6 +51,8 @@ local defaults = {
         FocusToT = {},
         FocusSpellBar = {},
         UIWidgetTopCenterContainerFrame = {},
+        UIWidgetBelowMinimapContainerFrame = {},
+        ArenaEnemyFramesContainer = {},
         StanceBar = {},
         Runes = {},
         ArcaneCharges = {},
@@ -156,7 +159,12 @@ local options = {
         },
         uiWidgetTopCenterContainerFrame = {
             name = "Subzone Information",
-            desc = "Enables / Disables top of screen subzone information widget support. Be aware: this frame behaves... unusually... if you are not in an area that shows anything!",
+            desc = "Enables / Disables top of screen subzone information widget support. This usually contains zone objectives such as number of flag captures in WSG. Be aware: this will not show anything if you are not in a zone that has an objective!",
+            type = "toggle",
+        },
+        UIWidgetBelowMinimapContainerFrame = {
+            name = "Below Minimap",
+            desc = "Enables / Disables below minimap container support. This usually contains PvP objectives like flag carriers in WSG and base capture progress bars. Be aware: this will not show anything if you are not in an area that puts anything in the container!",
             type = "toggle",
         },
         stanceBar = {
@@ -261,6 +269,7 @@ local achievementFrameLoaded
 local addonLoaded
 local totemFrameLoaded
 local ahLoaded
+local UIWidgetBelowMinimapContainerFrameLoaded
 
 local function registerTotemFrame(db)
     TotemFrame:SetParent(UIParent)
@@ -473,6 +482,16 @@ f:SetScript("OnEvent", function(__, event, arg1)
         if db.EMEOptions.uiWidgetTopCenterContainerFrame then
             lib:RegisterFrame(UIWidgetTopCenterContainerFrame, "Subzone Information", db.UIWidgetTopCenterContainerFrame)
             lib:SetDontResize(UIWidgetTopCenterContainerFrame)
+        end
+        
+        if db.EMEOptions.UIWidgetBelowMinimapContainerFrame then
+            if UIWidgetBelowMinimapContainerFrame then
+                UIWidgetBelowMinimapContainerFrameLoaded = true
+                UIWidgetBelowMinimapContainerFrame:SetParent(UIParent)
+                lib:RegisterFrame(UIWidgetBelowMinimapContainerFrame, "PvP Objectives", db.UIWidgetBelowMinimapContainerFrame)
+                ArenaEnemyFramesContainer:SetParent(UIParent)
+                lib:RegisterFrame(ArenaEnemyFramesContainer, "BG Targets", db.ArenaEnemyFramesContainer)
+            end
         end
         
         if db.EMEOptions.stanceBar then
@@ -1086,6 +1105,16 @@ f:SetScript("OnEvent", function(__, event, arg1)
                     lib:RepositionFrame(AuctionHouseMultisellProgressFrame)
                 end)
             end)
+        end
+    elseif (event == "ADDON_LOADED") and (arg1 == "Blizzard_UIWidgets") and (not UIWidgetBelowMinimapContainerFrameLoaded) then
+        UIWidgetBelowMinimapContainerFrameLoaded = true
+        local db = f.db.global
+        
+        if db.EMEOptions.UIWidgetBelowMinimapContainerFrame then
+            UIWidgetBelowMinimapContainerFrame:SetParent(UIParent)
+            lib:RegisterFrame(UIWidgetBelowMinimapContainerFrame, "PvP Objectives", db.UIWidgetBelowMinimapContainerFrame)
+            ArenaEnemyFramesContainer:SetParent(UIParent)
+            lib:RegisterFrame(ArenaEnemyFramesContainer, "BG Targets", db.ArenaEnemyFramesContainer)
         end
     elseif event == "PLAYER_REGEN_ENABLED" then
         for _, handler in ipairs(continueAfterCombatEndsHandlers) do

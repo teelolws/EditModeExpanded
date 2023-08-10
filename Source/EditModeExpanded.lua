@@ -1015,6 +1015,10 @@ f:SetScript("OnEvent", function(__, event, arg1)
                 end)
             end
         end
+        
+        -- The earlier RegisterFrame will :SetShown(true) the TalkingHeadFrame if it was set to Hide then unset.
+        -- Since its actually not normally shown on login, we will immediately re-hide it again.
+        TalkingHeadFrame:Hide()
     elseif (event == "PLAYER_TOTEM_UPDATE") and addonLoaded then
         if totemFrameLoaded then
             lib:RepositionFrame(TotemFrame)

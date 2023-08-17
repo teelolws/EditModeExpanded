@@ -431,6 +431,8 @@ f:SetScript("OnEvent", function(__, event, arg1)
             FocusFrameSpellBar:HookScript("OnShow", function(self)
                 lib:RepositionFrame(FocusFrameSpellBar)
             end)
+            lib:SetDontResize(FocusFrameSpellBar)
+            lib:RegisterResizable(FocusFrameSpellBar)
         end
         
         if db.EMEOptions.lfg then

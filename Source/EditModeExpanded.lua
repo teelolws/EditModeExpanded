@@ -1016,6 +1016,10 @@ f:SetScript("OnEvent", function(__, event, arg1)
                     noInfinite = false
                 end)
             end
+            -- Effloresence
+            if db.EMEOptions.totem then
+                registerTotemFrame(db)
+            end
         end
         
         -- The earlier RegisterFrame will :SetShown(true) the TalkingHeadFrame if it was set to Hide then unset.

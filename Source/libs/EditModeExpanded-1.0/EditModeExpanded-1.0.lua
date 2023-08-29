@@ -1165,13 +1165,13 @@ do
                         frame:SetShown(framesDB[systemID].settings[ENUM_EDITMODEACTIONBARSETTING_HIDEABLE] ~= 1)
                     end
                 end
-                
-                if not frame.EMESystemID then
                     
-                    -- update scale
-                    if framesDialogsKeys[systemID] and framesDialogsKeys[systemID][Enum.EditModeUnitFrameSetting.FrameSize] and db.settings and db.settings[Enum.EditModeUnitFrameSetting.FrameSize] then
-                        frame:SetScaleOverride(db.settings[Enum.EditModeUnitFrameSetting.FrameSize]/100)
-                    end
+                -- update scale
+                if framesDialogsKeys[systemID] and framesDialogsKeys[systemID][Enum.EditModeUnitFrameSetting.FrameSize] and db.settings and db.settings[Enum.EditModeUnitFrameSetting.FrameSize] then
+                    frame:SetScaleOverride(db.settings[Enum.EditModeUnitFrameSetting.FrameSize]/100)
+                end
+
+                if not frame.EMESystemID then
                     
                     -- update position
                     frame:ClearAllPoints()

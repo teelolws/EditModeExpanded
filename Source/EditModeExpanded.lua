@@ -478,6 +478,12 @@ f:SetScript("OnEvent", function(__, event, arg1)
                 hooksecurefunc(ExpansionLandingPageMinimapButton, "UpdateIcon", function()
                     lib:RepositionFrame(ExpansionLandingPageMinimapButton)
                 end)
+                Minimap:HookScript("OnHide", function()
+                    ExpansionLandingPageMinimapButton:Hide()
+                end)
+                Minimap:HookScript("OnShow", function()
+                    ExpansionLandingPageMinimapButton:Show()
+                end)
             end
         end
         

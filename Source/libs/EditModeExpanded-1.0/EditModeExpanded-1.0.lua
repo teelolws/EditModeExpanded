@@ -1393,6 +1393,7 @@ function registerFrameMovableWithArrowKeys(frame, anchorPoint, anchorTo)
     frame.Selection:EnableKeyboard();
     frame.Selection:SetPropagateKeyboardInput(true);
     frame.Selection:SetScript("OnKeyDown", function(self, key)
+        if InCombatLockdown() then return end
         frame:MoveWithArrowKey(key);
     end)
 

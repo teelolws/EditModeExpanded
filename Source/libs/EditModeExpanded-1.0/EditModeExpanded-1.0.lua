@@ -2,7 +2,7 @@
 -- Internal variables
 --
 
-local MAJOR, MINOR = "EditModeExpanded-1.0", 71
+local MAJOR, MINOR = "EditModeExpanded-1.0", 72
 local lib = LibStub:NewLibrary(MAJOR, MINOR)
 if not lib then return end
 
@@ -184,6 +184,9 @@ function lib:RegisterFrame(frame, name, db, anchorTo, anchorPoint, clamped)
     table.insert(frames, frame)
     
     Mixin(frame, EditModeSystemMixin)
+    
+    frame.BreakFrameSnap = function() end
+    frame.SnapToFrame = function() end
     
     frame.system = index
     index = index + 1

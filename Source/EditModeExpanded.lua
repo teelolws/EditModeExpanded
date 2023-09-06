@@ -40,6 +40,10 @@ local defaults = {
             auctionMultisell = true,
             chatButtons = true,
             backpack = true,
+            targetFrame = true,
+            focusFrame = true,
+            buffFrame = true,
+            debuffFrame = true,
         },
         QueueStatusButton = {},
         TotemFrame = {},
@@ -219,7 +223,27 @@ local options = {
         },
         bags = {
             name = "Bag Bar",
-            desc = "Enables / Disables additional options for the Bag Bag",
+            desc = "Enables / Disables additional options for the Bag Bar",
+            type = "toggle",
+        },
+        targetFrame = {
+            name = "Target",
+            desc = "Enables / Disables additional options for the Target Frame",
+            type = "toggle",
+        },
+        focusFrame = {
+            name = "Focus",
+            desc = "Enables / Disables additional options for the Focus Frame",
+            type = "toggle",
+        },
+        buffFrame = {
+            name = "Buffs",
+            desc = "Enables / Disables additional options for the Buff List",
+            type = "toggle",
+        },
+        debuffFrame = {
+            name = "Debuffs",
+            desc = "Enables / Disables additional options for the Debuff List",
             type = "toggle",
         },
         menuResizable = {
@@ -321,6 +345,80 @@ local function registerGroupLootContainer()
     end)
 end
 
+local function registerSecureFrameHideable(frame)
+    local f = CreateFrame("Frame")
+    f:RegisterEvent("PLAYER_REGEN_ENABLED")
+    f:RegisterEvent("PLAYER_REGEN_DISABLED")
+    local hidden
+    local toggleInCombat
+    
+    local x, y
+    local function hide()
+        if not x then
+            x, y = frame:GetLeft(), frame:GetBottom()
+        end
+        frame:ClearAllPoints()
+        frame:SetClampedToScreen(false)
+        frame:SetPoint("TOPRIGHT", UIParent, "BOTTOMLEFT", -1000, -1000)
+    end
+    
+    local function show()
+        if not x then return end
+        frame:ClearAllPoints()
+        frame:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", x, y)
+        x, y = nil, nil
+    end
+    
+    f:SetScript("OnEvent", function(self, event)
+        if not toggleInCombat then return end
+        if event == "PLAYER_REGEN_ENABLED" then -- leaving combat
+            if hidden then
+                hide()
+            else
+                show()
+            end
+        else -- entering combat
+            if hidden then
+                show()
+            else
+                hide()
+            end
+        end
+    end)
+    
+    lib:RegisterCustomCheckbox(frame, "Hide",
+        function()
+            hidden = true
+            if not EditModeManagerFrame.editModeActive then
+                hide()
+            end
+        end,
+        function()
+            hidden = false
+            show()
+        end,
+        "HidePermanently")
+    
+    lib:RegisterCustomCheckbox(frame, "Toggle In Combat",
+        function()
+            toggleInCombat = true
+        end,
+        function()
+            toggleInCombat = false
+        end,
+        "ToggleInCombat")
+    
+    hooksecurefunc(EditModeManagerFrame, "EnterEditMode", function()
+        show()
+    end)
+    
+    hooksecurefunc(EditModeManagerFrame, "ExitEditMode", function()
+        if hidden then
+            hide()
+        end
+    end)
+end
+
 f:SetScript("OnEvent", function(__, event, arg1)
     if (event == "ADDON_LOADED") and (arg1 == "EditModeExpanded") and (not addonLoaded) then
         addonLoaded = true
@@ -378,6 +476,14 @@ f:SetScript("OnEvent", function(__, event, arg1)
             end)
         end
         
+        if db.EMEOptions.targetFrame then
+            registerSecureFrameHideable(TargetFrame)
+        end
+        
+        if db.EMEOptions.focusFrame then
+            registerSecureFrameHideable(FocusFrame)
+        end
+        
         if db.EMEOptions.targetOfTarget then
             lib:RegisterFrame(TargetFrameToT, "Target of Target", f.db.global.ToT)
             lib:RegisterResizable(TargetFrameToT)
@@ -386,6 +492,7 @@ f:SetScript("OnEvent", function(__, event, arg1)
                     TargetFrameToT:Show()
                 end
             end)
+            lib:RegisterHideable(TargetFrameToT)
         end
         
         if db.EMEOptions.targetCast then
@@ -400,12 +507,13 @@ f:SetScript("OnEvent", function(__, event, arg1)
                 lib:RepositionFrame(TargetFrameSpellBar)
             end)
             lib:SetDontResize(TargetFrameSpellBar)
-            lib:RegisterResizable(TargetFrameSpellBar)            
+            lib:RegisterResizable(TargetFrameSpellBar)
+            lib:RegisterHideable(TargetFrameSpellBar)            
         end
         
         if db.EMEOptions.focusTargetOfTarget then
             FocusFrameToT:SetUserPlaced(false) -- bug with frame being saved in layout cache leading to errors in TargetFrame.lua
-            lib:RegisterFrame(FocusFrameToT, "Focus Target of Target", f.db.global.FocusToT, FocusFrame, "TOPRIGHT")
+            lib:RegisterFrame(FocusFrameToT, "Focus Target of Target", f.db.global.FocusToT)
             lib:RegisterResizable(FocusFrameToT)
             FocusFrameToT:HookScript("OnHide", function()
                 if (not InCombatLockdown()) and EditModeManagerFrame.editModeActive and lib:IsFrameEnabled(FocusFrameToT) then
@@ -417,6 +525,7 @@ f:SetScript("OnEvent", function(__, event, arg1)
                     FocusFrameToT:SetUserPlaced(false)
                 end
             end)
+            lib:RegisterHideable(FocusFrameToT)
         end
         
         if db.EMEOptions.focusCast then
@@ -433,6 +542,7 @@ f:SetScript("OnEvent", function(__, event, arg1)
             end)
             lib:SetDontResize(FocusFrameSpellBar)
             lib:RegisterResizable(FocusFrameSpellBar)
+            lib:RegisterHideable(FocusFrameSpellBar)
         end
         
         if db.EMEOptions.lfg then
@@ -811,6 +921,14 @@ f:SetScript("OnEvent", function(__, event, arg1)
                     end)
                 end)
             end)
+        end
+        
+        if db.EMEOptions.buffFrame then
+            registerSecureFrameHideable(BuffFrame)
+        end
+        
+        if db.EMEOptions.debuffFrame then
+            registerSecureFrameHideable(DebuffFrame)
         end
         
         local class = UnitClassBase("player")

@@ -417,6 +417,16 @@ local function registerSecureFrameHideable(frame)
             hide()
         end
     end)
+    
+    hooksecurefunc(frame, "Show", function()
+        if InCombatLockdown() then return end
+        if hidden then hide() end
+    end)
+    
+    hooksecurefunc(frame, "SetShown", function()
+        if InCombatLockdown() then return end
+        if hidden then hide() end
+    end)
 end
 
 f:SetScript("OnEvent", function(__, event, arg1)

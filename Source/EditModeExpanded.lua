@@ -492,7 +492,7 @@ f:SetScript("OnEvent", function(__, event, arg1)
                     TargetFrameToT:Show()
                 end
             end)
-            lib:RegisterHideable(TargetFrameToT)
+            registerSecureFrameHideable(TargetFrameToT)
         end
         
         if db.EMEOptions.targetCast then
@@ -525,7 +525,7 @@ f:SetScript("OnEvent", function(__, event, arg1)
                     FocusFrameToT:SetUserPlaced(false)
                 end
             end)
-            lib:RegisterHideable(FocusFrameToT)
+            registerSecureFrameHideable(FocusFrameToT)
         end
         
         if db.EMEOptions.focusCast then

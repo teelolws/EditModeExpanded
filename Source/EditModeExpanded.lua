@@ -561,6 +561,8 @@ f:SetScript("OnEvent", function(__, event, arg1)
                 if InCombatLockdown() then return end
                 QueueStatusFrame:Update()
             end)
+            
+            registerSecureFrameHideable(QueueStatusButton)
         end
         
         if db.EMEOptions.minimap then
@@ -594,7 +596,10 @@ f:SetScript("OnEvent", function(__, event, arg1)
                 Minimap:HookScript("OnShow", function()
                     ExpansionLandingPageMinimapButton:Show()
                 end)
+                registerSecureFrameHideable(ExpansionLandingPageMinimapButton)
             end
+            
+            registerSecureFrameHideable(MinimapCluster)
         end
         
         if db.EMEOptions.uiWidgetTopCenterContainerFrame then

@@ -2,7 +2,7 @@
 -- Internal variables
 --
 
-local MAJOR, MINOR = "EditModeExpanded-1.0", 72
+local MAJOR, MINOR = "EditModeExpanded-1.0", 73
 local lib = LibStub:NewLibrary(MAJOR, MINOR)
 if not lib then return end
 
@@ -310,6 +310,8 @@ function lib:RegisterFrame(frame, name, db, anchorTo, anchorPoint, clamped)
         db.settings[Enum.EditModeUnitFrameSetting.FrameSize] = 100
         EditModeExpandedSystemSettingsDialog:Hide()
         frame:HighlightSystem()
+        
+        db.settings[ENUM_EDITMODEACTIONBARSETTING_HIDEABLE] = 0
     end)
     
     EditModeManagerExpandedFrame:HookScript("OnHide", function()

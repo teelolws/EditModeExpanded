@@ -44,6 +44,7 @@ local defaults = {
             focusFrame = true,
             buffFrame = true,
             debuffFrame = true,
+            objectiveTrackerFrame = true,
         },
         QueueStatusButton = {},
         TotemFrame = {},
@@ -263,7 +264,7 @@ local options = {
         },
         actionBars = {
             name = "Action Bars",
-            desc = "Allows the action bars to have their padding set to zero. WARNING: you MUST move all your action bars from their default position, or you will get addon errors. You can even move the bars back to where they were originally!",
+            desc = "Allows the action bars to have their padding set to zero. WARNING: you MUST move all your action bars from their default position AND disable 'magnetism', or you will get addon errors. You can even move the bars back to where they were originally!",
             type = "toggle",
         },
         groupLootContainer = {
@@ -882,6 +883,8 @@ f:SetScript("OnEvent", function(__, event, arg1)
                         
                         "OverrideIconPadding"
                     )
+                    
+                    registerSecureFrameHideable(bar)
                 end
             end)
         end
@@ -944,6 +947,10 @@ f:SetScript("OnEvent", function(__, event, arg1)
         
         if db.EMEOptions.debuffFrame then
             registerSecureFrameHideable(DebuffFrame)
+        end
+        
+        if db.EMEOptions.objectiveTrackerFrame then
+            registerSecureFrameHideable(ObjectiveTrackerFrame)
         end
         
         local class = UnitClassBase("player")

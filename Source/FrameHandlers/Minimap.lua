@@ -38,7 +38,8 @@ function addon:initMinimap()
             addon:registerSecureFrameHideable(ExpansionLandingPageMinimapButton)
         end
         
-        addon:registerSecureFrameHideable(MinimapCluster)
+        lib:RegisterHideable(MinimapCluster)
+        lib:RegisterToggleInCombat(MinimapCluster)
     end
     
     if db.EMEOptions.minimapHeader then

@@ -38,8 +38,82 @@ function addon:initMinimap()
             addon:registerSecureFrameHideable(ExpansionLandingPageMinimapButton)
         end
         
-        lib:RegisterHideable(MinimapCluster)
-        lib:RegisterToggleInCombat(MinimapCluster)
+        -- slightly simplified version of the code from addon:registerSecureFrameHideable
+        local hidden, toggleInCombat
+    
+        local function hide()
+            if(Minimap:IsShown()) then
+                Minimap:Hide();
+	        end
+        end
+    
+        local function show()
+            if not Minimap:IsShown() then
+                Minimap:Show()
+            end
+            UpdateUIPanelPositions(MinimapCluster)
+            UpdateUIPanelPositions(Minimap)
+        end
+    
+        EventRegistry:RegisterFrameEventAndCallbackWithHandle("PLAYER_REGEN_ENABLED", function()
+            if not toggleInCombat then return end
+            if hidden then
+                hide()
+            else
+                show()
+            end
+        end)
+        
+        EventRegistry:RegisterFrameEventAndCallbackWithHandle("PLAYER_REGEN_DISABLED", function()
+            if not toggleInCombat then return end
+            if hidden then
+                show()
+            else
+                hide()
+            end
+        end)
+    
+        lib:RegisterCustomCheckbox(MinimapCluster, "Hide",
+            function()
+                hidden = true
+                if not EditModeManagerFrame.editModeActive then
+                    hide()
+                end
+            end,
+            function()
+                hidden = false
+                show()
+            end,
+            "HidePermanently")
+        
+        lib:RegisterCustomCheckbox(MinimapCluster, "Toggle In Combat",
+            function()
+                toggleInCombat = true
+            end,
+            function()
+                toggleInCombat = false
+            end,
+            "ToggleInCombat")
+        
+        hooksecurefunc(EditModeManagerFrame, "EnterEditMode", function()
+            show()
+        end)
+        
+        hooksecurefunc(EditModeManagerFrame, "ExitEditMode", function()
+            if hidden then
+                hide()
+            end
+        end)
+    
+        hooksecurefunc(MinimapCluster, "Show", function()
+            if InCombatLockdown() then return end
+            if hidden then hide() end
+        end)
+        
+        hooksecurefunc(MinimapCluster, "SetShown", function()
+            if InCombatLockdown() then return end
+            if hidden then hide() end
+        end)
     end
     
     if db.EMEOptions.minimapHeader then
@@ -47,5 +121,12 @@ function addon:initMinimap()
         lib:RegisterFrame(MinimapCluster.BorderTop, "Zone Name", db.MinimapZoneName)
         lib:SetDontResize(MinimapCluster.BorderTop)
         addon:registerSecureFrameHideable(MinimapCluster.BorderTop)
+        
+        MinimapCluster:SetWidth(MinimapCluster.MinimapContainer:GetWidth())
+        MinimapCluster:SetHeight(MinimapCluster.MinimapContainer:GetHeight())
+        MinimapCluster:HookScript("OnShow", function()
+            MinimapCluster:SetWidth(MinimapCluster.MinimapContainer:GetWidth())
+        MinimapCluster:SetHeight(MinimapCluster.MinimapContainer:GetHeight())
+        end)
     end
 end

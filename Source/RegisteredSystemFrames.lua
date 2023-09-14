@@ -10,8 +10,9 @@ function addon:initSystemFrames()
         
         -- Backward compatibility: frame name was changed from MicroMenu to MicroMenuContainer in 10.1
         if name == "MicroMenuContainer" then
-            if db["MicroMenuContainer"] then
-                db[name] = db["MicroMenuContiner"]
+            if db["MicroMenu"] and (not db[name]) then
+                db[name] = db["MicroMenu"]
+                db["MicroMenu"] = nil
             end
         end
         

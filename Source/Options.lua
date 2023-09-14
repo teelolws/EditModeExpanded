@@ -18,6 +18,7 @@ local defaults = {
             compactRaidFrameContainer = true,
             talkingHead = true,
             minimap = true,
+            minimapHeader = true,
             uiWidgetTopCenterContainerFrame = false,
             UIWidgetBelowMinimapContainerFrame = false,
             stanceBar = true,
@@ -85,6 +86,7 @@ local defaults = {
         ChatFrameMenuButton = {},
         ContainerFrame1 = {},
         ContainerFrameCombinedBags = {},
+        MinimapZoneName = {},
     }
 }
 
@@ -157,6 +159,11 @@ local options = {
         minimap = {
             name = "Minimap",
             desc = "Enables / Disables additional options for the Minimap",
+            type = "toggle",
+        },
+        minimapHeader = {
+            name = "Minimap Header",
+            desc = "Enables / Disables Minimap Header support",
             type = "toggle",
         },
         uiWidgetTopCenterContainerFrame = {

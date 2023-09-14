@@ -40,4 +40,11 @@ function addon:initMinimap()
         
         addon:registerSecureFrameHideable(MinimapCluster)
     end
+    
+    if db.EMEOptions.minimapHeader then
+        MinimapCluster.BorderTop:SetParent(UIParent)
+        lib:RegisterFrame(MinimapCluster.BorderTop, "Zone Name", db.MinimapZoneName)
+        lib:SetDontResize(MinimapCluster.BorderTop)
+        addon:registerSecureFrameHideable(MinimapCluster.BorderTop)
+    end
 end

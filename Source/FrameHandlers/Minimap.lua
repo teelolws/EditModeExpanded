@@ -122,11 +122,13 @@ function addon:initMinimap()
         lib:SetDontResize(MinimapCluster.BorderTop)
         addon:registerSecureFrameHideable(MinimapCluster.BorderTop)
         
-        MinimapCluster:SetWidth(MinimapCluster.MinimapContainer:GetWidth())
-        MinimapCluster:SetHeight(MinimapCluster.MinimapContainer:GetHeight())
-        MinimapCluster:HookScript("OnShow", function()
-            MinimapCluster:SetWidth(MinimapCluster.MinimapContainer:GetWidth())
-        MinimapCluster:SetHeight(MinimapCluster.MinimapContainer:GetHeight())
-        end)
+        local function update()
+            MinimapCluster:SetWidth(MinimapCluster.MinimapContainer:GetWidth()*MinimapCluster.MinimapContainer:GetScale())
+            MinimapCluster:SetHeight(MinimapCluster.MinimapContainer:GetHeight()*MinimapCluster.MinimapContainer:GetScale())
+        end
+        MinimapCluster:HookScript("OnShow", update)
+        hooksecurefunc(MinimapCluster.MinimapContainer, "SetScale", function() C_Timer.After(0.01, update) end)
+        update()
+        MinimapCluster:SetClampedToScreen(false)
     end
 end

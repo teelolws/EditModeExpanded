@@ -18,7 +18,7 @@ local defaults = {
             compactRaidFrameContainer = true,
             talkingHead = true,
             minimap = true,
-            minimapHeader = true,
+            minimapHeader = false,
             uiWidgetTopCenterContainerFrame = false,
             UIWidgetBelowMinimapContainerFrame = false,
             stanceBar = true,
@@ -163,7 +163,7 @@ local options = {
         },
         minimapHeader = {
             name = "Minimap Header",
-            desc = "Enables / Disables Minimap Header support",
+            desc = "Enables / Disables Minimap Header support. WARNING: The minimap may not behave as expected, disable this option if you have issues. Make sure not to check 'Header Underneath'.",
             type = "toggle",
         },
         uiWidgetTopCenterContainerFrame = {

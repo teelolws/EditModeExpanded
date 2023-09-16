@@ -92,8 +92,8 @@ local defaults = {
 
 local options = {
     type = "group",
-    set = function(info, value) f.db.global.EMEOptions[info[#info]] = value end,
-    get = function(info) return f.db.global.EMEOptions[info[#info]] end,
+    set = function(info, value) addon.db.global.EMEOptions[info[#info]] = value end,
+    get = function(info) return addon.db.global.EMEOptions[info[#info]] end,
     args = {
         description = {
             name = "All changes require a /reload to take effect! Uncheck if you don't want this addon to manage that frame.",

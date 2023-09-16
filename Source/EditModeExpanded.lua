@@ -3,6 +3,8 @@ local addonName, addon = ...
 local lib = LibStub:GetLibrary("EditModeExpanded-1.0")
 
 EventUtil.RegisterOnceFrameEventAndCallback("PLAYER_ENTERING_WORLD", function()
+    addon:registerSecureFrameHideable(BossTargetFrameContainer)
+    
     if addon.db.global.EMEOptions.showCoordinates then 
         hooksecurefunc(EditModeExpandedSystemSettingsDialog, "AttachToSystemFrame", function(self, frame)
             self.Title:SetText(frame:GetSystemName().." ("..math.floor(frame:GetLeft())..","..math.floor(frame:GetBottom())..")")

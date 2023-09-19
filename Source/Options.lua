@@ -19,6 +19,7 @@ local defaults = {
             talkingHead = true,
             minimap = true,
             minimapHeader = false,
+            minimapResize = false,
             uiWidgetTopCenterContainerFrame = false,
             UIWidgetBelowMinimapContainerFrame = false,
             stanceBar = true,
@@ -87,6 +88,7 @@ local defaults = {
         ContainerFrame1 = {},
         ContainerFrameCombinedBags = {},
         MinimapZoneName = {},
+        MinimapSeparated = {},
     }
 }
 
@@ -156,15 +158,26 @@ local options = {
             desc = "Enables / Disables additional options for the Talking Head",
             type = "toggle",
         },
-        minimap = {
+        minimapGroup = {
             name = "Minimap",
-            desc = "Enables / Disables additional options for the Minimap",
-            type = "toggle",
-        },
-        minimapHeader = {
-            name = "Minimap Header",
-            desc = "Enables / Disables Minimap Header support. WARNING: The minimap may not behave as expected, disable this option if you have issues. Make sure not to check 'Header Underneath'.",
-            type = "toggle",
+            type = "group",
+            args = {
+                minimap = {
+                    name = "Minimap",
+                    desc = "Enables / Disables additional options for the Minimap",
+                    type = "toggle",
+                },
+                minimapHeader = {
+                    name = "Minimap Header",
+                    desc = "Enables / Disables Minimap Header support. WARNING: The minimap may not behave as expected, disable this option if you have issues. Make sure not to check 'Header Underneath'.",
+                    type = "toggle",
+                },
+                minimapResize = {
+                    name = "Resize Minimap Cluster",
+                    desc = "Allows the whole Minimap Cluster to be resized, affecting everything attached to it. NOTE: You may get unexpected results if you use both sliders.",
+                    type = "toggle",
+                },
+            },
         },
         uiWidgetTopCenterContainerFrame = {
             name = "Subzone Information",

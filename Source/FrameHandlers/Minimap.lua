@@ -131,4 +131,8 @@ function addon:initMinimap()
         update()
         MinimapCluster:SetClampedToScreen(false)
     end
+    
+    if db.EMEOptions.minimapResize then
+        lib:RegisterResizable(MinimapCluster)
+    end
 end

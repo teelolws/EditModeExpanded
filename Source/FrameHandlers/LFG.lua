@@ -8,9 +8,11 @@ function addon:initLFG()
         QueueStatusButton:SetParent(UIParent)
         lib:RegisterFrame(QueueStatusButton, "LFG", db.QueueStatusButton)
         hooksecurefunc(MicroMenu, "UpdateQueueStatusAnchors", function()
+            if InCombatLockdown() then return end
             lib:RepositionFrame(QueueStatusButton)
         end)
         hooksecurefunc(MicroMenuContainer, "Layout", function()
+            if InCombatLockdown() then return end
             MicroMenuContainer:SetWidth(MicroMenu:GetWidth()*MicroMenu:GetScale())
         end)
         MicroMenuContainer:SetWidth(MicroMenu:GetWidth()*MicroMenu:GetScale())

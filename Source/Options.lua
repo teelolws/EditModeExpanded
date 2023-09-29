@@ -103,24 +103,50 @@ local options = {
             fontSize = "medium",
             order = 0,
         },
-        lfg = {
-            name = "LFG Button",
-            desc = "Enables / Disables LFG Button support",
-            type = "toggle", 
-        },
-        holyPower = {
-            name = "Holy Power",
-            desc = "Enables / Disables Holy Power support",
-            type = "toggle",
+        classResourceGroup = {
+            name = "Class Resources",
+            type = "group",
+            args = {
+                holyPower = {
+                    name = "Holy Power",
+                    desc = "Enables / Disables Holy Power support",
+                    type = "toggle",
+                },
+                soulShards = {
+                    name = "Soul Shards",
+                    desc = "Enables / Disables Soul Shards support",
+                    type = "toggle",
+                },
+                runes = {
+                    name = "Death Knight Runes",
+                    desc = "Enables / Disables Death Knight runes support",
+                    type = "toggle",
+                },
+                arcaneCharges = {
+                    name = "Mage Arcane Charges",
+                    desc = "Enables / Disables Mage arcane charges support",
+                    type = "toggle",
+                },
+                chi = {
+                    name = "Monk Chi",
+                    desc = "Enables / Disables Monk chi support",
+                    type = "toggle",
+                },
+                evokerEssences = {
+                    name = "Evoker Essences",
+                    desc = "Enables / Disables Evoker essences support",
+                    type = "toggle",
+                },
+                comboPoints = {
+                    name = "Combo Ponts",
+                    desc = "Enables / Disables Combo Points support",
+                    type = "toggle",
+                },
+            },
         },
         totem = {
             name = "Totem",
             desc = "Enables / Disables Totem support",
-            type = "toggle",
-        },
-        soulShards = {
-            name = "Soul Shards",
-            desc = "Enables / Disables Soul Shards support",
             type = "toggle",
         },
         achievementAlert = {
@@ -194,26 +220,6 @@ local options = {
             desc = "Enables / Disables additional options for the Stance Bar",
             type = "toggle",
         },
-        runes = {
-            name = "Death Knight Runes",
-            desc = "Enables / Disables Death Knight runes support",
-            type = "toggle",
-        },
-        arcaneCharges = {
-            name = "Mage Arcane Charges",
-            desc = "Enables / Disables Mage arcane charges support",
-            type = "toggle",
-        },
-        chi = {
-            name = "Monk Chi",
-            desc = "Enables / Disables Monk chi support",
-            type = "toggle",
-        },
-        evokerEssences = {
-            name = "Evoker Essences",
-            desc = "Enables / Disables Evoker essences support",
-            type = "toggle",
-        },
         showCoordinates = {
             name = "Show Coordinates",
             type = "toggle",
@@ -234,15 +240,31 @@ local options = {
             desc = "Enables / Disables additional options for the Reputation Bar",
             type = "toggle",
         },
-        menu = {
-            name = "Menu Bar",
-            desc = "Enables / Disables additional options for the Menu Bar",
-            type = "toggle",
-        },
-        bags = {
-            name = "Bag Bar",
-            desc = "Enables / Disables additional options for the Bag Bar",
-            type = "toggle",
+        menuGroup = {
+            name = "Menu",
+            type = "group",
+            args = {
+                menu = {
+                    name = "Menu Bar",
+                    desc = "Enables / Disables additional options for the Menu Bar",
+                    type = "toggle",
+                },
+                menuResizable = {
+                    name = "Resize Menu Bar",
+                    desc = "Allows the Menu Bar to be resized, with more options than the default options. WARNING: this will override the resize slider provided by the base UI. If you try to use both sliders, unexpected things could happen!",
+                    type = "toggle",
+                },
+                bags = {
+                    name = "Bag Bar",
+                    desc = "Enables / Disables additional options for the Bag Bar",
+                    type = "toggle",
+                },
+                lfg = {
+                    name = "LFG Button",
+                    desc = "Enables / Disables LFG Button support",
+                    type = "toggle", 
+                },
+            },
         },
         targetFrame = {
             name = "Target",
@@ -262,16 +284,6 @@ local options = {
         debuffFrame = {
             name = "Debuffs",
             desc = "Enables / Disables additional options for the Debuff List",
-            type = "toggle",
-        },
-        menuResizable = {
-            name = "Resize Menu Bar",
-            desc = "Allows the Menu Bar to be resized, with more options than the default options. WARNING: this will override the resize slider provided by the base UI. If you try to use both sliders, unexpected things could happen!",
-            type = "toggle",
-        },
-        comboPoints = {
-            name = "Combo Ponts",
-            desc = "Enables / Disables Combo Points support",
             type = "toggle",
         },
         bonusRoll = {

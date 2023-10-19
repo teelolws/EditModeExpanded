@@ -8,17 +8,20 @@ function addon:initStanceBar()
         lib:RegisterHideable(StanceBar)
         lib:RegisterToggleInCombat(StanceBar)
         hooksecurefunc(StanceBar, "Show", function()
+            if InCombatLockdown() then return end
             if lib:IsFrameMarkedHidden(StanceBar) then
                 StanceBar:Hide()
             end
         end)
         hooksecurefunc(StanceBar, "SetShown", function()
+            if InCombatLockdown() then return end
             if lib:IsFrameMarkedHidden(StanceBar) then
                 StanceBar:Hide()
             end
         end)
         
         C_Timer.After(1, function()
+            if InCombatLockdown() then return end
             if lib:IsFrameMarkedHidden(StanceBar) then
                 StanceBar:Hide()
             end

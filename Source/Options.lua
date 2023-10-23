@@ -138,7 +138,7 @@ local options = {
                     type = "toggle",
                 },
                 comboPoints = {
-                    name = "Combo Ponts",
+                    name = "Combo Points",
                     desc = "Enables / Disables Combo Points support",
                     type = "toggle",
                 },

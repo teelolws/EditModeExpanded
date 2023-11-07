@@ -32,7 +32,6 @@ local defaults = {
             mainStatusTrackingBarContainer = true,
             secondaryStatusTrackingBarContainer = true,
             menu = true,
-            menuResizable = false,
             bags = true,
             comboPoints = true,
             bonusRoll = true,
@@ -249,10 +248,7 @@ local options = {
                     desc = "Enables / Disables additional options for the Menu Bar",
                     type = "toggle",
                 },
-                menuResizable = {
-                    name = "Resize Menu Bar",
-                    desc = "Allows the Menu Bar to be resized, with more options than the default options. WARNING: this will override the resize slider provided by the base UI. If you try to use both sliders, unexpected things could happen!",
-                    type = "toggle",
+                type = "toggle",
                 },
                 bags = {
                     name = "Bag Bar",

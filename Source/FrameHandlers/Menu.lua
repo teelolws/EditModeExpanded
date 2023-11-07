@@ -67,18 +67,6 @@ function addon:initMenuBar()
         lib:RegisterCustomCheckbox(MicroMenuContainer, "Use Shadowlands style buttons (requires reload)", addon.EnableSkinMicroMenuSL, addon.DisableSkinMicroMenuSL, "SLStyle")
     end
     
-    if db.EMEOptions.menuResizable then
-        lib:RegisterResizable(MicroMenuContainer)
-        C_Timer.After(1, function()
-            lib:UpdateFrameResize(MicroMenuContainer)
-        end)
-        
-        -- triggers when player leaves a vehicle or pet battle
-        hooksecurefunc("ResetMicroMenuPosition", function(...)
-            lib:UpdateFrameResize(MicroMenuContainer)
-        end)
-    end
-    
     if db.EMEOptions.bags then
         lib:RegisterHideable(BagsBar)
         lib:RegisterToggleInCombat(BagsBar)

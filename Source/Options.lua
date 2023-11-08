@@ -29,6 +29,7 @@ local defaults = {
             evokerEssences = true,
             showCoordinates = false,
             playerFrame = true,
+            playerFrameResize = false,
             mainStatusTrackingBarContainer = true,
             secondaryStatusTrackingBarContainer = true,
             menu = true,
@@ -228,6 +229,11 @@ local options = {
             name = "Player Frame",
             type = "toggle",
             desc = "Enables / Disables additional options for the Player Frame",
+        },
+        playerFrameResize = {
+            name = "Resize Player Frame",
+            desc = "Allows the Player Frame to be resized to a smaller size than the default UI allows. NOTE: You may get unexpected results if you use both sliders.",
+            type = "toggle",
         },
         mainStatusTrackingBarContainer = {
             name = "Experience Bar",

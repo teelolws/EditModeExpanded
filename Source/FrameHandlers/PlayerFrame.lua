@@ -32,5 +32,9 @@ function addon:initPlayerFrame()
                 PlayerFrame.manabar:Hide()
             end
         end)
+        
+        if db.EMEOptions.playerFrameResize then
+            lib:RegisterResizable(PlayerFrame)
+        end
     end
 end

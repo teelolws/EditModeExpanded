@@ -248,8 +248,6 @@ local options = {
                     desc = "Enables / Disables additional options for the Menu Bar",
                     type = "toggle",
                 },
-                type = "toggle",
-                },
                 bags = {
                     name = "Bag Bar",
                     desc = "Enables / Disables additional options for the Bag Bar",

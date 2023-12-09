@@ -210,8 +210,14 @@ do
         	end
         	MainMenuBarDownload:Show();
         end
-        replaceAllAtlases()
+        replaceAtlases(MainMenuMicroButton, "MainMenu")
     end)
+    
+    for _, data in pairs(buttons) do
+        data.button:HookScript("OnEnter", function()
+            replaceAtlases(data.button, data.name)
+        end)
+    end
 
     CreateFrame("Frame", "GuildMicroButtonTabard", GuildMicroButton)
     GuildMicroButtonTabard:SetPoint("TOPLEFT", 3, 1)
@@ -258,4 +264,6 @@ do
     function addon:DisableSkinMicroMenuSL()
         SLSkinEnabled = false
     end
+    
+    replaceAllAtlases()
 end

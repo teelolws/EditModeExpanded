@@ -213,10 +213,15 @@ do
         replaceAtlases(MainMenuMicroButton, "MainMenu")
     end)
     
+    local eventTypes = {"OnEnter", "OnClick", "OnMouseDown", "OnMouseUp", "OnLeave"}
     for _, data in pairs(buttons) do
-        data.button:HookScript("OnEnter", function()
-            replaceAtlases(data.button, data.name)
-        end)
+        for _, eventType in pairs(eventTypes) do
+            data.button:HookScript(eventType, function()
+                replaceAtlases(data.button, data.name)
+            end)
+        end
+        hooksecurefunc(data.button, "SetPushed", replaceAllAtlases)
+        hooksecurefunc(data.button, "SetNormal", replaceAllAtlases)     
     end
 
     CreateFrame("Frame", "GuildMicroButtonTabard", GuildMicroButton)
@@ -244,7 +249,6 @@ do
     		GuildMicroButtonTabard:SetPoint("TOPLEFT", 3, 1);
     		GuildMicroButtonTabard:SetAlpha(1);
         end
-        GuildMicroButtonTabard:Show()
     end
 
     hooksecurefunc("UpdateMicroButtons", updateButtons)

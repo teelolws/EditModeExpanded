@@ -46,6 +46,7 @@ local defaults = {
             buffFrame = true,
             debuffFrame = true,
             objectiveTrackerFrame = true,
+            targetFrameBuffs = false,
         },
         QueueStatusButton = {},
         TotemFrame = {},
@@ -89,6 +90,8 @@ local defaults = {
         ContainerFrameCombinedBags = {},
         MinimapZoneName = {},
         MinimapSeparated = {},
+        TargetDebuffs = {},
+        TargetBuffs = {},
     }
 }
 
@@ -269,6 +272,11 @@ local options = {
         targetFrame = {
             name = "Target",
             desc = "Enables / Disables additional options for the Target Frame",
+            type = "toggle",
+        },
+        targetFrameBuffs = {
+            name = "Target Buffs",
+            desc = "Enables / Disables support for target buffs and debuffs",
             type = "toggle",
         },
         focusFrame = {

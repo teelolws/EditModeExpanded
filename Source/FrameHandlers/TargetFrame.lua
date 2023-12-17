@@ -23,6 +23,8 @@ function addon:initTargetFrame()
             lib:SetDontResize(targetBuffsFrame)
             
             hooksecurefunc("TargetFrame_UpdateDebuffAnchor", function(self, buff, index, numBuffs, anchorBuff, anchorIndex, size, offsetX, offsetY, mirrorVertically)
+                if self ~= TargetFrame then return end
+                
                 local point, relativeTo, relativePoint, offsetX, offsetY = buff:GetPoint()
                 
                 if point and (anchorBuff ~= relativeTo) then

@@ -37,6 +37,8 @@ function addon:initTargetFrame()
             end)
             
             hooksecurefunc("TargetFrame_UpdateBuffAnchor", function(self, buff, index, numDebuffs, anchorBuff, anchorIndex, size, offsetX, offsetY, mirrorVertically)
+                if self ~= TargetFrame then return end
+                
                 local point, relativeTo, relativePoint, offsetX, offsetY = buff:GetPoint()
                 
                 if point and (anchorBuff ~= relativeTo) then

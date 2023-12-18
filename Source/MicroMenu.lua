@@ -128,6 +128,7 @@ do
     local prefix = "hud-microbutton-"
     	
     local function replaceAtlases(self, name)
+        if not SLSkinEnabled then return end
         -- code from 9.2 version of FrameXML\MainMenuBarMicroButtons.lua
         self:SetNormalAtlas(prefix..name.."-Up", true)
         self:SetPushedAtlas(prefix..name.."-Down", true)
@@ -181,6 +182,7 @@ do
     }
 
     local function replaceAllAtlases()
+        if not SLSkinEnabled then return end
         for _, data in pairs(buttons) do
             replaceAtlases(data.button, data.name)
         end

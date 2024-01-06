@@ -2,7 +2,7 @@
 -- Internal variables
 --
 
-local MAJOR, MINOR = "EditModeExpanded-1.0", 73
+local MAJOR, MINOR = "EditModeExpanded-1.0", 74
 local lib = LibStub:NewLibrary(MAJOR, MINOR)
 if not lib then return end
 
@@ -931,7 +931,7 @@ hooksecurefunc(f, "OnLoad", function()
             local systemSettingDisplayInfo = GetSystemSettingDisplayInfo(framesDialogs[systemID]);
             if systemSettingDisplayInfo then
                 for index, displayInfo in ipairs(systemSettingDisplayInfo) do
-                      local settingPool = self:GetSettingPool(displayInfo.type);
+                    local settingPool = self:GetSettingPool(displayInfo.type);
                     if settingPool then
                         local settingFrame;
     
@@ -943,10 +943,10 @@ hooksecurefunc(f, "OnLoad", function()
                         end
     
                         settingFrame:SetPoint("TOPLEFT");
-                          settingFrame.layoutIndex = index;
+                        settingFrame.layoutIndex = index;
                         
-                        local settingName = (self.attachedToSystem:UseSettingAltName(displayInfo.setting) and displayInfo.altName) and displayInfo.altName or displayInfo.name;
-                          local updatedDisplayInfo = self.attachedToSystem:UpdateDisplayInfoOptions(displayInfo);
+                        local settingName = (self.attachedToSystem:UseSettingAltName(displayInfo.setting) and displayInfo.altName) and displayInfo.altName or displayInfo.name
+                        local updatedDisplayInfo = self.attachedToSystem:UpdateDisplayInfoOptions(displayInfo);
                         if not framesDB[systemID].settings then framesDB[systemID].settings = {} end
                           
                         local savedValue = framesDB[systemID].settings[updatedDisplayInfo.setting]
@@ -1041,9 +1041,12 @@ hooksecurefunc(f, "OnLoad", function()
                             end)
                         end
                         
-                          settingsToSetup[settingFrame] = { displayInfo = updatedDisplayInfo, currentValue = savedValue, settingName = settingName }
-                          settingFrame:Show();
-                      end
+                        if type(settingName) == "function" then
+                            settingName = settingName()
+                        end
+                        settingsToSetup[settingFrame] = { displayInfo = updatedDisplayInfo, currentValue = savedValue, settingName = settingName }
+                        settingFrame:Show();
+                    end
                 end
         
                 self.Buttons:ClearAllPoints();

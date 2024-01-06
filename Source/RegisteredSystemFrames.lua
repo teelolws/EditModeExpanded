@@ -25,6 +25,15 @@ function addon:initSystemFrames()
     TalkingHeadFrame:Hide()
 end
 
+local function getToggleInCombatText(hidden)
+    if hidden then
+        return "Toggle(Show) During Combat"
+    else
+        return "Toggle(Hide) During Combat"
+    end
+end
+    
+
 function addon:registerSecureFrameHideable(frame)
     local hidden, toggleInCombat, x, y
     
@@ -74,7 +83,7 @@ function addon:registerSecureFrameHideable(frame)
         end,
         "HidePermanently")
     
-    lib:RegisterCustomCheckbox(frame, "Toggle In Combat",
+    lib:RegisterCustomCheckbox(frame, function() return getToggleInCombatText(hidden) end,
         function()
             toggleInCombat = true
         end,

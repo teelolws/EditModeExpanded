@@ -2,7 +2,7 @@
 -- Internal variables
 --
 
-local MAJOR, MINOR = "EditModeExpanded-1.0", 74
+local MAJOR, MINOR = "EditModeExpanded-1.0", 75
 local lib = LibStub:NewLibrary(MAJOR, MINOR)
 if not lib then return end
 
@@ -999,6 +999,7 @@ hooksecurefunc(f, "OnLoad", function()
                         end
                         
                         if displayInfo.setting == ENUM_EDITMODEACTIONBARSETTING_CUSTOM then
+                            if not framesDB[systemID].settings[displayInfo.setting] then framesDB[systemID].settings[displayInfo.setting] = {} end
                             savedValue = framesDB[systemID].settings[displayInfo.setting][displayInfo.customCheckBoxID]
                             if savedValue == nil then savedValue = 0 end
                             settingFrame.Button:SetChecked(savedValue)

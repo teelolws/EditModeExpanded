@@ -2,20 +2,26 @@
 -- Internal variables
 --
 
-local MAJOR, MINOR = "EditModeExpanded-1.0", 75
+local MAJOR, MINOR = "EditModeExpanded-1.0", 76
 local lib = LibStub:NewLibrary(MAJOR, MINOR)
 if not lib then return end
 
 -- the internal frames provided by Blizzard go up to index 16. They reference Enum.EditModeSystem, which starts from index 0
 local STARTING_INDEX = 17
 local index = STARTING_INDEX
-local frames = {}
-local baseFramesDB = {} -- the base db that includes all profiles inside
-local framesDB = {} -- the currently selected db inside the profile
-local framesDialogs = {}
-local framesDialogsKeys = {}
-local existingFrames = {} -- frames already part of Edit Mode where we are adding more options
-local firstCheckButtonPlaced = false
+local frames = lib.frames or {}
+lib.frames = frames
+local baseFramesDB = lib.baseFramesDB or {} -- the base db that includes all profiles inside
+lib.baseFramesDB = baseFramesDB
+local framesDB = lib.framesDB or {} -- the currently selected db inside the profile
+lib.framesDB = framesDB
+local framesDialogs = lib.framesDialogs or {}
+lib.framesDialogs = framesDialogs
+local framesDialogsKeys = lib.framesDialogsKeys or {}
+lib.framesDialogsKeys = framesDialogsKeys
+local existingFrames = lib.exitingFrames or {} -- frames already part of Edit Mode where we are adding more options
+lib.existingFrames = existingFrames
+-- lib.firstCheckButtonPlaced = false
 local enteringCombat = InCombatLockdown()
 
 local ENUM_EDITMODEACTIONBARSETTING_HIDEABLE = 10 -- Enum.EditModeActionBarSetting.Hideable = 10
@@ -335,8 +341,8 @@ function lib:RegisterFrame(frame, name, db, anchorTo, anchorPoint, clamped)
     checkButtonFrame:SetSize(32, 32)
     
     checkButtonFrame.index = frame.system
-    if not firstCheckButtonPlaced then
-        firstCheckButtonPlaced = true
+    if not lib.firstCheckButtonPlaced then
+        lib.firstCheckButtonPlaced = true
         checkButtonFrame:SetPoint("TOPLEFT", EditModeManagerExpandedFrame.AccountSettings.disableHighlightTexturesOption, "BOTTOMLEFT", 0, 10)
     else
         -- some system IDs may be existing edit mode frames which were not assigned a checkbox
@@ -648,7 +654,7 @@ local function clearSelectedSystem(index, systemFrame)
 end
 
 hooksecurefunc(f, "OnLoad", function()
-    CreateFrame("Frame", "EditModeManagerExpandedFrame", nil, UIParent)
+    EditModeManagerExpandedFrame = EditModeManagerExpandedFrame or CreateFrame("Frame", nil, nil, UIParent)
     EditModeManagerExpandedFrame:Hide();
     EditModeManagerExpandedFrame:SetScale(UIParent:GetScale());
     EditModeManagerExpandedFrame:SetPoint("TOPLEFT", EditModeManagerFrame, "TOPRIGHT", 2, 0)
@@ -657,12 +663,12 @@ hooksecurefunc(f, "OnLoad", function()
     EditModeManagerExpandedFrame.Title = EditModeManagerExpandedFrame:CreateFontString(nil, "ARTWORK", "GameFontHighlightLarge")
     EditModeManagerExpandedFrame.Title:SetPoint("TOP", 0, -15)
     EditModeManagerExpandedFrame.Title:SetText("Expanded")
-    EditModeManagerExpandedFrame.Border = CreateFrame("Frame", nil, EditModeManagerExpandedFrame, "DialogBorderTranslucentTemplate")
-    EditModeManagerExpandedFrame.AccountSettings = CreateFrame("Frame", nil, EditModeManagerExpandedFrame)
+    EditModeManagerExpandedFrame.Border = EditModeManagerExpandedFrame.Border or CreateFrame("Frame", nil, EditModeManagerExpandedFrame, "DialogBorderTranslucentTemplate")
+    EditModeManagerExpandedFrame.AccountSettings = EditModeManagerExpandedFrame.AccountSettings or CreateFrame("Frame", nil, EditModeManagerExpandedFrame)
     EditModeManagerExpandedFrame.AccountSettings:SetPoint("TOPLEFT", 0, -35)
     EditModeManagerExpandedFrame.AccountSettings:SetPoint("BOTTOMLEFT", 10, 10)
     EditModeManagerExpandedFrame.AccountSettings:SetWidth(200)
-    EditModeManagerExpandedFrame.CloseButton = CreateFrame("Button", nil, EditModeManagerExpandedFrame, "UIPanelCloseButton")
+    EditModeManagerExpandedFrame.CloseButton = EditModeManagerExpandedFrame.CloseButton or CreateFrame("Button", nil, EditModeManagerExpandedFrame, "UIPanelCloseButton")
     EditModeManagerExpandedFrame.CloseButton:SetPoint("TOPRIGHT")
     
     EditModeManagerFrame:HookScript("OnShow", function()
@@ -801,7 +807,7 @@ hooksecurefunc(f, "OnLoad", function()
     --
     -- Edit Mode Dialog Box code
     --
-    local frame = CreateFrame("Frame", "EditModeExpandedSystemSettingsDialog", UIParent, "ResizeLayoutFrame")
+    local frame = EditModeExpandedSystemSettingsDialog or CreateFrame("Frame", "EditModeExpandedSystemSettingsDialog", UIParent, "ResizeLayoutFrame")
     Mixin(frame, EditModeSystemSettingsDialogMixin)
     frame:SetMovable(true)
     frame:SetClampedToScreen(true)
@@ -817,19 +823,19 @@ hooksecurefunc(f, "OnLoad", function()
     frame.heightPadding = 40
     frame.Title = frame:CreateFontString(nil, "ARTWORK", "GameFontHighlightLarge")
     frame.Title:SetPoint("TOP", 0, -15)
-    frame.Border = CreateFrame("Frame", nil, frame, "DialogBorderTranslucentTemplate")
+    frame.Border = frame.Border or CreateFrame("Frame", nil, frame, "DialogBorderTranslucentTemplate")
     frame.Border.ignoreInLayout = true
-    frame.CloseButton = CreateFrame("Button", nil, frame, "UIPanelCloseButton")
+    frame.CloseButton = frame.CloseButton or CreateFrame("Button", nil, frame, "UIPanelCloseButton")
     frame.CloseButton.ignoreInLayout = true
     frame.CloseButton:SetPoint("TOPRIGHT")
-    frame.Settings = CreateFrame("Frame", nil, frame, "VerticalLayoutFrame")
+    frame.Settings = frame.Settings or CreateFrame("Frame", nil, frame, "VerticalLayoutFrame")
     frame.Settings:SetSize(1, 1)
     frame.Settings.spacing = 2
     frame.Settings:SetPoint("TOP", frame.Title, "BOTTOM", 0, -12)
-    frame.Buttons = CreateFrame("Frame", nil, frame, "VerticalLayoutFrame")
+    frame.Buttons = frame.Buttons or CreateFrame("Frame", nil, frame, "VerticalLayoutFrame")
     frame.Buttons.spacing = 2
     frame.Buttons:SetPoint("TOPLEFT", frame.Settings, "BOTTOMLEFT", 0, -12)
-    frame.Buttons.RevertChangesButton = CreateFrame("Button", nil, frame.Buttons, "EditModeSystemSettingsDialogButtonTemplate")
+    frame.Buttons.RevertChangesButton = frame.Buttons.RevertChangesButton or CreateFrame("Button", nil, frame.Buttons, "EditModeSystemSettingsDialogButtonTemplate")
     frame.Buttons.RevertChangesButton:SetText(HUD_EDIT_MODE_REVERT_CHANGES)
     frame.Buttons.RevertChangesButton.layoutIndex = 1
     frame.Buttons.Divider = frame.Buttons:CreateTexture(nil, "ARTWORK")
@@ -862,7 +868,7 @@ hooksecurefunc(f, "OnLoad", function()
     end
     
     -- Add the option to hide the highlight textures
-    EditModeManagerExpandedFrame.AccountSettings.disableHighlightTexturesOption = CreateFrame("CheckButton", nil, EditModeManagerExpandedFrame.AccountSettings, "UICheckButtonTemplate")
+    EditModeManagerExpandedFrame.AccountSettings.disableHighlightTexturesOption = EditModeManagerExpandedFrame.AccountSettings.disableHighlightTexturesOption or CreateFrame("CheckButton", nil, EditModeManagerExpandedFrame.AccountSettings, "UICheckButtonTemplate")
     local checkButtonFrame = EditModeManagerExpandedFrame.AccountSettings.disableHighlightTexturesOption
     
     checkButtonFrame:SetScript("OnClick", function(self)

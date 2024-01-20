@@ -63,4 +63,53 @@ function addon:initRaidFrames()
             noInfinite = false
         end
     end)
+    
+    local partyFrameNamesWereHidden
+    lib:RegisterCustomCheckbox(PartyFrame, "Hide Names",
+        function()
+            for i = 1, 4 do
+                PartyFrame["MemberFrame"..i].name:Hide()
+            end
+            partyFrameNamesWereHidden = true
+        end,
+        function()
+            if not partyFrameNamesWereHidden then return end
+            for i = 1, 4 do
+                PartyFrame["MemberFrame"..i].name:Show()
+            end
+            partyFrameNamesWereHidden = false
+        end,
+        "HidePartyNames"
+    )
+    
+    local showRaidFrameNames
+    
+    local function updateHideRaidFrameNames()
+        for groupID = 1, 8 do
+            local group = _G["CompactRaidGroup"..groupID]
+            if group then
+                for playerID = 1, 5 do
+                    local player = _G["CompactRaidGroup"..groupID.."Member"..playerID]
+                    if player then
+                        player.name:SetShown(showRaidFrameNames)
+                    end
+                end
+            end
+        end
+    end
+                        
+    
+    lib:RegisterCustomCheckbox(CompactRaidFrameContainer, "Hide Names",
+        function()
+            showRaidFrameNames = false
+            updateHideRaidFrameNames()
+        end,
+        function()
+            showRaidFrameNames = true
+            updateHideRaidFrameNames()
+        end,
+        "HideRaidNames"
+    )
+
+    hooksecurefunc("CompactUnitFrame_UpdateName", updateHideRaidFrameNames)
 end

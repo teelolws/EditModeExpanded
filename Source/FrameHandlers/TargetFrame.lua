@@ -46,5 +46,20 @@ function addon:initTargetFrame()
                 end
             end)
         end
+        
+        local targetFrameWasHidden
+        lib:RegisterCustomCheckbox(TargetFrame, "Hide Name",
+            function()
+                TargetFrame.name:Hide()
+                targetFrameWasHidden = true
+            end,
+            function()
+                if targetFrameWasHidden then
+                    TargetFrame.name:Show()
+                end
+                targetFrameWasHidden = false
+            end,
+            "HideName"
+        )
     end
 end

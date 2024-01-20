@@ -1579,15 +1579,17 @@ do
                     
                     local systemID = getSystemID(frame)
                     local db = framesDB[systemID]
-                    local settings = db.settings
-                    local dialogs = framesDialogsKeys[systemID]
-                    
-                    if dialogs and dialogs[ENUM_EDITMODEACTIONBARSETTING_TOGGLEHIDEINCOMBAT] and settings and (settings[ENUM_EDITMODEACTIONBARSETTING_TOGGLEHIDEINCOMBAT] == 1) and dialogs[ENUM_EDITMODEACTIONBARSETTING_HIDEABLE] then
-                        if settings[ENUM_EDITMODEACTIONBARSETTING_HIDEABLE] == 1 then
-                            -- if "Hide" in enabled and this option too, then hide it while out of combat, show it while in combat
-                            frame:Show()
-                        else
-                            frame:Hide()
+                    if db then
+                        local settings = db.settings
+                        local dialogs = framesDialogsKeys[systemID]
+                        
+                        if dialogs and dialogs[ENUM_EDITMODEACTIONBARSETTING_TOGGLEHIDEINCOMBAT] and settings and (settings[ENUM_EDITMODEACTIONBARSETTING_TOGGLEHIDEINCOMBAT] == 1) and dialogs[ENUM_EDITMODEACTIONBARSETTING_HIDEABLE] then
+                            if settings[ENUM_EDITMODEACTIONBARSETTING_HIDEABLE] == 1 then
+                                -- if "Hide" in enabled and this option too, then hide it while out of combat, show it while in combat
+                                frame:Show()
+                            else
+                                frame:Hide()
+                            end
                         end
                     end
                 end
@@ -1602,14 +1604,16 @@ do
                     end
                     local systemID = getSystemID(frame)
                     local db = framesDB[systemID]
-                    local settings = db.settings
-                    local dialogs = framesDialogsKeys[systemID]
-                    
-                    if dialogs and settings and dialogs[ENUM_EDITMODEACTIONBARSETTING_TOGGLEHIDEINCOMBAT] and (settings[ENUM_EDITMODEACTIONBARSETTING_TOGGLEHIDEINCOMBAT] == 1) and dialogs[ENUM_EDITMODEACTIONBARSETTING_HIDEABLE] then
-                        if settings[ENUM_EDITMODEACTIONBARSETTING_HIDEABLE] == 1 then
-                            frame:Hide()
-                        else
-                            frame:Show()
+                    if db then
+                        local settings = db.settings
+                        local dialogs = framesDialogsKeys[systemID]
+                        
+                        if dialogs and settings and dialogs[ENUM_EDITMODEACTIONBARSETTING_TOGGLEHIDEINCOMBAT] and (settings[ENUM_EDITMODEACTIONBARSETTING_TOGGLEHIDEINCOMBAT] == 1) and dialogs[ENUM_EDITMODEACTIONBARSETTING_HIDEABLE] then
+                            if settings[ENUM_EDITMODEACTIONBARSETTING_HIDEABLE] == 1 then
+                                frame:Hide()
+                            else
+                                frame:Show()
+                            end
                         end
                     end
                 end

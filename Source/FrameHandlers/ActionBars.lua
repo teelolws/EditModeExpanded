@@ -29,6 +29,26 @@ function addon:initActionBars()
             )
             
             addon:registerSecureFrameHideable(bar)
+            
+            local alreadyHidden
+            lib:RegisterCustomCheckbox(bar, "Hide macro/keybind names",
+                function()
+                    for _, button in pairs(bar.actionButtons) do
+                        button.Name:Hide()
+                        button.HotKey:Hide()
+                    end
+                    alreadyHidden = true
+                end,
+                function()
+                    if not alreadyHidden then return end
+                    for _, button in pairs(bar.actionButtons) do
+                        button.Name:Show()
+                        button.HotKey:Show()
+                    end
+                    alreadyHidden = false
+                end,
+                "HideMacroName"
+            )
         end
     end)
 end

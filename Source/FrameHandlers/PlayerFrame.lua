@@ -58,5 +58,17 @@ function addon:initPlayerFrame()
             end,
             "HideIcons"
         )
+        
+        C_Timer.After(4, function()
+            lib:RegisterCustomCheckbox(PlayerFrame, "Hide Level",
+                function()
+                    PlayerLevelText:Hide()
+                end,
+                function()
+                    PlayerLevelText:Show()
+                end,
+                "HideLevel"
+            )
+        end)
     end
 end

@@ -669,7 +669,7 @@ function lib:RegisterCustomButton(frame, name, onClick)
             type = ENUM_EDITMODEACTIONBARSETTING_BUTTON,
             onClick = onClick,
             name = name,
-            button = button,
+            settingFrame = button,
         }
     )
 end
@@ -971,23 +971,19 @@ hooksecurefunc(f, "OnLoad", function()
             if systemSettingDisplayInfo then
                 for index, displayInfo in ipairs(systemSettingDisplayInfo) do
                     local settingPool = self:GetSettingPool(displayInfo.type);
-                    
-                    if displayInfo.type == ENUM_EDITMODEACTIONBARSETTING_BUTTON then
-                        settingPool = displayInfo.button
-                    end
+                    local settingFrame
                     
                     if settingPool then
-                        local settingFrame;
-    
-                        if displayInfo.type == ENUM_EDITMODEACTIONBARSETTING_BUTTON then
-                            settingFrame = settingPool
-                        elseif draggingSlider and draggingSlider.setting == displayInfo.setting then
-                            -- This is a slider that is being interacted with and so was not released.
-                            settingFrame = draggingSlider;
+                        if draggingSlider and draggingSlider.setting == displayInfo.setting then
+                            settingFrame = draggingSlider
                         else
-                            settingFrame = settingPool:Acquire();
+                            settingFrame = settingPool:Acquire()
                         end
-    
+                    else
+                        settingFrame = displayInfo.settingFrame
+                    end
+                    
+                    if settingFrame then
                         settingFrame:SetPoint("TOPLEFT");
                         settingFrame.layoutIndex = index;
                         
@@ -1127,6 +1123,8 @@ end)
 
 hooksecurefunc(f, "OnLoad", function()
     function EditModeExpandedSystemSettingsDialog:GetSettingPool(settingType)
+        -- EditModesettingDropdownTemplate not usable due to spreading taint
+        -- Use LibUIDropDownMenu instead and avoid frame pools (cannot use custom templates in a library)
         --if settingType == Enum.EditModeSettingDisplayType.Dropdown then
         --    return self.pools:GetPool("EditModeSettingDropdownTemplate");
         --else

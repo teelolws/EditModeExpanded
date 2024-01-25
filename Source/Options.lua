@@ -147,6 +147,47 @@ local options = {
                 },
             },
         },
+        targetGroup = {
+            name = "Target and Focus",
+            type = "group",
+            args = {
+                targetOfTarget = {
+                    name = "Target of Target",
+                    desc = "Enables / Disables Target of Target support",
+                    type = "toggle",
+                },
+                targetCast = {
+                    name = "Target Cast Bar",
+                    desc = "Enables / Disables Target Cast Bar support",
+                    type = "toggle",
+                },
+                focusTargetOfTarget = {
+                    name = "Focus Target of Target",
+                    desc = "Enables / Disables Focus Target of Target support",
+                    type = "toggle",
+                },
+                focusCast = {
+                    name = "Focus Cast Bar",
+                    desc = "Enables / Disables Focus Cast Bar support",
+                    type = "toggle",
+                },
+                targetFrame = {
+                    name = "Target",
+                    desc = "Enables / Disables additional options for the Target Frame",
+                    type = "toggle",
+                },
+                targetFrameBuffs = {
+                    name = "Target Buffs",
+                    desc = "Enables / Disables support for target buffs and debuffs",
+                    type = "toggle",
+                },
+                focusFrame = {
+                    name = "Focus",
+                    desc = "Enables / Disables additional options for the Focus Frame",
+                    type = "toggle",
+                },
+            },
+        },
         totem = {
             name = "Totem",
             desc = "Enables / Disables Totem support",
@@ -157,26 +198,7 @@ local options = {
             desc = "Enables / Disables Achievement Alert support",
             type = "toggle",
         },
-        targetOfTarget = {
-            name = "Target of Target",
-            desc = "Enables / Disables Target of Target support",
-            type = "toggle",
-        },
-        targetCast = {
-            name = "Target Cast Bar",
-            desc = "Enables / Disables Target Cast Bar support",
-            type = "toggle",
-        },
-        focusTargetOfTarget = {
-            name = "Focus Target of Target",
-            desc = "Enables / Disables Focus Target of Target support",
-            type = "toggle",
-        },
-        focusCast = {
-            name = "Focus Cast Bar",
-            desc = "Enables / Disables Focus Cast Bar support",
-            type = "toggle",
-        },
+        
         compactRaidFrameContainer = {
             name = "Compact Raid Frame Container",
             desc = "Enables / Disables additional options for the Compact Raid Frames",
@@ -269,21 +291,7 @@ local options = {
                 },
             },
         },
-        targetFrame = {
-            name = "Target",
-            desc = "Enables / Disables additional options for the Target Frame",
-            type = "toggle",
-        },
-        targetFrameBuffs = {
-            name = "Target Buffs",
-            desc = "Enables / Disables support for target buffs and debuffs",
-            type = "toggle",
-        },
-        focusFrame = {
-            name = "Focus",
-            desc = "Enables / Disables additional options for the Focus Frame",
-            type = "toggle",
-        },
+        
         buffFrame = {
             name = "Buffs",
             desc = "Enables / Disables additional options for the Buff List",

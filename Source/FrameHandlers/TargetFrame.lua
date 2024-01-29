@@ -7,19 +7,10 @@ function addon:initTargetFrame()
         addon:registerSecureFrameHideable(TargetFrame)
         
         if db.EMEOptions.targetFrameBuffs then
-            local targetDebuffsFrame = CreateFrame("Frame", "TargetFrameDebuffs", TargetFrame)
             local targetBuffsFrame = CreateFrame("Frame", "TargetFrameBuffs", TargetFrame)
-            
             targetBuffsFrame:SetPoint("TOPLEFT", TargetFrame, "BOTTOMLEFT", 5, -10)
-            targetDebuffsFrame:SetPoint("TOPLEFT", targetBuffsFrame, "BOTTOMLEFT", 0, -5)
-            
-            targetDebuffsFrame:SetSize(100, 10)
             targetBuffsFrame:SetSize(100, 10)
-            
-            lib:RegisterFrame(targetDebuffsFrame, "Target Debuffs", db.TargetDebuffs)
             lib:RegisterFrame(targetBuffsFrame, "Target Buffs", db.TargetBuffs)
-            
-            lib:SetDontResize(targetDebuffsFrame)
             lib:SetDontResize(targetBuffsFrame)
             
             hooksecurefunc("TargetFrame_UpdateDebuffAnchor", function(self, buff, index, numBuffs, anchorBuff, anchorIndex, size, offsetX, offsetY, mirrorVertically)
@@ -27,8 +18,10 @@ function addon:initTargetFrame()
                 
                 local point, relativeTo, relativePoint, offsetX, offsetY = buff:GetPoint()
                 
-                if point and (anchorBuff ~= relativeTo) then
-                    buff:SetPoint(point, targetDebuffsFrame, relativePoint, offsetX, offsetY)
+                if (index == 1) and (numBuffs > 0) then
+                    buff:SetPoint(point, self.TargetFrameContent.TargetFrameContentContextual.buffs, relativePoint, offsetX, offsetY)
+                else
+                    buff:SetPoint(point, targetBuffsFrame, relativePoint, offsetX, offsetY)
                 end
                 -- From FrameXML\TargetFrame.lua:
                 -- TargetFrameMixin:UpdateAuraFrames(auraList, numAuras, numOppositeAuras, setupFunc, anchorFunc, maxRowWidth, offsetX, mirrorAurasVertically, template)

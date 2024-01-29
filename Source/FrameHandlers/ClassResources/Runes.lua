@@ -10,6 +10,7 @@ function addon:initRunes()
     lib:RegisterToggleInCombat(RuneFrame)
     lib:SetDontResize(RuneFrame)
     lib:RegisterResizable(RuneFrame)
+    addon.registerAnchorToDropdown(RuneFrame)
     hooksecurefunc(PlayerFrameBottomManagedFramesContainer, "Layout", function()
         if not EditModeManagerFrame.editModeActive then
             lib:RepositionFrame(RuneFrame)

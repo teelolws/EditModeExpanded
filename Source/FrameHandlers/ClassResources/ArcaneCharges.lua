@@ -10,6 +10,7 @@ function addon:initArcaneCharges()
         lib:RegisterToggleInCombat(MageArcaneChargesFrame)
         lib:SetDontResize(MageArcaneChargesFrame)
         lib:RegisterResizable(MageArcaneChargesFrame)
+        addon.registerAnchorToDropdown(MageArcaneChargesFrame)
         hooksecurefunc(PlayerFrameBottomManagedFramesContainer, "Layout", function()
             if not EditModeManagerFrame.editModeActive then
                 lib:RepositionFrame(MageArcaneChargesFrame)

@@ -9,6 +9,7 @@ function addon:initHolyPower()
         C_Timer.After(4, function() lib:RepositionFrame(PaladinPowerBarFrame) end)
         lib:RegisterHideable(PaladinPowerBarFrame)
         lib:RegisterToggleInCombat(PaladinPowerBarFrame)
+        addon.registerAnchorToDropdown(PaladinPowerBarFrame)
         hooksecurefunc(PlayerFrameBottomManagedFramesContainer, "Layout", function()
             if not EditModeManagerFrame.editModeActive then
                 lib:RepositionFrame(PaladinPowerBarFrame)

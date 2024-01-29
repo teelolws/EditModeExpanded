@@ -10,6 +10,7 @@ function addon:initChiBar()
         lib:RegisterHideable(MonkHarmonyBarFrame)
         lib:RegisterToggleInCombat(MonkHarmonyBarFrame)
         lib:RegisterResizable(MonkHarmonyBarFrame)
+        addon.registerAnchorToDropdown(MonkHarmonyBarFrame)
         hooksecurefunc(PlayerFrameBottomManagedFramesContainer, "Layout", function()
             if not EditModeManagerFrame.editModeActive then
                 lib:RepositionFrame(MonkHarmonyBarFrame)

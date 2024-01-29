@@ -10,6 +10,7 @@ function addon:initSoulShards()
         lib:RegisterToggleInCombat(WarlockPowerFrame)
         lib:SetDontResize(WarlockPowerFrame)
         lib:RegisterResizable(WarlockPowerFrame)
+        addon.registerAnchorToDropdown(WarlockPowerFrame)
         hooksecurefunc(PlayerFrameBottomManagedFramesContainer, "Layout", function()
             if not EditModeManagerFrame.editModeActive then
                 lib:RepositionFrame(WarlockPowerFrame)

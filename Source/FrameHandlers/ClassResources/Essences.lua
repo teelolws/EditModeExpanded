@@ -10,6 +10,7 @@ function addon:initEssences()
         lib:RegisterHideable(EssencePlayerFrame)
         lib:RegisterToggleInCombat(EssencePlayerFrame)
         lib:RegisterResizable(EssencePlayerFrame)
+        addon.registerAnchorToDropdown(EssencePlayerFrame)
         hooksecurefunc(PlayerFrameBottomManagedFramesContainer, "Layout", function()
             if not EditModeManagerFrame.editModeActive then
                 lib:RepositionFrame(EssencePlayerFrame)

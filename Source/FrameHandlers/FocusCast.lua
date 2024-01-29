@@ -19,5 +19,6 @@ function addon:initFocusCastBar()
         lib:SetDontResize(FocusFrameSpellBar)
         lib:RegisterResizable(FocusFrameSpellBar)
         lib:RegisterHideable(FocusFrameSpellBar)
+        addon.registerAnchorToDropdown(FocusFrameSpellBar)
     end
 end

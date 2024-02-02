@@ -1,4 +1,4 @@
--- $Id: LibUIDropDownMenu.lua 131 2024-01-29 14:04:44Z arithmandar $
+-- $Id: LibUIDropDownMenu.lua 133 2024-01-30 13:04:40Z arithmandar $
 -- ----------------------------------------------------------------------------
 -- Localized Lua globals.
 -- ----------------------------------------------------------------------------
@@ -18,7 +18,7 @@ local GameTooltip_SetTitle, GameTooltip_AddInstructionLine, GameTooltip_AddNorma
 
 -- ----------------------------------------------------------------------------
 local MAJOR_VERSION = "LibUIDropDownMenu-4.0"
-local MINOR_VERSION = 90000 + tonumber(("$Rev: 131 $"):match("%d+"))
+local MINOR_VERSION = 90000 + tonumber(("$Rev: 133 $"):match("%d+"))
 
 
 local LibStub = _G.LibStub
@@ -169,7 +169,9 @@ local function create_MenuButton(name, parent)
 		end
 		if (WoWRetail) then
 			GetValueOrCallFunction(self, "funcOnEnter", self);
-			self.NewFeature:Hide();
+			if self.NewFeature then
+				self.NewFeature:Hide();
+			end
 		end
 	end
 
@@ -288,6 +290,7 @@ local function create_MenuButton(name, parent)
 	end
 	-- UIDropDownMenuButtonIcon Script END
 	
+	-- Button Frame
 	local f = CreateFrame("Button", name, parent or nil)
     f:SetWidth(100)
     f:SetHeight(16)
@@ -311,6 +314,7 @@ local function create_MenuButton(name, parent)
 	f.UnCheck:SetPoint("LEFT", f, 0, 0)
 	f.UnCheck:SetTexCoord(0.5, 1, 0.5, 1)
 	
+	-- Icon Texture
 	local fIcon
 	fIcon = f:CreateTexture( name and (name.."Icon") or nil, "ARTWORK")
 	fIcon:SetSize(16, 16)
@@ -363,7 +367,6 @@ local function create_MenuButton(name, parent)
 	
 	-- ExpandArrow
 	local fea = CreateFrame("Button", name and (name.."ExpandArrow") or nil, f)
-
 	fea:SetSize(16, 16)
 	fea:SetPoint("RIGHT", f, 0, 0)
 	fea:Hide()
@@ -433,9 +436,9 @@ local function create_MenuButton(name, parent)
 	end)
 	f.invisibleButton = fib
 	
+	-- NewFeature
 	if (WoWRetail) then
-		-- NewFeature
-        local fnf = CreateFrame("Frame", name and (name.."NewFeature") or nil, f, "NewFeatureLabelTemplate");
+		local fnf = CreateFrame("Frame", name and (name.."NewFeature") or nil, f, "NewFeatureLabelTemplate");
 		fnf:SetFrameStrata("HIGH");
 		fnf:SetScale(0.8);
 		fnf:SetFrameLevel(100);
@@ -445,6 +448,7 @@ local function create_MenuButton(name, parent)
 		f.NewFeature = fnf;
 	end
 
+	-- MenuButton scripts
 	f:SetScript("OnClick", function(self, button)
 		button_OnClick(self, button)
 	end)
@@ -512,19 +516,23 @@ local function creatre_DropDownList(name, parent)
 	fmb:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b)
 	f.MenuBackdrop = fmb
 	
-    f.Button1 = name and _G[name.."Button1"] or create_MenuButton(name and (name.."Button1") or nil, f) -- to replace the inherits of "UIDropDownMenuButtonTemplate"
+	f.Button1 = name and _G[name.."Button1"] or create_MenuButton(name and (name.."Button1") or nil, f) -- to replace the inherits of "UIDropDownMenuButtonTemplate"
 	f.Button1:SetID(1)
-    
-    if not f.Button1.NewFeature then
-        local fnf = CreateFrame("Frame", name and (name.."NewFeature") or nil, f, "NewFeatureLabelTemplate");
-		fnf:SetFrameStrata("HIGH");
-		fnf:SetScale(0.8);
-		fnf:SetFrameLevel(100);
-		fnf:SetSize(1, 1);
-		fnf:Hide();
-		
-		f.Button1.NewFeature = fnf;
-    end
+
+	-- Checking if NewFeature exists or not
+	if (WoWRetail) then
+		if not f.Button1.NewFeature then
+			local fnf = CreateFrame("Frame", name and (name.."NewFeature") or nil, f, "NewFeatureLabelTemplate");
+			fnf:SetFrameStrata("HIGH");
+			fnf:SetScale(0.8);
+			fnf:SetFrameLevel(100);
+			fnf:SetSize(1, 1);
+			fnf:Hide();
+			
+			f.Button1.NewFeature = fnf;
+		end
+	end
+	
 	
 	f:SetScript("OnClick", function(self)
 		self:Hide()
@@ -917,6 +925,7 @@ info.mouseOverIcon = [TEXTURE] -- An override icon when a button is moused over.
 info.ignoreAsMenuSelection [nil, true] -- Never set the menu text/icon to this, even when this button is checked
 info.registerForRightClick [nil, true] -- Register dropdown buttons for right clicks
 info.registerForAnyClick [nil, true] -- Register dropdown buttons for any clicks
+info.showNewLabel
 ]]
 
 -- Create (return) empty table
@@ -950,7 +959,6 @@ function lib:UIDropDownMenu_CreateFrames(level, index)
 			local newButton = create_MenuButton("L_DropDownList"..i.."Button"..L_UIDROPDOWNMENU_MAXBUTTONS, _G["L_DropDownList"..i])
 			newButton:SetID(L_UIDROPDOWNMENU_MAXBUTTONS);
 		end
-        
 	end
 end
 
@@ -1446,7 +1454,7 @@ function lib:UIDropDownMenu_GetButtonWidth(button)
 	if ( button.hasArrow or button.hasColorSwatch ) then
 		width = width + 10;
 	end
-	if (WoWRetail and button.showNewLabel) then
+	if (WoWRetail and button.showNewLabel and button.NewFeature) then
 		width = width + button.NewFeature.Label:GetUnboundedStringWidth();
 	end
 	if ( button.notCheckable ) then
@@ -1521,9 +1529,9 @@ function lib:UIDropDownMenu_Refresh(frame, useValue, dropdownLevel)
 			end
 		end
 
-		if (WoWRetail) then
+		if (WoWRetail and button.NewFeature) then
 			local normalText = _G[button:GetName().."NormalText"];
-            button.NewFeature:SetShown(button.showNewLabel);
+			button.NewFeature:SetShown(button.showNewLabel);
 			button.NewFeature:SetPoint("LEFT", normalText, "RIGHT", 20, 0);
 		end
 
@@ -2185,8 +2193,9 @@ function lib:UIDropDownMenu_GetValue(id)
 	end
 end
 
---[[
 function lib:OpenColorPicker(info)
+	ColorPickerFrame:SetupColorPickerAndShow(info);
+--[[
 	ColorPickerFrame.func = info.swatchFunc;
 	ColorPickerFrame.hasOpacity = info.hasOpacity;
 	ColorPickerFrame.opacityFunc = info.opacityFunc;
@@ -2197,13 +2206,14 @@ function lib:OpenColorPicker(info)
 	-- This must come last, since it triggers a call to ColorPickerFrame.func()
 	ColorPickerFrame:SetColorRGB(info.r, info.g, info.b);
 	ShowUIPanel(ColorPickerFrame);
+]]
 end
 
 function lib:ColorPicker_GetPreviousValues()
-	return ColorPickerFrame.previousValues.r, ColorPickerFrame.previousValues.g, ColorPickerFrame.previousValues.b;
+--	return ColorPickerFrame.previousValues.r, ColorPickerFrame.previousValues.g, ColorPickerFrame.previousValues.b;
+	ColorPickerFrame:GetPreviousValues();
 end
 
-]]
 -- //////////////////////////////////////////////////////////////
 -- LibUIDropDownMenuTemplates
 -- //////////////////////////////////////////////////////////////

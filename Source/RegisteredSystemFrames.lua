@@ -93,10 +93,12 @@ function addon:registerSecureFrameHideable(frame)
         "ToggleInCombat")
     
     hooksecurefunc(EditModeManagerFrame, "EnterEditMode", function()
+        if InCombatLockdown() then return end
         show()
     end)
     
     hooksecurefunc(EditModeManagerFrame, "ExitEditMode", function()
+        if InCombatLockdown() then return end
         if hidden then
             hide()
         end

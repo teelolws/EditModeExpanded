@@ -1,6 +1,7 @@
 local addonName, addon = ...
 
 local lib = LibStub:GetLibrary("EditModeExpanded-1.0")
+local libDD = LibStub:GetLibrary("LibUIDropDownMenu-4.0")
 
 function addon:initMenuBar()
     local db = addon.db.global
@@ -13,45 +14,54 @@ function addon:initMenuBar()
             end
         end)
         local enabled = false
-        local padding
-        lib:RegisterCustomCheckbox(MicroMenuContainer, "Set padding to zero",
-            function()
-                enabled = true
-                for key, button in ipairs(MicroMenu:GetLayoutChildren()) do
-                    if key ~= 1 then
-                        local a, b, c, d, e = button:GetPoint(1)
-                        if (key == 2) and (not padding) then
-                            padding = d
-                        end
-                        button:ClearAllPoints()
-                        button:SetPoint(a, b, c, d-(3*(key-1)), e)
-                    end
-                end
-                MicroMenu:SetWidth(MicroMenu:GetWidth() - 30)
-                MicroMenuContainer:SetWidth(MicroMenu:GetWidth()*MicroMenu:GetScale())
-            end,
-            
-            function(init)
-                if not init then
-                    enabled = false
-                    for key, button in ipairs(MicroMenu:GetLayoutChildren()) do
-                        if key ~= 1 then
-                            local a, b, c, d, e = button:GetPoint(1)
-                            button:ClearAllPoints()
-                            button:SetPoint(a, b, c, d+(3*(key-1)), e)
-                        end
-                    end
-                    MicroMenu:SetWidth(MicroMenu:GetWidth() + 30)
-                    MicroMenuContainer:SetWidth(MicroMenu:GetWidth()*MicroMenu:GetScale())
+        local dropdown, getSettingDB = lib:RegisterDropdown(MicroMenuContainer, libDD, "PaddingDropdown")
+        local dropdownOptions = {-4, -3, -2, -1, 0, 1, 2, 3, 4, 5}
+        
+        local function updatePadding()
+           local db = getSettingDB()
+           if not db.checked then return end
+           
+           for key, button in ipairs(MicroMenu:GetLayoutChildren()) do
+                if key ~= 1 then
+                    local a, b, c, d, e = button:GetPoint(1)
+                    button:ClearAllPoints()
+                    button:SetPoint(a, b, c, (db.checked + button:GetWidth() - 3) * (key-1), e)
                 end
             end
-        )
+            MicroMenu:SetWidth(MicroMenu:GetWidth() - 30)
+            MicroMenuContainer:SetWidth(MicroMenu:GetWidth()*MicroMenu:GetScale())
+        end
+        
+        libDD:UIDropDownMenu_Initialize(dropdown, function(self, level, menuList)
+            local db = getSettingDB()
+            local info = libDD:UIDropDownMenu_CreateInfo()        
+            
+            for _, f in ipairs(dropdownOptions) do
+                info.text = f
+                info.checked = db.checked == f
+                info.func = function()
+                    if db.checked == f then
+                        db.checked = nil
+                    else
+                        db.checked = f
+                    end
+                    updatePadding()
+                end
+                libDD:UIDropDownMenu_AddButton(info)
+            end
+        end)
+        libDD:UIDropDownMenu_SetWidth(dropdown, 100)
+        libDD:UIDropDownMenu_SetText(dropdown, "Button Padding")
+        
+        C_Timer.After(1, updatePadding)
         
         hooksecurefunc(MicroMenuContainer, "Layout", function(...)
             if OverrideActionBar.isShown then return end
             if PetBattleFrame and PetBattleFrame:IsShown() then return end
+            local db = getSettingDB()
+            if not db.checked then return end
 
-            if enabled and padding and ((math.floor((select(4, MicroMenu:GetLayoutChildren()[2]:GetPoint(1))*100) + 0.5)/100) == (math.floor((padding*100) + 0.5)/100)) then
+            if enabled and db.checked and ((math.floor((select(4, MicroMenu:GetLayoutChildren()[2]:GetPoint(1))*100) + 0.5)/100) == (math.floor((db.checked*100) + 0.5)/100)) then
                 for key, button in ipairs(MicroMenu:GetLayoutChildren()) do
                     if key ~= 1 then
                         local a, b, c, d, e = button:GetPoint(1)

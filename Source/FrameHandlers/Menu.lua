@@ -13,7 +13,6 @@ function addon:initMenuBar()
                 MicroMenuContainer:Hide()
             end
         end)
-        local enabled = false
         local dropdown, getSettingDB = lib:RegisterDropdown(MicroMenuContainer, libDD, "PaddingDropdown")
         local dropdownOptions = {-4, -3, -2, -1, 0, 1, 2, 3, 4, 5}
         
@@ -61,7 +60,7 @@ function addon:initMenuBar()
             local db = getSettingDB()
             if not db.checked then return end
 
-            if enabled and db.checked and ((math.floor((select(4, MicroMenu:GetLayoutChildren()[2]:GetPoint(1))*100) + 0.5)/100) == (math.floor((db.checked*100) + 0.5)/100)) then
+            if db.checked and ((math.floor((select(4, MicroMenu:GetLayoutChildren()[2]:GetPoint(1))*100) + 0.5)/100) == (math.floor((db.checked*100) + 0.5)/100)) then
                 for key, button in ipairs(MicroMenu:GetLayoutChildren()) do
                     if key ~= 1 then
                         local a, b, c, d, e = button:GetPoint(1)

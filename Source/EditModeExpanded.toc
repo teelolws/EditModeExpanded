@@ -17,6 +17,7 @@ libs\LibUIDropDownMenu\LibUIDropDownMenu.lua
 
 FrameHandlers\AchievementFrame.lua
 FrameHandlers\ActionBars.lua
+FrameHandlers\Arena.lua
 FrameHandlers\BelowMinimapContainer.lua
 FrameHandlers\BonusRoll.lua
 FrameHandlers\Buffs.lua

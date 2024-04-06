@@ -2,7 +2,7 @@
 -- Internal variables
 --
 
-local MAJOR, MINOR = "EditModeExpanded-1.0", 79
+local MAJOR, MINOR = "EditModeExpanded-1.0", 80
 local lib = LibStub:NewLibrary(MAJOR, MINOR)
 if not lib then return end
 
@@ -1261,7 +1261,7 @@ hooksecurefunc(f, "OnLoad", function()
     
         self.pools = CreateFramePoolCollection();
         --self.pools:CreatePool("FRAME", self.Settings, "EditModeSettingDropdownTemplate") -- trying to use dropdowns causes taint issues, probably because of long-running taint issues with dropdowns in general
-        --self.pools:CreatePool("FRAME", self.Settings, "EditModeSettingSliderTemplate");
+        self.pools:CreatePool("FRAME", self.Settings, "EditModeSettingSliderTemplate");
         self.pools:CreatePool("FRAME", self.Settings, "EditModeSettingCheckboxTemplate");
     
         local function resetExtraButton(pool, button)

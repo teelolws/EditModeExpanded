@@ -24,7 +24,6 @@ local framesDialogsKeys = lib.framesDialogsKeys or {}
 lib.framesDialogsKeys = framesDialogsKeys
 local existingFrames = lib.exitingFrames or {} -- frames already part of Edit Mode where we are adding more options
 lib.existingFrames = existingFrames
--- lib.firstCheckButtonPlaced = false
 local enteringCombat = InCombatLockdown()
 
 local ENUM_EDITMODEACTIONBARSETTING_HIDEABLE = 10 -- Enum.EditModeActionBarSetting.Hideable = 10

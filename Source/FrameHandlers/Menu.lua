@@ -60,6 +60,8 @@ function addon:initMenuBar()
             local db = getSettingDB()
             if not db.checked then return end
 
+            -- don't recall what this was for - doesn't seem to be any issues without it now!
+            --[[
             if db.checked and ((math.floor((select(4, MicroMenu:GetLayoutChildren()[2]:GetPoint(1))*100) + 0.5)/100) == (math.floor((db.checked*100) + 0.5)/100)) then
                 for key, button in ipairs(MicroMenu:GetLayoutChildren()) do
                     if key ~= 1 then
@@ -70,6 +72,7 @@ function addon:initMenuBar()
                 end
                 MicroMenu:SetWidth(MicroMenu:GetWidth() - 30)
             end
+            ]]
         end)
         
         lib:RegisterCustomCheckbox(MicroMenuContainer, "Use 10.0 style buttons (requires reload)", addon.EnableSkinMicroMenuBW, addon.DisableSkinMicroMenuBW, "10.0Style")

@@ -70,7 +70,7 @@ function addon:registerSecureFrameHideable(frame)
         end
     end)
     
-    lib:RegisterCustomCheckbox(frame, "Hide",
+    local onResetFunctionHide = lib:RegisterCustomCheckbox(frame, "Hide",
         function()
             hidden = true
             if not EditModeManagerFrame.editModeActive then
@@ -83,7 +83,7 @@ function addon:registerSecureFrameHideable(frame)
         end,
         "HidePermanently")
     
-    lib:RegisterCustomCheckbox(frame, function() return getToggleInCombatText(hidden) end,
+    local onResetFunctionToggle = lib:RegisterCustomCheckbox(frame, function() return getToggleInCombatText(hidden) end,
         function()
             toggleInCombat = true
         end,
@@ -106,6 +106,7 @@ function addon:registerSecureFrameHideable(frame)
     
     hooksecurefunc(frame, "Show", function()
         if InCombatLockdown() then return end
+        if EditModeManagerFrame.editModeActive then return end
         if hidden then hide() end
     end)
     
@@ -113,4 +114,13 @@ function addon:registerSecureFrameHideable(frame)
         if InCombatLockdown() then return end
         if hidden then hide() end
     end)
+    
+    if frame.EMEResetButton then
+        frame.EMEResetButton:HookScript("OnClick", function()
+            hidden = false
+            toggleInCombat = false
+            onResetFunctionHide()
+            onResetFunctionToggle()
+        end)
+    end
 end

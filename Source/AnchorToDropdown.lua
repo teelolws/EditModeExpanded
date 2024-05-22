@@ -37,4 +37,10 @@ function addon.registerAnchorToDropdown(frame)
     
     EventRegistry:RegisterCallback("EDIT_MODE_LAYOUTS_UPDATED", updateFrameAnchor)
     updateFrameAnchor()
+    if frame.EMEResetButton then
+        frame.EMEResetButton:HookScript("OnClick", function()
+            local db = getSettingDB()
+            db.checked = false
+        end)
+    end
 end

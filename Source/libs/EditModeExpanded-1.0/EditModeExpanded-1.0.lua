@@ -630,6 +630,7 @@ local customCheckboxCallDuringProfileInit = {}
 -- call this to register a custom checkbox where you're providing the handler
 -- internalName is a name to use in the database to identify this checkbox
 -- for backwards compatibility, internalName defaults to "1"
+-- returns: function that can be called to reset this back to default
 function lib:RegisterCustomCheckbox(frame, name, onChecked, onUnchecked, internalName)
     if not internalName then
         internalName = 1
@@ -675,6 +676,13 @@ function lib:RegisterCustomCheckbox(frame, name, onChecked, onUnchecked, interna
         callLater()
     else
         table.insert(customCheckboxCallDuringProfileInit, callLater)
+    end
+    
+    return function()
+        local db = framesDB[systemID]
+        if not db.settings then db.settings = {} end
+        if not db.settings[ENUM_EDITMODEACTIONBARSETTING_CUSTOM] then db.settings[ENUM_EDITMODEACTIONBARSETTING_CUSTOM] = {} end
+        db.settings[ENUM_EDITMODEACTIONBARSETTING_CUSTOM][internalName] = 0
     end
 end
 

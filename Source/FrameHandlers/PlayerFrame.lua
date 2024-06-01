@@ -5,12 +5,22 @@ local lib = LibStub:GetLibrary("EditModeExpanded-1.0")
 function addon:initPlayerFrame()
     local db = addon.db.global
     if db.EMEOptions.playerFrame then
-        lib:RegisterHideable(PlayerFrame)
+        lib:RegisterHideable(PlayerFrame, PlayerFrame_OnEvent)
         lib:RegisterToggleInCombat(PlayerFrame)
         C_Timer.After(4, function()
             if lib:IsFrameMarkedHidden(PlayerFrame) then
                 PlayerFrame:Hide()
+                PlayerFrame:SetScript("OnEvent", nil)
             end
+            
+            -- From UIParent.lua
+            hooksecurefunc("UpdateUIElementsForClientScene", function(sceneType)
+                if sceneType == Enum.ClientSceneType.MinigameSceneType then return end
+                if lib:IsFrameMarkedHidden(PlayerFrame) then
+                    PlayerFrame:Hide()
+                    PlayerFrame:SetScript("OnEvent", nil)
+                end
+            end)
         end)
         
         local checked = false

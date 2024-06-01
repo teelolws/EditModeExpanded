@@ -2,7 +2,7 @@
 -- Internal variables
 --
 
-local MAJOR, MINOR = "EditModeExpanded-1.0", 80
+local MAJOR, MINOR = "EditModeExpanded-1.0", 81
 local lib = LibStub:NewLibrary(MAJOR, MINOR)
 if not lib then return end
 
@@ -486,6 +486,9 @@ function lib:RepositionFrame(frame)
         else
             if db.settings[ENUM_EDITMODEACTIONBARSETTING_HIDEABLE] == 1 then
                 frame:Hide()
+                if frame.EMEOnEventHandler then
+                    frame:SetScript("OnEvent", nil)
+                end
                 return
             end
         end
@@ -575,7 +578,7 @@ end
  
 -- Call this to add a checkbox to the frames dialog box, allowing the frame to be permanently hidden outside of Edit Mode
 -- param1: an edit mode registered frame, either one already registered by Blizz, or a custom one you have registered with lib:RegisterFrame
-function lib:RegisterHideable(frame)
+function lib:RegisterHideable(frame, onEventHandler)
     local systemID = getSystemID(frame)
     
     if not framesDialogs[systemID] then framesDialogs[systemID] = {} end
@@ -588,6 +591,8 @@ function lib:RegisterHideable(frame)
             name = "Hide",
             type = Enum.EditModeSettingDisplayType.Checkbox,
     })
+    
+    frame.EMEOnEventHandler = onEventHandler
 end
 
 function lib:IsFrameMarkedHidden(frame)
@@ -827,6 +832,9 @@ hooksecurefunc(f, "OnLoad", function()
             if framesDB[systemID] and framesDB[systemID].settings and (framesDB[systemID].settings[ENUM_EDITMODEACTIONBARSETTING_HIDEABLE] ~= nil) then
                 if (framesDB[systemID].settings[ENUM_EDITMODEACTIONBARSETTING_HIDEABLE] == 1) then
                     frame:Show()
+                    if frame.EMEOnEventHandler then
+                        frame:SetScript("OnEvent", frame.EMEOnEventHandler)
+                    end
                 end
             end
         end
@@ -846,6 +854,9 @@ hooksecurefunc(f, "OnLoad", function()
             if framesDB[frame.system] and framesDB[frame.system].settings and (framesDB[frame.system].settings[ENUM_EDITMODEACTIONBARSETTING_HIDEABLE] ~= nil) then
                 if (framesDB[frame.system].settings[ENUM_EDITMODEACTIONBARSETTING_HIDEABLE] == 1) then
                     frame:Hide()
+                    if frame.EMEOnEventHandler then
+                        frame:SetScript("OnEvent", nil)
+                    end
                 else
                     frame:SetShown(wasVisible[frame.system])
                 end
@@ -864,6 +875,9 @@ hooksecurefunc(f, "OnLoad", function()
             if framesDB[systemID] and framesDB[systemID].settings and (framesDB[systemID].settings[ENUM_EDITMODEACTIONBARSETTING_HIDEABLE] ~= nil) then
                 if (framesDB[systemID].settings[ENUM_EDITMODEACTIONBARSETTING_HIDEABLE] == 1) then
                     frame:Hide()
+                    if frame.EMEOnEventHandler then
+                        frame:SetScript("OnEvent", nil)
+                    end
                 end
             end
         end
@@ -1096,13 +1110,20 @@ hooksecurefunc(f, "OnLoad", function()
                             if savedValue == nil then savedValue = 0 end
                             settingFrame.Button:SetChecked(savedValue)
                             settingFrame.Button:SetScript("OnClick", function()
+                                local frame = EditModeExpandedSystemSettingsDialog.attachedToSystem
                                 if settingFrame.Button:GetChecked() then
                                     framesDB[systemID].settings[displayInfo.setting] = 1
-                                    EditModeExpandedSystemSettingsDialog.attachedToSystem:Hide()
+                                    frame:Hide()
+                                    if frame.EMEOnEventHandler then
+                                        frame:SetScript("OnEvent", nil)
+                                    end
                                     wasVisible[systemID] = false
                                 else
                                     framesDB[systemID].settings[displayInfo.setting] = 0
-                                    EditModeExpandedSystemSettingsDialog.attachedToSystem:Show()
+                                    frame:Show()
+                                    if frame.EMEOnEventHandler then
+                                        frame:SetScript("OnEvent", frame.EMEOnEventHandler)
+                                    end
                                     wasVisible[systemID] = true
                                 end
                             end)
@@ -1341,6 +1362,13 @@ function refreshCurrentProfile()
             if db.settings and (db.settings[ENUM_EDITMODEACTIONBARSETTING_HIDEABLE] ~= nil) then
                 if frame ~= TalkingHeadFrame then
                     frame:SetShown(framesDB[systemID].settings[ENUM_EDITMODEACTIONBARSETTING_HIDEABLE] ~= 1)
+                    if frame.EMEOnEventHandler then
+                        if frame:IsShown() then
+                            frame:SetScript("OnEvent", frame.EMEOnEventHandler)
+                        else
+                            frame:SetScript("OnEvent", nil)
+                        end
+                    end
                 end
             end
                 
@@ -1704,8 +1732,14 @@ do
                             if settings[ENUM_EDITMODEACTIONBARSETTING_HIDEABLE] == 1 then
                                 -- if "Hide" in enabled and this option too, then hide it while out of combat, show it while in combat
                                 frame:Show()
+                                if frame.EMEOnEventHandler then
+                                    frame:SetScript("OnEvent", nil)
+                                end
                             else
                                 frame:Hide()
+                                if frame.EMEOnEventHandler then
+                                    frame:SetScript("OnEvent", frame.EMEOnEventHandler)
+                                end
                             end
                         end
                     end
@@ -1728,8 +1762,14 @@ do
                         if dialogs and settings and dialogs[ENUM_EDITMODEACTIONBARSETTING_TOGGLEHIDEINCOMBAT] and (settings[ENUM_EDITMODEACTIONBARSETTING_TOGGLEHIDEINCOMBAT] == 1) and dialogs[ENUM_EDITMODEACTIONBARSETTING_HIDEABLE] then
                             if settings[ENUM_EDITMODEACTIONBARSETTING_HIDEABLE] == 1 then
                                 frame:Hide()
+                                if frame.EMEOnEventHandler then
+                                    frame:SetScript("OnEvent", frame.EMEOnEventHandler)
+                                end
                             else
                                 frame:Show()
+                                if frame.EMEOnEventHandler then
+                                    frame:SetScript("OnEvent", nil)
+                                end
                             end
                         end
                     end

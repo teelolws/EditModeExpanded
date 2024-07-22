@@ -24,5 +24,9 @@ function addon:initLFG()
         end)
         
         addon:registerSecureFrameHideable(QueueStatusButton)
+        
+        C_Timer.After(1, function()
+            lib:RepositionFrame(QueueStatusButton)
+        end)
     end
 end

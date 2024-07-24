@@ -2,11 +2,11 @@
 -- Internal variables
 --
 
-local MAJOR, MINOR = "EditModeExpanded-1.0", 81
+local MAJOR, MINOR = "EditModeExpanded-1.0", 82
 local lib = LibStub:NewLibrary(MAJOR, MINOR)
 if not lib then return end
 
--- the internal frames provided by Blizzard go up to index 16. They reference Enum.EditModeSystem, which starts from index 0
+-- the internal frames provided by Blizzard go up to index 19. They reference Enum.EditModeSystem, which starts from index 0
 local STARTING_INDEX = 0
 for _ in pairs(Enum.EditModeSystem) do
     STARTING_INDEX = STARTING_INDEX + 1
@@ -770,9 +770,16 @@ local function clearSelectedSystem(index, systemFrame)
 end
 
 hooksecurefunc(f, "OnLoad", function()
-    EditModeManagerExpandedFrame = EditModeManagerExpandedFrame or CreateFrame("Frame", nil, nil, UIParent)
+    if not EditModeManagerExpandedFrame then
+        CreateFrame("Frame", "EditModeManagerExpandedFrame", nil, UIParent)
+    end
     EditModeManagerExpandedFrame:Hide();
-    EditModeManagerExpandedFrame:SetScale(UIParent:GetScale());
+    
+    -- This no longer seems to be correct during the loading screen
+    C_Timer.After(1, function()
+        EditModeManagerExpandedFrame:SetScale(UIParent:GetScale());
+    end)
+    
     EditModeManagerExpandedFrame:SetPoint("TOPLEFT", EditModeManagerFrame, "TOPRIGHT", 2, 0)
     EditModeManagerExpandedFrame:SetPoint("BOTTOMLEFT", EditModeManagerFrame, "BOTTOMRIGHT", 2, 0)
     EditModeManagerExpandedFrame:SetWidth(300)

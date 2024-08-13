@@ -115,7 +115,7 @@ EventUtil.ContinueOnAddOnLoaded("Blizzard_AuctionHouseUI", function()
 end)
 
 EventUtil.ContinueOnAddOnLoaded("Blizzard_UIWidgets", function()
-    local loading, finished = IsAddOnLoaded(addonName)
+    local loading, finished = C_AddOns.IsAddOnLoaded(addonName)
     if not finished then return end
     addon:initBelowMinimapContainer()
 end)

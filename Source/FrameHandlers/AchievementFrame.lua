@@ -12,10 +12,22 @@ function addon:initAchievementFrame()
     end
     lib:RegisterFrame(AlertFrame, "Achievements", db.Achievements)
     lib:SetDefaultSize(AlertFrame, 20, 20)
+    lib:RegisterResizable(AlertFrame)
     AlertFrame.Selection:HookScript("OnMouseDown", function()
         AchievementAlertSystem:AddAlert(6)
     end)
     AlertFrame:HookScript("OnEvent", function()
         lib:RepositionFrame(AlertFrame)
+    end)
+    hooksecurefunc(AlertFrame, "SetScaleOverride", function(self, scale)
+        for achievementAlertFrame in AchievementAlertSystem.alertFramePool:EnumerateActive() do
+            achievementAlertFrame:SetScale(scale)
+        end
+    end)
+    hooksecurefunc(AchievementAlertSystem, "AddAlert", function()
+        local scale = AlertFrame:GetScale()
+        for achievementAlertFrame in AchievementAlertSystem.alertFramePool:EnumerateActive() do
+            achievementAlertFrame:SetScale(scale)
+        end
     end)
 end

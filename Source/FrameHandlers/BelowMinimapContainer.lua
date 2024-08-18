@@ -12,6 +12,7 @@ function addon:initBelowMinimapContainer()
             alreadyLoaded = true
             UIWidgetBelowMinimapContainerFrame:SetParent(UIParent)
             lib:RegisterFrame(UIWidgetBelowMinimapContainerFrame, "PvP Objectives", db.UIWidgetBelowMinimapContainerFrame)
+            lib:RegisterResizable(UIWidgetBelowMinimapContainerFrame)
             ArenaEnemyFramesContainer:SetParent(UIParent)
             lib:RegisterFrame(ArenaEnemyFramesContainer, "BG Targets", db.ArenaEnemyFramesContainer)
         end

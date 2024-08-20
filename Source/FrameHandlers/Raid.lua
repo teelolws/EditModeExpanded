@@ -43,13 +43,13 @@ function addon:initRaidFrames()
         if db.positionWasSavedWhileCollapsed and not CompactRaidFrameManager.collapsed then
             for i = 1, CompactRaidFrameManager:GetNumPoints() do
                 local a, b, c, x, e = CompactRaidFrameManager:GetPoint(i)
-                x = x + 175
+                x = x + 193
                 CompactRaidFrameManager:SetPoint(a,b,c,x,e)
             end
         elseif (not db.positionWasSavedWhileCollapsed) and CompactRaidFrameManager.collapsed then
             for i = 1, CompactRaidFrameManager:GetNumPoints() do
                 local a, b, c, x, e = CompactRaidFrameManager:GetPoint(i)
-                x = x - 175
+                x = x - 193
                 CompactRaidFrameManager:SetPoint(a,b,c,x,e)
             end
         end

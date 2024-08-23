@@ -2,6 +2,16 @@ local addonName, addon = ...
 
 local lib = LibStub:GetLibrary("EditModeExpanded-1.0")
 
+local function resetScales()
+    local scale = AlertFrame:GetScale()
+    for achievementAlertFrame in AchievementAlertSystem.alertFramePool:EnumerateActive() do
+        achievementAlertFrame:SetScale(scale)
+    end
+    for achievementAlertFrame in CriteriaAlertSystem.alertFramePool:EnumerateActive() do
+        achievementAlertFrame:SetScale(scale)
+    end
+end
+
 function addon:initAchievementFrame()
     local db = addon.db.global
     
@@ -19,15 +29,8 @@ function addon:initAchievementFrame()
     AlertFrame:HookScript("OnEvent", function()
         lib:RepositionFrame(AlertFrame)
     end)
-    hooksecurefunc(AlertFrame, "SetScaleOverride", function(self, scale)
-        for achievementAlertFrame in AchievementAlertSystem.alertFramePool:EnumerateActive() do
-            achievementAlertFrame:SetScale(scale)
-        end
-    end)
-    hooksecurefunc(AchievementAlertSystem, "AddAlert", function()
-        local scale = AlertFrame:GetScale()
-        for achievementAlertFrame in AchievementAlertSystem.alertFramePool:EnumerateActive() do
-            achievementAlertFrame:SetScale(scale)
-        end
-    end)
+    hooksecurefunc(AlertFrame, "SetScaleOverride", resetScales)
+    hooksecurefunc(AchievementAlertSystem, "AddAlert", resetScales)
+    hooksecurefunc(CriteriaAlertSystem, "AddAlert", resetScales)
+        
 end

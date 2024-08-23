@@ -68,6 +68,7 @@ local unpinFromMinimap
 local getOffsetXY
 local registerFrameMovableWithArrowKeys
 local refreshCurrentProfile
+local runOutOfCombat
 
 local function getSystemID(frame)
     if not frame.system then return false end
@@ -1367,74 +1368,77 @@ function refreshCurrentProfile()
             db = db.profiles[profileName]
             framesDB[systemID] = db
             
-            -- frame hide option
-            if db.settings and (db.settings[ENUM_EDITMODEACTIONBARSETTING_HIDEABLE] ~= nil) then
-                if frame ~= TalkingHeadFrame then
-                    frame:SetShown(framesDB[systemID].settings[ENUM_EDITMODEACTIONBARSETTING_HIDEABLE] ~= 1)
-                    if frame.EMEOnEventHandler then
-                        if frame:IsShown() then
-                            frame:SetScript("OnEvent", frame.EMEOnEventHandler)
-                        else
-                            frame:SetScript("OnEvent", nil)
+            runOutOfCombat(function()
+            
+                -- frame hide option
+                if db.settings and (db.settings[ENUM_EDITMODEACTIONBARSETTING_HIDEABLE] ~= nil) then
+                    if frame ~= TalkingHeadFrame then
+                        frame:SetShown(framesDB[systemID].settings[ENUM_EDITMODEACTIONBARSETTING_HIDEABLE] ~= 1)
+                        if frame.EMEOnEventHandler then
+                            if frame:IsShown() then
+                                frame:SetScript("OnEvent", frame.EMEOnEventHandler)
+                            else
+                                frame:SetScript("OnEvent", nil)
+                            end
                         end
                     end
                 end
-            end
-                
-            -- update scale
-            if framesDialogsKeys[systemID] and framesDialogsKeys[systemID][ENUM_EDITMODEACTIONBARSETTING_FRAMESIZE] and db.settings and db.settings[ENUM_EDITMODEACTIONBARSETTING_FRAMESIZE] then
-                frame:SetScaleOverride(db.settings[ENUM_EDITMODEACTIONBARSETTING_FRAMESIZE]/100)
-            end
+                    
+                -- update scale
+                if framesDialogsKeys[systemID] and framesDialogsKeys[systemID][ENUM_EDITMODEACTIONBARSETTING_FRAMESIZE] and db.settings and db.settings[ENUM_EDITMODEACTIONBARSETTING_FRAMESIZE] then
+                    frame:SetScaleOverride(db.settings[ENUM_EDITMODEACTIONBARSETTING_FRAMESIZE]/100)
+                end
 
-            if not frame.EMESystemID then
-                
-                -- update position
-                frame:ClearAllPoints()
-                local anchorPoint = frame.EMEanchorPoint
-                if db.x and db.y then
-                    local x, y = getOffsetXY(frame, db.x, db.y)
-                    frame:SetPoint(anchorPoint, frame.EMEanchorTo, anchorPoint, x, y)
-                else
-                    if db.defaultX and db.defaultY then
-                        local x, y = getOffsetXY(frame, db.defaultX, db.defaultY)
-                        if not pcall( function() frame:SetPoint(anchorPoint, frame.EMEanchorTo, anchorPoint, x, y) end ) then
-                            frame:SetPoint(anchorPoint, nil, anchorPoint, x, y)
+                if not frame.EMESystemID then
+                    
+                    -- update position
+                    frame:ClearAllPoints()
+                    local anchorPoint = frame.EMEanchorPoint
+                    if db.x and db.y then
+                        local x, y = getOffsetXY(frame, db.x, db.y)
+                        frame:SetPoint(anchorPoint, frame.EMEanchorTo, anchorPoint, x, y)
+                    else
+                        if db.defaultX and db.defaultY then
+                            local x, y = getOffsetXY(frame, db.defaultX, db.defaultY)
+                            if not pcall( function() frame:SetPoint(anchorPoint, frame.EMEanchorTo, anchorPoint, x, y) end ) then
+                                frame:SetPoint(anchorPoint, nil, anchorPoint, x, y)
+                            end
                         end
                     end
-                end
-            
-                -- minimap pinning
-                if framesDialogsKeys[systemID] and framesDialogsKeys[systemID][ENUM_EDITMODEACTIONBARSETTING_MINIMAPPINNED] then
-                    if db.settings and (db.settings[ENUM_EDITMODEACTIONBARSETTING_MINIMAPPINNED] ~= nil) then
-                        if db.settings[ENUM_EDITMODEACTIONBARSETTING_MINIMAPPINNED] == 1 then
-                            pinToMinimap(frame)
-                        else
-                            unpinFromMinimap(frame)
+                
+                    -- minimap pinning
+                    if framesDialogsKeys[systemID] and framesDialogsKeys[systemID][ENUM_EDITMODEACTIONBARSETTING_MINIMAPPINNED] then
+                        if db.settings and (db.settings[ENUM_EDITMODEACTIONBARSETTING_MINIMAPPINNED] ~= nil) then
+                            if db.settings[ENUM_EDITMODEACTIONBARSETTING_MINIMAPPINNED] == 1 then
+                                pinToMinimap(frame)
+                            else
+                                unpinFromMinimap(frame)
+                            end
                         end
+                    end
+                    
+                    -- the option in the expanded frame
+                    if frame.EMEdisabledByDefault then
+                        db.enabled = false
+                    end
+                    if db.enabled == nil then
+                        db.enabled = true
+                    end
+                    frame.EMECheckButtonFrame:SetChecked(db.enabled)
+                    
+                    -- only way I can find to un-select frames
+                    if EditModeManagerFrame.editModeActive and frame:IsShown() then
+                        frame:HighlightSystem()
+                    end
+                    
+                    if db.clamped == 1 then
+                        frame:SetClampedToScreen(true)
+                    else
+                        frame:SetClampedToScreen(false)
                     end
                 end
                 
-                -- the option in the expanded frame
-                if frame.EMEdisabledByDefault then
-                    db.enabled = false
-                end
-                if db.enabled == nil then
-                    db.enabled = true
-                end
-                frame.EMECheckButtonFrame:SetChecked(db.enabled)
-                
-                -- only way I can find to un-select frames
-                if EditModeManagerFrame.editModeActive and frame:IsShown() then
-                    frame:HighlightSystem()
-                end
-                
-                if db.clamped == 1 then
-                    frame:SetClampedToScreen(true)
-                else
-                    frame:SetClampedToScreen(false)
-                end
-            
-            end
+            end)
         end
         
         for _, func in pairs(customCheckboxCallDuringProfileInit) do
@@ -1717,6 +1721,10 @@ end
 
 do
     local lf = CreateFrame("Frame")
+    local outOfCombatCallbacks = {}
+    runOutOfCombat = function(callback)
+        table.insert(outOfCombatCallbacks, callback)
+    end
     hooksecurefunc(f, "OnLoad", function()
         lf:RegisterEvent("PLAYER_REGEN_DISABLED")
         lf:RegisterEvent("PLAYER_REGEN_ENABLED")
@@ -1739,7 +1747,7 @@ do
                         
                         if dialogs and dialogs[ENUM_EDITMODEACTIONBARSETTING_TOGGLEHIDEINCOMBAT] and settings and (settings[ENUM_EDITMODEACTIONBARSETTING_TOGGLEHIDEINCOMBAT] == 1) and dialogs[ENUM_EDITMODEACTIONBARSETTING_HIDEABLE] then
                             if settings[ENUM_EDITMODEACTIONBARSETTING_HIDEABLE] == 1 then
-                                -- if "Hide" in enabled and this option too, then hide it while out of combat, show it while in combat
+                                -- if "Hide" is enabled and this option too, then hide it while out of combat, show it while in combat
                                 frame:Show()
                                 if frame.EMEOnEventHandler then
                                     frame:SetScript("OnEvent", nil)
@@ -1755,6 +1763,10 @@ do
                 end
             end
         elseif event == "PLAYER_REGEN_ENABLED" then
+            for _, callback in ipairs(outOfCombatCallbacks) do
+                callback()
+            end
+            wipe(outOfCombatCallbacks)
             enteringCombat = false
             -- exiting combat
             for _, frames in pairs({frames, existingFrames}) do

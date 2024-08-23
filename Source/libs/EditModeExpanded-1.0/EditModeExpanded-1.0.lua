@@ -2,7 +2,7 @@
 -- Internal variables
 --
 
-local MAJOR, MINOR = "EditModeExpanded-1.0", 82
+local MAJOR, MINOR = "EditModeExpanded-1.0", 83
 local lib = LibStub:NewLibrary(MAJOR, MINOR)
 if not lib then return end
 
@@ -929,7 +929,9 @@ hooksecurefunc(f, "OnLoad", function()
                 local systemID = frame.EMESystemID or frame.system
                 local db = baseFramesDB[systemID]
                 
-                db.profiles[newProfileName] = CopyTable(db.profiles[oldProfileName])
+                if db.profiles[oldProfileName] then
+                    db.profiles[newProfileName] = CopyTable(db.profiles[oldProfileName])
+                end
             end
         end
         

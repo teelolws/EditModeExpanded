@@ -10,6 +10,10 @@ function addon:initActionBars()
         local bars = {MainMenuBar, MultiBarBottomLeft, MultiBarBottomRight, MultiBarRight, MultiBarLeft, MultiBar5, MultiBar6, MultiBar7}
 
         for _, bar in ipairs(bars) do
+            
+            --[[
+            -- setting.buttonPadding causes taint to spread and cause issues
+            -- another method needed, if its even possible
             lib:RegisterCustomCheckbox(bar, "Override Icon Padding to Zero", 
                 -- on checked
                 function()
@@ -27,6 +31,7 @@ function addon:initActionBars()
                 
                 "OverrideIconPadding"
             )
+            --]]
             
             addon:registerSecureFrameHideable(bar)
             

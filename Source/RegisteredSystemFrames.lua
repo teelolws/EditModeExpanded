@@ -33,9 +33,10 @@ local function getToggleInCombatText(hidden)
     end
 end
     
-
+local actionbars = {[MainMenuBar]=true, [MultiBarBottomLeft]=true, [MultiBarBottomRight]=true, [MultiBarRight]=true, [MultiBarLeft]=true, [MultiBar5]=true, [MultiBar6]=true, [MultiBar7]=true}
 function addon:registerSecureFrameHideable(frame)
     local hidden, toggleInCombat, x, y
+    local override
     
     local function hide()
         if not x then
@@ -54,6 +55,11 @@ function addon:registerSecureFrameHideable(frame)
     end
     
     EventRegistry:RegisterFrameEventAndCallbackWithHandle("PLAYER_REGEN_ENABLED", function()
+        if override then
+            override = false
+            if hidden then hide() end
+        end
+        
         if not toggleInCombat then return end
         if hidden then
             hide()
@@ -107,11 +113,13 @@ function addon:registerSecureFrameHideable(frame)
     hooksecurefunc(frame, "Show", function()
         if InCombatLockdown() then return end
         if EditModeManagerFrame.editModeActive then return end
+        if override then return end
         if hidden then hide() end
     end)
     
     hooksecurefunc(frame, "SetShown", function()
         if InCombatLockdown() then return end
+        if override then return end
         if hidden then hide() end
     end)
     
@@ -121,6 +129,24 @@ function addon:registerSecureFrameHideable(frame)
             toggleInCombat = false
             onResetFunctionHide()
             onResetFunctionToggle()
+        end)
+    end
+    
+    if actionbars[frame] then
+        EventUtil.ContinueOnAddOnLoaded("Blizzard_PlayerSpells", function()
+            hooksecurefunc(PlayerSpellsFrame, "Show", function()
+                if InCombatLockdown() then return end
+                if EditModeManagerFrame.editModeActive then return end
+                override = true
+                if hidden then show() end
+            end)
+            
+            hooksecurefunc(PlayerSpellsFrame, "Hide", function()
+                if InCombatLockdown() then return end
+                if EditModeManagerFrame.editModeActive then return end
+                override = false
+                if hidden then hide() end
+            end)
         end)
     end
 end

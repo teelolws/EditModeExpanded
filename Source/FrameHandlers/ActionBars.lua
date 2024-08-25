@@ -5,7 +5,7 @@ local lib = LibStub:GetLibrary("EditModeExpanded-1.0")
 function addon:initActionBars()
     local db = addon.db.global
     if not db.EMEOptions.actionBars then return end
-    C_Timer.After(10, function()
+    C_Timer.After(5, function()
         if InCombatLockdown() then return end 
         local bars = {MainMenuBar, MultiBarBottomLeft, MultiBarBottomRight, MultiBarRight, MultiBarLeft, MultiBar5, MultiBar6, MultiBar7}
 

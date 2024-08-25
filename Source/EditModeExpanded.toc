@@ -24,6 +24,7 @@ FrameHandlers\ChatButtons.lua
 FrameHandlers\FocusCast.lua
 FrameHandlers\FocusFrame.lua
 FrameHandlers\FocusToT.lua
+FrameHandlers\GameMenu.lua
 FrameHandlers\GroupLoot.lua
 FrameHandlers\LFG.lua
 FrameHandlers\Menu.lua

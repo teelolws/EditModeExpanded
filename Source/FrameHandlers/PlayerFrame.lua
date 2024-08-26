@@ -28,16 +28,19 @@ function addon:initPlayerFrame()
             -- on checked
             function()
                 checked = true
+                if InCombatLockdown() then return end
                 PlayerFrame.manabar:Hide()
             end,
             
             -- on unchecked
             function()
                 checked = false
+                if InCombatLockdown() then return end
                 PlayerFrame.manabar:Show()
             end
         )
         PlayerFrame.manabar:HookScript("OnShow", function()
+            if InCombatLockdown() then return end
             if checked then
                 PlayerFrame.manabar:Hide()
             end

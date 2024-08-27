@@ -4,23 +4,24 @@ local lib = LibStub:GetLibrary("EditModeExpanded-1.0")
 
 local function resetScales()
     local scale = AlertFrame:GetScale()
-    for achievementAlertFrame in AchievementAlertSystem.alertFramePool:EnumerateActive() do
-        achievementAlertFrame:SetScale(scale)
-    end
-    for achievementAlertFrame in CriteriaAlertSystem.alertFramePool:EnumerateActive() do
-        achievementAlertFrame:SetScale(scale)
+    for _, alertSystem in pairs(AlertFrame.alertFrameSubSystems) do
+        if alertSystem.alertFramePool then
+            for achievementAlertFrame in alertSystem.alertFramePool:EnumerateActive() do
+                achievementAlertFrame:SetScale(scale)
+            end
+        end
     end
 end
 
-function addon:initAchievementFrame()
+function addon:initAlertFrame()
     local db = addon.db.global
     
     if not db.EMEOptions.achievementAlert then return end
     
     if ( not AchievementFrame ) then
-	AchievementFrame_LoadUI()
+        AchievementFrame_LoadUI()
     end
-    lib:RegisterFrame(AlertFrame, "Achievements", db.Achievements)
+    lib:RegisterFrame(AlertFrame, "Alerts", db.Achievements)
     lib:SetDefaultSize(AlertFrame, 20, 20)
     lib:RegisterResizable(AlertFrame)
     AlertFrame.Selection:HookScript("OnMouseDown", function()
@@ -32,5 +33,4 @@ function addon:initAchievementFrame()
     hooksecurefunc(AlertFrame, "SetScaleOverride", resetScales)
     hooksecurefunc(AchievementAlertSystem, "AddAlert", resetScales)
     hooksecurefunc(CriteriaAlertSystem, "AddAlert", resetScales)
-        
 end

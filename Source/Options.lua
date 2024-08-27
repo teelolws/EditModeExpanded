@@ -10,7 +10,7 @@ local defaults = {
             holyPower = true,
             totem = true,
             soulShards = true,
-            achievementAlert = true,
+            achievementAlert = true, -- alertFrame, using the name acheivement for backward compatibility
             targetOfTarget = true,
             targetCast = true,
             focusTargetOfTarget = true,
@@ -52,7 +52,7 @@ local defaults = {
         QueueStatusButton = {},
         TotemFrame = {},
         HolyPower = {},
-        Achievements = {},
+        Achievements = {}, -- alertFrame, using Acheivements for backward compatibility
         SoulShards = {},
         ToT = {},
         TargetSpellBar = {},
@@ -196,8 +196,8 @@ local options = {
             type = "toggle",
         },
         achievementAlert = {
-            name = "Achievement",
-            desc = "Enables / Disables Achievement Alert support",
+            name = "Alert",
+            desc = "Enables / Disables Alert support",
             type = "toggle",
         },
         

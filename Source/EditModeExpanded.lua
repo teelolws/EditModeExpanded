@@ -14,7 +14,7 @@ EventUtil.RegisterOnceFrameEventAndCallback("PLAYER_ENTERING_WORLD", function()
         end)
     end
 
-    addon:initAchievementFrame()
+    addon:initAlertFrame()
     addon:initTargetFrame()    
     addon:initFocusFrame()
     addon:initTargetOfTarget()

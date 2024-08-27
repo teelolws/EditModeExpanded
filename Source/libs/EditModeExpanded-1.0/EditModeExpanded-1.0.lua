@@ -2,7 +2,7 @@
 -- Internal variables
 --
 
-local MAJOR, MINOR = "EditModeExpanded-1.0", 83
+local MAJOR, MINOR = "EditModeExpanded-1.0", 84
 local lib = LibStub:NewLibrary(MAJOR, MINOR)
 if not lib then return end
 
@@ -1723,7 +1723,11 @@ do
     local lf = CreateFrame("Frame")
     local outOfCombatCallbacks = {}
     runOutOfCombat = function(callback)
-        table.insert(outOfCombatCallbacks, callback)
+        if InCombatLockdown() then
+            table.insert(outOfCombatCallbacks, callback)
+        else
+            callback()
+        end
     end
     hooksecurefunc(f, "OnLoad", function()
         lf:RegisterEvent("PLAYER_REGEN_DISABLED")

@@ -37,6 +37,7 @@ function addon:initRaidFrames()
         local db = lib.framesDB[CompactRaidFrameManager.system]
         db.positionWasSavedWhileCollapsed = CompactRaidFrameManager.collapsed
     end)
+
     C_Timer.After(1, function()
         if InCombatLockdown() then return end
         local db = lib.framesDB[CompactRaidFrameManager.system]

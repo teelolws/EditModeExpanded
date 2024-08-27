@@ -7,6 +7,7 @@ local function resetScales()
     for _, alertSystem in pairs(AlertFrame.alertFrameSubSystems) do
         if alertSystem.alertFramePool then
             for achievementAlertFrame in alertSystem.alertFramePool:EnumerateActive() do
+                achievementAlertFrame:SetParent(UIParent)
                 achievementAlertFrame:SetScale(scale)
             end
         end
@@ -31,6 +32,6 @@ function addon:initAlertFrame()
         lib:RepositionFrame(AlertFrame)
     end)
     hooksecurefunc(AlertFrame, "SetScaleOverride", resetScales)
-    hooksecurefunc(AchievementAlertSystem, "AddAlert", resetScales)
-    hooksecurefunc(CriteriaAlertSystem, "AddAlert", resetScales)
+    hooksecurefunc(AlertFrame, "ReparentAlerts", resetScales)
+    hooksecurefunc(AlertFrame, "UpdateAnchors", resetScales)
 end

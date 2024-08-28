@@ -6,7 +6,7 @@ function addon:initRaidFrames()
     local db = addon.db.global
     if not db.EMEOptions.compactRaidFrameContainer then return end
     lib:RegisterFrame(CompactRaidFrameManager, "Raid Manager", db.CompactRaidFrameManager, nil, nil, false)
-    
+
     hooksecurefunc("CompactRaidFrameManager_Expand", function()
         if InCombatLockdown() then return end
         CompactRaidFrameManager:ClearPoint("TOPLEFT")
@@ -56,7 +56,7 @@ function addon:initRaidFrames()
     end)
     lib:RegisterHideable(CompactRaidFrameManager)
     lib:RegisterToggleInCombat(CompactRaidFrameManager)
-    
+
     -- the wasVisible saved in the library when entering Edit Mode cannot be relied upon, as entering Edit Mode shows the raid manager in some situations, before we can detect if it was already visible
     hooksecurefunc(EditModeManagerFrame, "ExitEditMode", function()
         if InCombatLockdown() then return end

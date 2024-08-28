@@ -82,13 +82,16 @@ EventUtil.RegisterOnceFrameEventAndCallback("PLAYER_ENTERING_WORLD", function()
     end
 end)
 
-local editModeLayoutsUpdatedHandle
-editModeLayoutsUpdatedHandle = EventRegistry:RegisterFrameEventAndCallbackWithHandle("EDIT_MODE_LAYOUTS_UPDATED", function()
-    local layoutInfo = EditModeManagerFrame:GetActiveLayoutInfo()
-    if layoutInfo.layoutType == 0 then return end
-    editModeLayoutsUpdatedHandle:Unregister()
-    addon:initRaidFrames()
-end)
+do
+    local once
+    EventRegistry:RegisterFrameEventAndCallback("EDIT_MODE_LAYOUTS_UPDATED", function()
+        if once then return end
+        local layoutInfo = EditModeManagerFrame:GetActiveLayoutInfo()
+        if layoutInfo.layoutType == 0 then return end
+        once = true
+        addon:initRaidFrames()
+    end)
+end
 
 EventUtil.ContinueOnAddOnLoaded(addonName, function()
     addon:initOptions()

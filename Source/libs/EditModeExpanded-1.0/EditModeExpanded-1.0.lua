@@ -231,7 +231,8 @@ function lib:RegisterFrame(frame, name, db, anchorTo, anchorPoint, clamped)
     frame.systemNameString = name
     frame.Selection:SetGetLabelTextFunction(function() return name end)
     frame:SetupSettingsDialogAnchor();
-    frame.snappedFrames = {};
+    
+    --frame.snappedFrames = {}; -- this was spreading taint, need to check for the absence causing errors
     registerFrameMovableWithArrowKeys(frame)
     
     -- prevent the frame from going outside the screen boundaries

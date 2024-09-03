@@ -90,6 +90,22 @@ do
         if layoutInfo.layoutType == 0 then return end
         once = true
         addon:initRaidFrames()
+        
+        if EditModeManagerExpandedFrame then
+            EditModeExpandedWarningFrame:SetParent(EditModeManagerExpandedFrame)
+            EditModeExpandedWarningFrame:SetPoint("TOPLEFT", EditModeManagerExpandedFrame, "BOTTOMLEFT", 0, -2)
+            EditModeExpandedWarningFrame.ScrollingFont:SetText("Warning: Using Snap to Elements can cause unexpected results!");
+            if EditModeManagerFrame.EnableSnapCheckButton:IsControlChecked() then
+                EditModeExpandedWarningFrame:Show()
+            end
+            hooksecurefunc(EditModeManagerFrame, "SetEnableSnap", function(self, enableSnap, isUserInput)
+                if enableSnap then
+                    EditModeExpandedWarningFrame:Show()
+                else
+                    EditModeExpandedWarningFrame:Hide()
+                end
+            end)
+        end
     end)
 end
 

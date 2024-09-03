@@ -1,0 +1,23 @@
+<Ui>
+	<Frame name="EditModeExpandedWarningFrame" toplevel="true" enableMouse="true" frameStrata="HIGH" hidden="true">
+		<Size x="300" y="50"/>
+		<Frames>
+			<Frame parentKey="Border" inherits="DialogBorderDarkTemplate"/>
+			<Frame parentKey="ScrollingFont" inherits="ScrollingFontTemplate" frameStrata="HIGH">
+				<Size x="300" y="50"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="15" y="-15"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="fontName" value="GameFontHighlightLeft" type="string"/>
+				</KeyValues>
+					</Frame>
+			<Button name="EditModeExpandedWarningFrameCloseButton" inherits="UIPanelCloseButton">
+                <Size x="20" y="20"/>
+                <Anchors>
+                    <Anchor point="TOPRIGHT"/>
+                </Anchors>
+            </Button>
+		</Frames>
+	</Frame>
+</Ui>

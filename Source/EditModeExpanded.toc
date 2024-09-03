@@ -55,3 +55,4 @@ MicroMenu.lua
 RegisteredSystemFrames.lua
 CombatManager.lua
 EditModeExpanded.lua
+WarningFrame.xml

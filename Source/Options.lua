@@ -48,6 +48,7 @@ local defaults = {
             objectiveTrackerFrame = true,
             targetFrameBuffs = false,
             gameMenu = true,
+            gameTooltip = true,
         },
         QueueStatusButton = {},
         TotemFrame = {},
@@ -332,6 +333,11 @@ local options = {
         backpack = {
             name = "Backpack",
             desc = "Enables / Disables Backpack support",
+            type = "toggle",
+        },
+        gameTooltip = {
+            name = "Tooltip",
+            desc = "Enables / Disabled HUD Tooltip support",
             type = "toggle",
         },
     },

@@ -149,4 +149,8 @@ function addon:registerSecureFrameHideable(frame)
             end)
         end)
     end
+    
+    return function()
+            return ( hidden and (not toggleInCombat) ) or ( hidden and toggleInCombat and (not InCombatLockdown()) ) or ( (not hidden) and toggleInCombat and InCombatLockdown() )
+        end
 end

@@ -38,6 +38,7 @@ FrameHandlers\TalkingHead.lua
 FrameHandlers\TargetCast.lua
 FrameHandlers\TargetFrame.lua
 FrameHandlers\TargetOfTarget.lua
+FrameHandlers\Tooltip.lua
 FrameHandlers\TopCenterContainer.lua
 FrameHandlers\TotemFrame.lua
 

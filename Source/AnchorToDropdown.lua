@@ -6,6 +6,7 @@ function addon.registerAnchorToDropdown(frame)
     local dropdown, getSettingDB = lib:RegisterDropdown(frame, libDD, "AnchorToDropdown")
     
     local function updateFrameAnchor()
+        if InCombatLockdown() then return end
         local db = getSettingDB()
         if db.checked then
             lib:ReanchorFrame(frame, _G[db.checked], "BOTTOMLEFT")

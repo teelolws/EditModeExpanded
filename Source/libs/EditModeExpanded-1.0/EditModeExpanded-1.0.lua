@@ -513,10 +513,11 @@ function lib:ReanchorFrame(frame, anchorTo, anchorPoint)
     local systemID = getSystemID(frame)
     local db = framesDB[systemID]
     
-    local x, y = getOffsetXY(frame, db.x, db.y)
-    
     frame.EMEanchorTo = anchorTo
     frame.EMEanchorPoint = anchorPoint
+    
+    local x, y = frame:GetRect()
+    if not (x and y) then return end
     
     x, y = getOffsetXY(frame, frame:GetRect())
     

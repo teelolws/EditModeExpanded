@@ -12,17 +12,20 @@ function addon:initArcaneCharges()
         lib:RegisterResizable(MageArcaneChargesFrame)
         addon.registerAnchorToDropdown(MageArcaneChargesFrame)
         hooksecurefunc(PlayerFrameBottomManagedFramesContainer, "Layout", function()
+            if GetSpecialization() ~= 1 then return end
             if not EditModeManagerFrame.editModeActive then
                 lib:RepositionFrame(MageArcaneChargesFrame)
             end
         end)
         hooksecurefunc(MageArcaneChargesFrame, "HandleBarSetup", function()
+            if GetSpecialization() ~= 1 then return end
             if not EditModeManagerFrame.editModeActive then
                 lib:RepositionFrame(MageArcaneChargesFrame)
             end
         end)
         local noInfinite
         hooksecurefunc(MageArcaneChargesFrame, "Show", function()
+            if GetSpecialization() ~= 1 then return end
             if noInfinite then return end
             noInfinite = true
             lib:RepositionFrame(MageArcaneChargesFrame)

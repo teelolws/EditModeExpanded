@@ -2,7 +2,7 @@
 -- Internal variables
 --
 
-local MAJOR, MINOR = "EditModeExpanded-1.0", 84
+local MAJOR, MINOR = "EditModeExpanded-1.0", 85
 local lib = LibStub:NewLibrary(MAJOR, MINOR)
 if not lib then return end
 
@@ -34,6 +34,7 @@ local ENUM_EDITMODEACTIONBARSETTING_TOGGLEHIDEINCOMBAT = 14
 local ENUM_EDITMODEACTIONBARSETTING_BUTTON = 15
 local ENUM_EDITMODEACTIONBARSETTING_FRAMESIZE = 16 -- Enum.EditModeUnitFrameSetting.FrameSize
 local ENUM_EDITMODEACTIONBARSETTING_DROPDOWN = 17
+local ENUM_EDITMODEACTIONBARSETTING_SLIDER = 18
 
 -- run OnLoad the first time RegisterFrame is called by an addon
 local f = lib.internalOnLoadFrame or {}
@@ -542,8 +543,6 @@ function lib:RegisterResizable(frame)
             minValue = 10,
             maxValue = 200,
             stepSize = 5,
-            ConvertValue = ConvertValueDefault,
-            formatter = showAsPercentage,
         })
     
     local db = framesDB[systemID]
@@ -758,6 +757,45 @@ function lib:RegisterDropdown(frame, libUIDropDownMenu, internalName)
     end
     
     return dropdown, getCurrentDB
+end
+
+-- register a custom slider
+function lib:RegisterSlider(frame, name, internalName, onChanged, min, max, step)
+    local systemID = getSystemID(frame)
+    
+    if not framesDialogs[systemID] then framesDialogs[systemID] = {} end
+    if not framesDialogsKeys[systemID] then framesDialogsKeys[systemID] = {} end
+    if not framesDialogsKeys[systemID][ENUM_EDITMODEACTIONBARSETTING_SLIDER] then framesDialogsKeys[systemID][ENUM_EDITMODEACTIONBARSETTING_SLIDER] = {} end
+    framesDialogsKeys[systemID][ENUM_EDITMODEACTIONBARSETTING_SLIDER][internalName] = true
+    
+    table.insert(framesDialogs[systemID],
+        {
+            setting = ENUM_EDITMODEACTIONBARSETTING_SLIDER,
+            name = name,
+            type = Enum.EditModeSettingDisplayType.Slider,
+            onChanged = onChanged,
+            minValue = min,
+            maxValue = max,
+            stepSize = step,
+            internalName = internalName,
+        }
+    )
+        
+    local function callLater()
+        local db = framesDB[systemID]
+        if not db.settings then db.settings = {} end
+        if not db.settings[ENUM_EDITMODEACTIONBARSETTING_SLIDER] then db.settings[ENUM_EDITMODEACTIONBARSETTING_SLIDER] = {} end
+        
+        if db.settings[ENUM_EDITMODEACTIONBARSETTING_SLIDER][internalName] ~= nil then
+            onChanged(db.settings[ENUM_EDITMODEACTIONBARSETTING_SLIDER][internalName])
+        end
+    end
+    
+    if profilesInitialised then
+        callLater()
+    else
+        table.insert(customCheckboxCallDuringProfileInit, callLater)
+    end
 end
 
 --
@@ -1049,19 +1087,6 @@ local function GetSystemSettingDisplayInfo(dialogs)
     return dialogs
 end
 
-local function showAsPercentage(value)
-    local roundToNearestInteger = true;
-    return FormatPercentage(value / 100, roundToNearestInteger);
-end
-
-local function ConvertValueDefault(self, value, forDisplay)
-    if forDisplay then
-        return self:ClampValue((value * self.stepSize) + self.minValue);
-    else
-        return (value - self.minValue) / self.stepSize;
-    end
-end
-
 hooksecurefunc(f, "OnLoad", function()
     function EditModeExpandedSystemSettingsDialog:UpdateSettings(systemFrame)
         if systemFrame == self.attachedToSystem then
@@ -1110,6 +1135,21 @@ hooksecurefunc(f, "OnLoad", function()
                           	local function OnValueChanged(self, value)
                                 if not self.initInProgress then
                                     EditModeExpandedSystemSettingsDialog:OnSettingValueChanged(self.setting, value);
+                                end
+                            end
+                              
+                            settingFrame.cbrHandles = EventUtil.CreateCallbackHandleContainer()
+                          	settingFrame.cbrHandles:RegisterCallback(settingFrame.Slider, MinimalSliderWithSteppersMixin.Event.OnValueChanged, OnValueChanged, settingFrame)
+                        end
+                        
+                        if displayInfo.setting == ENUM_EDITMODEACTIONBARSETTING_SLIDER then
+                            if not framesDB[systemID].settings[displayInfo.setting] then framesDB[systemID].settings[displayInfo.setting] = {} end
+                            savedValue = framesDB[systemID].settings[displayInfo.setting][displayInfo.internalName]
+                            if savedValue == nil then savedValue = 100 end
+                            CallbackRegistryMixin.OnLoad(settingFrame)
+                            local function OnValueChanged(self, value)
+                                if not self.initInProgress then
+                                    EditModeExpandedSystemSettingsDialog:OnSettingValueChanged(self.setting, value, displayInfo.internalName, displayInfo.onChanged);
                                 end
                             end
                               
@@ -1273,15 +1313,19 @@ hooksecurefunc(f, "OnLoad", function()
         return draggingSlider;
     end
     
-    function EditModeExpandedSystemSettingsDialog:OnSettingValueChanged(setting, value)
+    function EditModeExpandedSystemSettingsDialog:OnSettingValueChanged(setting, value, internalName, onChanged)
         local attachedToSystem = self.attachedToSystem
         if attachedToSystem then
             local db = framesDB[getSystemID(attachedToSystem)]
             if not db.settings then db.settings = {} end
-            db.settings[setting] = value
             if setting == ENUM_EDITMODEACTIONBARSETTING_FRAMESIZE then
+                db.settings[setting] = value
                 attachedToSystem:SetScaleOverride(value/100)
                 db.x, db.y = attachedToSystem:GetRect()
+            elseif setting == ENUM_EDITMODEACTIONBARSETTING_SLIDER then
+                if not db.settings[setting] then db.settings[setting] = {} end
+                db.settings[setting][internalName] = value
+                onChanged(value)
             end
         end
     end

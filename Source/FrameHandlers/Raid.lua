@@ -5,11 +5,11 @@ local lib = LibStub:GetLibrary("EditModeExpanded-1.0")
 function addon:initRaidFrames()
     local db = addon.db.global
     if not db.EMEOptions.compactRaidFrameContainer then return end
-    lib:RegisterFrame(CompactRaidFrameManager, "Raid Manager", db.CompactRaidFrameManager, nil, nil, false)
+    lib:RegisterFrame(CompactRaidFrameManager, "Raid Manager", db.CompactRaidFrameManager, nil, "TOPLEFT", false)
 
     hooksecurefunc("CompactRaidFrameManager_Expand", function()
         if InCombatLockdown() then return end
-        CompactRaidFrameManager:ClearPoint("TOPLEFT")
+        --CompactRaidFrameManager:ClearPoint("TOPLEFT")
         lib:RepositionFrame(CompactRaidFrameManager)
         local db = lib.framesDB[CompactRaidFrameManager.system]
         if db.positionWasSavedWhileCollapsed then
@@ -22,7 +22,7 @@ function addon:initRaidFrames()
     end)
     hooksecurefunc("CompactRaidFrameManager_Collapse", function()
         if InCombatLockdown() then return end
-        CompactRaidFrameManager:ClearPoint("TOPLEFT")
+        --CompactRaidFrameManager:ClearPoint("TOPLEFT")
         lib:RepositionFrame(CompactRaidFrameManager)
         local db = lib.framesDB[CompactRaidFrameManager.system]
         if not db.positionWasSavedWhileCollapsed then
@@ -71,7 +71,7 @@ function addon:initRaidFrames()
             CompactRaidFrameManager:Show()
         else
             noInfinite = true
-            lib:RepositionFrame(CompactRaidFrameManager)
+            --lib:RepositionFrame(CompactRaidFrameManager)
             if not (IsInGroup() or IsInRaid()) then
                 CompactRaidFrameManager:Hide()
             end
@@ -83,7 +83,7 @@ function addon:initRaidFrames()
         if InCombatLockdown() then return end
         if not EditModeManagerFrame.editModeActive then
             noInfinite = true
-            lib:RepositionFrame(CompactRaidFrameManager)
+            --lib:RepositionFrame(CompactRaidFrameManager)
             if not (IsInGroup() or IsInRaid()) then
                 CompactRaidFrameManager:Hide()
             end

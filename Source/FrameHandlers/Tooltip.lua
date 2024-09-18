@@ -9,8 +9,15 @@ function addon:initTooltip()
         local isHidden = addon:registerSecureFrameHideable(GameTooltipDefaultContainer)
         hooksecurefunc(GameTooltip, "SetPoint", function(self, point, relativeTo, relativePoint)
             if isHidden() then
-                GameTooltip:SetClampedToScreen(false)
-                GameTooltip:ClearAllPoints()
+                self:SetClampedToScreen(false)
+                self:ClearAllPoints()
+            end
+        end)
+        hooksecurefunc(GameTooltip, "SetOwner", function(self, anchorTo, anchorPoint)
+            if isHidden() then
+                if anchorTo ~= UIParent then
+                    self:SetClampedToScreen(true)
+                end
             end
         end)
     end

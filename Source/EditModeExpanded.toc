@@ -27,6 +27,7 @@ FrameHandlers\FocusToT.lua
 FrameHandlers\GameMenu.lua
 FrameHandlers\GroupLoot.lua
 FrameHandlers\LFG.lua
+FrameHandlers\LossOfControl.lua
 FrameHandlers\Menu.lua
 FrameHandlers\Minimap.lua
 FrameHandlers\ObjectiveTracker.lua

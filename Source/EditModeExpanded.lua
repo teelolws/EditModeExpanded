@@ -37,6 +37,7 @@ EventUtil.RegisterOnceFrameEventAndCallback("PLAYER_ENTERING_WORLD", function()
     addon:initObjectiveTracker()
     addon:initGameMenu()
     addon:initTooltip()
+    addon:initLossOfControl()
         
     local class = UnitClassBase("player")
         

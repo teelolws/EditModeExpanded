@@ -100,13 +100,15 @@ function addon:initTalkingHead()
 
         C_Timer.After(1, function()
             local db = getSettingDB()
+            if not db then return end
+            if not db.checked then return end
             if db.checked ~= 1 then
                 shouldHideDialog = true
             end
             if (db.checked == 3) or (db.checked == 5) then
                 shouldMuteSound = true
             end
-            if db.checked and (db.checked > 3) then
+            if db.checked > 3 then
                 hideOnlyInCombat = true
             end
         end)

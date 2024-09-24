@@ -106,7 +106,7 @@ function addon:initTalkingHead()
             if (db.checked == 3) or (db.checked == 5) then
                 shouldMuteSound = true
             end
-            if db.checked > 3 then
+            if db.checked and (db.checked > 3) then
                 hideOnlyInCombat = true
             end
         end)

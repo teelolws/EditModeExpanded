@@ -12,8 +12,15 @@ libs\CallbackHandler-1.0\CallbackHandler-1.0.lua
 libs\AceDB-3.0\AceDB-3.0.xml
 libs\AceGUI-3.0\AceGUI-3.0.xml
 libs\AceConfig-3.0\AceConfig-3.0.xml
+libs\AceLocale-3.0\AceLocale-3.0.xml
 libs\EditModeExpanded-1.0\EditModeExpanded-1.0.xml
 libs\LibUIDropDownMenu\LibUIDropDownMenu.lua
+
+Locales\enus.lua
+Locales\esES.lua
+Locales\ruRU.lua
+Locales\zhCN.lua
+Locales\zhTW.lua
 
 FrameHandlers\ActionBars.lua
 FrameHandlers\AlertFrame.lua

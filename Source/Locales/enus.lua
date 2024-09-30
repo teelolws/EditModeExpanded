@@ -1,0 +1,29 @@
+local addonName, addon = ...
+local L = LibStub("AceLocale-3.0"):NewLocale(addonName, "enUS", true)
+if not L then return end
+
+L["Toggle(Show) During Combat"] = true
+L["Toggle(Hide) During Combat"] = true
+L["OPTIONS_RELOAD_REQUIREMENT_WARNING"] = "All changes require a /reload to take effect! Uncheck if you don't want this addon to manage that frame."
+L["Class Resources"] = true
+L["TOGGLE_SUPPORT_STRING"] = "Enables / Disables %s support"
+L["TOGGLE_ADDITIONAL_OPTIONS_SUPPORT_STRING"] = "Enables / Disables additional options for %s"
+L["Minimap Header"] = true
+L["MINIMAP_HEADER_DESCRIPTION"] = "Enables / Disables Minimap Header support. WARNING: The minimap may not behave as expected, disable this option if you have issues. Make sure not to check 'Header Underneath'!"
+L["Resize Minimap Cluster"] = true
+L["RESIZE_MINIMAP_DESCRIPTION"] = "Allows the whole Minimap Cluster to be resized, affecting everything attached to it. NOTE: You may get unexpected results if you use both sliders."
+L["Subzone Information"] = true
+L["SUBZONE_DESCRIPTION"] = "Enables / Disables top of screen subzone information widget support. This usually contains zone objectives such as number of flag captures in WSG. Be aware: this will not show anything if you are not in a zone that has an objective!"
+L["Below Minimap"] = true
+L["BELOW_MINIMAP_DESCRIPTION"] = "Enables / Disables below minimap container support. This usually contains PvP objectives like flag carriers in WSG and base capture progress bars. Be aware: this will not show anything if you are not in an area that puts anything in the container!"
+L["Show Coordinates"] = true
+L["SHOW_COORDINATES_DESCRIPTION"] = "Show window coordinates of selected frame"
+L["Resize Player Frame"] = true
+L["RESIZE_PLAYER_FRAME_DESCRIPTION"] = "Allows the Player Frame to be resized to a smaller size than the default UI allows. NOTE: You may get unexpected results if you use both sliders."
+L["Menu Bar"] = true
+L["LFG Button"] = true
+L["Buffs"] = true
+L["Debuffs"] = true
+L["Bonus Roll"] = true
+L["ACTIONBARS_DESCRIPTION"] = "Allows the action bars to have their padding set to zero. WARNING: you MUST move all your action bars from their default position AND disable 'magnetism', or you will get addon errors. You can even move the bars back to where they were originally!"
+L["Group Loot Container"] = true

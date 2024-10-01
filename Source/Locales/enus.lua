@@ -27,3 +27,6 @@ L["Debuffs"] = true
 L["Bonus Roll"] = true
 L["ACTIONBARS_DESCRIPTION"] = "Allows the action bars to have their padding set to zero. WARNING: you MUST move all your action bars from their default position AND disable 'magnetism', or you will get addon errors. You can even move the bars back to where they were originally!"
 L["Group Loot Container"] = true
+L["Chat Buttons"] = true
+L["Alert"] = true
+L["Auction Multisell"] = true

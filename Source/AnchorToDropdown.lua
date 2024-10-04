@@ -1,4 +1,6 @@
 local addonName, addon = ...
+
+local L = LibStub("AceLocale-3.0"):GetLocale(addonName)
 local lib = LibStub:GetLibrary("EditModeExpanded-1.0")
 local libDD = LibStub:GetLibrary("LibUIDropDownMenu-4.0")
 
@@ -34,7 +36,7 @@ function addon.registerAnchorToDropdown(frame)
         end
     end)
     libDD:UIDropDownMenu_SetWidth(dropdown, 100)
-    libDD:UIDropDownMenu_SetText(dropdown, "Anchor To:")
+    libDD:UIDropDownMenu_SetText(dropdown, L["Anchor To:"])
     
     EventRegistry:RegisterCallback("EDIT_MODE_LAYOUTS_UPDATED", updateFrameAnchor)
     updateFrameAnchor()

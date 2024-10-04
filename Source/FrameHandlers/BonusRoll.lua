@@ -1,5 +1,6 @@
 local addonName, addon = ...
 
+local L = LibStub("AceLocale-3.0"):GetLocale(addonName)
 local lib = LibStub:GetLibrary("EditModeExpanded-1.0")
 
 function addon:initBonusRoll()
@@ -16,7 +17,7 @@ function addon:initBonusRoll()
             end
             alreadyInitialized = true
             addon:continueAfterCombatEnds(function()
-                lib:RegisterFrame(BonusRollFrame, "Bonus Roll", db.BonusRoll)
+                lib:RegisterFrame(BonusRollFrame, L["Bonus Roll"], db.BonusRoll)
                 lib:HideByDefault(BonusRollFrame)
                 BonusRollFrame.Selection:SetFrameStrata("TOOLTIP")
             end)

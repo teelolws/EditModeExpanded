@@ -1,11 +1,12 @@
 local addonName, addon = ...
 
+local L = LibStub("AceLocale-3.0"):GetLocale(addonName)
 local lib = LibStub:GetLibrary("EditModeExpanded-1.0")
 
 function addon:initChiBar()
     local db = addon.db.global
     if db.EMEOptions.chi then
-        lib:RegisterFrame(MonkHarmonyBarFrame, "Chi", db.Chi)
+        lib:RegisterFrame(MonkHarmonyBarFrame, CHI_POWER, db.Chi)
         lib:SetDontResize(MonkHarmonyBarFrame)
         lib:RegisterHideable(MonkHarmonyBarFrame)
         lib:RegisterToggleInCombat(MonkHarmonyBarFrame)

@@ -1,11 +1,12 @@
 local addonName, addon = ...
 
+local L = LibStub("AceLocale-3.0"):GetLocale(addonName)
 local lib = LibStub:GetLibrary("EditModeExpanded-1.0")
 
 function addon:initSoulShards()
     local db = addon.db.global
     if db.EMEOptions.soulShards then
-        lib:RegisterFrame(WarlockPowerFrame, "Soul Shards", db.SoulShards)
+        lib:RegisterFrame(WarlockPowerFrame, SOUL_SHARDS_POWER, db.SoulShards)
         lib:RegisterHideable(WarlockPowerFrame)
         lib:RegisterToggleInCombat(WarlockPowerFrame)
         lib:SetDontResize(WarlockPowerFrame)

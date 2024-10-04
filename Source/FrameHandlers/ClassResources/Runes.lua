@@ -1,11 +1,12 @@
 local addonName, addon = ...
 
+local L = LibStub("AceLocale-3.0"):GetLocale(addonName)
 local lib = LibStub:GetLibrary("EditModeExpanded-1.0")
 
 function addon:initRunes()
     local db = addon.db.global
     if not db.EMEOptions.runes then return end
-    lib:RegisterFrame(RuneFrame, "Runes", db.Runes)
+    lib:RegisterFrame(RuneFrame, RUNES, db.Runes)
     lib:RegisterHideable(RuneFrame)
     lib:RegisterToggleInCombat(RuneFrame)
     lib:SetDontResize(RuneFrame)

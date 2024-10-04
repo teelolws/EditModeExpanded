@@ -1,5 +1,6 @@
 local addonName, addon = ...
 
+local L = LibStub("AceLocale-3.0"):GetLocale(addonName)
 local lib = LibStub:GetLibrary("EditModeExpanded-1.0")
 
 EventUtil.RegisterOnceFrameEventAndCallback("PLAYER_ENTERING_WORLD", function()
@@ -96,7 +97,7 @@ do
         if EditModeManagerExpandedFrame then
             EditModeExpandedWarningFrame:SetParent(EditModeManagerExpandedFrame)
             EditModeExpandedWarningFrame:SetPoint("TOPLEFT", EditModeManagerExpandedFrame, "BOTTOMLEFT", 0, -2)
-            EditModeExpandedWarningFrame.ScrollingFont:SetText("Warning: Using Snap to Elements can cause unexpected results!");
+            EditModeExpandedWarningFrame.ScrollingFont:SetText(L["WARNING_FRAME_TEXT"])
             if EditModeManagerFrame.EnableSnapCheckButton:IsControlChecked() then
                 EditModeExpandedWarningFrame:Show()
             end
@@ -128,7 +129,7 @@ EventUtil.ContinueOnAddOnLoaded("Blizzard_AuctionHouseUI", function()
                 return
             end
             alreadyInitialized = true
-            lib:RegisterFrame(AuctionHouseMultisellProgressFrame, "Auction Multisell", db.AuctionHouseMultisellProgressFrame)
+            lib:RegisterFrame(AuctionHouseMultisellProgressFrame, L["Auction Multisell"], db.AuctionHouseMultisellProgressFrame)
             hooksecurefunc(UIParentBottomManagedFrameContainer, "Layout", function()
                 lib:RepositionFrame(AuctionHouseMultisellProgressFrame)
             end)

@@ -1,11 +1,12 @@
 local addonName, addon = ...
 
+local L = LibStub("AceLocale-3.0"):GetLocale(addonName)
 local lib = LibStub:GetLibrary("EditModeExpanded-1.0")
 
 function addon:initRogueComboPoints()
     local db = addon.db.global
     if db.EMEOptions.comboPoints then
-        lib:RegisterFrame(RogueComboPointBarFrame, "Combo Points", db.ComboPoints)
+        lib:RegisterFrame(RogueComboPointBarFrame, COMBO_POINTS_POWER, db.ComboPoints)
         lib:SetDontResize(RogueComboPointBarFrame)
         lib:RegisterHideable(RogueComboPointBarFrame)
         lib:RegisterToggleInCombat(RogueComboPointBarFrame)
@@ -29,7 +30,7 @@ end
 function addon:initDruidComboPoints()
     local db = addon.db.global
     if db.EMEOptions.comboPoints then
-        lib:RegisterFrame(DruidComboPointBarFrame, "Combo Points", db.ComboPoints)
+        lib:RegisterFrame(DruidComboPointBarFrame, COMBO_POINTS_POWER, db.ComboPoints)
         lib:SetDontResize(DruidComboPointBarFrame)
         lib:RegisterHideable(DruidComboPointBarFrame)
         lib:RegisterToggleInCombat(DruidComboPointBarFrame)

@@ -1,11 +1,12 @@
 local addonName, addon = ...
 
+local L = LibStub("AceLocale-3.0"):GetLocale(addonName)
 local lib = LibStub:GetLibrary("EditModeExpanded-1.0")
 
 function addon:initArcaneCharges()
     local db = addon.db.global
     if db.EMEOptions.arcaneCharges then
-        lib:RegisterFrame(MageArcaneChargesFrame, "Arcane Charges", db.ArcaneCharges)
+        lib:RegisterFrame(MageArcaneChargesFrame, POWER_TYPE_ARCANE_CHARGES, db.ArcaneCharges)
         lib:RegisterHideable(MageArcaneChargesFrame)
         lib:RegisterToggleInCombat(MageArcaneChargesFrame)
         lib:SetDontResize(MageArcaneChargesFrame)

@@ -1,5 +1,6 @@
 local addonName, addon = ...
 
+local L = LibStub("AceLocale-3.0"):GetLocale(addonName)
 local lib = LibStub:GetLibrary("EditModeExpanded-1.0")
 
 local function resetScales()
@@ -22,7 +23,7 @@ function addon:initAlertFrame()
     if ( not AchievementFrame ) then
         AchievementFrame_LoadUI()
     end
-    lib:RegisterFrame(AlertFrame, "Alerts", db.Achievements)
+    lib:RegisterFrame(AlertFrame, L["Alert"], db.Achievements)
     lib:SetDefaultSize(AlertFrame, 20, 20)
     lib:RegisterResizable(AlertFrame)
     AlertFrame.Selection:HookScript("OnMouseDown", function()

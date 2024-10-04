@@ -1,11 +1,12 @@
 local addonName, addon = ...
 
+local L = LibStub("AceLocale-3.0"):GetLocale(addonName)
 local lib = LibStub:GetLibrary("EditModeExpanded-1.0")
 
 function addon:initHolyPower()
     local db = addon.db.global
     if db.EMEOptions.holyPower then
-        lib:RegisterFrame(PaladinPowerBarFrame, "Holy Power", db.HolyPower)
+        lib:RegisterFrame(PaladinPowerBarFrame, HOLY_POWER, db.HolyPower)
         C_Timer.After(4, function() lib:RepositionFrame(PaladinPowerBarFrame) end)
         lib:RegisterHideable(PaladinPowerBarFrame)
         lib:RegisterToggleInCombat(PaladinPowerBarFrame)

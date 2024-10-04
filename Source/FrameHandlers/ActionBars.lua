@@ -1,5 +1,6 @@
 local addonName, addon = ...
 
+local L = LibStub("AceLocale-3.0"):GetLocale(addonName)
 local lib = LibStub:GetLibrary("EditModeExpanded-1.0")
 
 function addon:initActionBars()
@@ -36,7 +37,7 @@ function addon:initActionBars()
             addon:registerSecureFrameHideable(bar)
             
             local alreadyHidden
-            lib:RegisterCustomCheckbox(bar, "Hide macro/keybind names",
+            lib:RegisterCustomCheckbox(bar, L["ACTION_BARS_CHECKBOX_HIDE_NAMES_DESCRIPTION"],
                 function()
                     for _, button in pairs(bar.actionButtons) do
                         button.Name:Hide()

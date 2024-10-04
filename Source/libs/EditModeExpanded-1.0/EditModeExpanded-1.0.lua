@@ -2,7 +2,7 @@
 -- Internal variables
 --
 
-local MAJOR, MINOR = "EditModeExpanded-1.0", 85
+local MAJOR, MINOR = "EditModeExpanded-1.0", 86
 local lib = LibStub:NewLibrary(MAJOR, MINOR)
 if not lib then return end
 
@@ -824,7 +824,7 @@ hooksecurefunc(f, "OnLoad", function()
     EditModeManagerExpandedFrame:SetPoint("TOPLEFT", EditModeManagerFrame, "TOPRIGHT", 2, 0)
     EditModeManagerExpandedFrame:SetPoint("BOTTOMLEFT", EditModeManagerFrame, "BOTTOMRIGHT", 2, 0)
     EditModeManagerExpandedFrame:SetWidth(300)
-    EditModeManagerExpandedFrame.Title = EditModeManagerExpandedFrame:CreateFontString(nil, "ARTWORK", "GameFontHighlightLarge")
+    EditModeManagerExpandedFrame.Title = EditModeManagerExpandedFrame.Title or EditModeManagerExpandedFrame:CreateFontString(nil, "ARTWORK", "GameFontHighlightLarge")
     EditModeManagerExpandedFrame.Title:SetPoint("TOP", 0, -15)
     EditModeManagerExpandedFrame.Title:SetText("Expanded")
     EditModeManagerExpandedFrame.Border = EditModeManagerExpandedFrame.Border or CreateFrame("Frame", nil, EditModeManagerExpandedFrame, "DialogBorderTranslucentTemplate")

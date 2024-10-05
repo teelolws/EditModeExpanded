@@ -1,11 +1,12 @@
 local addonName, addon = ...
 
+local L = LibStub("AceLocale-3.0"):GetLocale(addonName)
 local lib = LibStub:GetLibrary("EditModeExpanded-1.0")
 
 function addon:initRaidFrames()
     local db = addon.db.global
     if not db.EMEOptions.compactRaidFrameContainer then return end
-    lib:RegisterFrame(CompactRaidFrameManager, "Raid Manager", db.CompactRaidFrameManager, nil, "TOPLEFT", false)
+    lib:RegisterFrame(CompactRaidFrameManager, L["Raid Manager"], db.CompactRaidFrameManager, nil, "TOPLEFT", false)
 
     hooksecurefunc("CompactRaidFrameManager_Expand", function()
         if InCombatLockdown() then return end
@@ -92,7 +93,7 @@ function addon:initRaidFrames()
     end)
     
     local partyFrameNamesWereHidden
-    lib:RegisterCustomCheckbox(PartyFrame, "Hide Names",
+    lib:RegisterCustomCheckbox(PartyFrame, L["Hide Names"],
         function()
             for i = 1, 4 do
                 PartyFrame["MemberFrame"..i].name:Hide()
@@ -124,9 +125,8 @@ function addon:initRaidFrames()
             end
         end
     end
-                        
-    
-    lib:RegisterCustomCheckbox(CompactRaidFrameContainer, "Hide Names",
+
+    lib:RegisterCustomCheckbox(CompactRaidFrameContainer, L["Hide Names"],
         function()
             showRaidFrameNames = false
             updateHideRaidFrameNames()

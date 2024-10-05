@@ -1,5 +1,6 @@
 local addonName, addon = ...
 
+local L = LibStub("AceLocale-3.0"):GetLocale(addonName)
 local lib = LibStub:GetLibrary("EditModeExpanded-1.0")
 local libDD = LibStub:GetLibrary("LibUIDropDownMenu-4.0")
 
@@ -50,33 +51,12 @@ function addon:initMenuBar()
             end
         end)
         libDD:UIDropDownMenu_SetWidth(dropdown, 100)
-        libDD:UIDropDownMenu_SetText(dropdown, "Button Padding")
+        libDD:UIDropDownMenu_SetText(dropdown, HUD_EDIT_MODE_SETTING_ACTION_BAR_ICON_PADDING)
         
         C_Timer.After(1, updatePadding)
         
-        hooksecurefunc(MicroMenuContainer, "Layout", function(...)
-            if OverrideActionBar.isShown then return end
-            if PetBattleFrame and PetBattleFrame:IsShown() then return end
-            local db = getSettingDB()
-            if not db.checked then return end
-
-            -- don't recall what this was for - doesn't seem to be any issues without it now!
-            --[[
-            if db.checked and ((math.floor((select(4, MicroMenu:GetLayoutChildren()[2]:GetPoint(1))*100) + 0.5)/100) == (math.floor((db.checked*100) + 0.5)/100)) then
-                for key, button in ipairs(MicroMenu:GetLayoutChildren()) do
-                    if key ~= 1 then
-                        local a, b, c, d, e = button:GetPoint(1)
-                        button:ClearAllPoints()
-                        button:SetPoint(a, b, c, d-(3*(key-1)), e)
-                    end
-                end
-                MicroMenu:SetWidth(MicroMenu:GetWidth() - 30)
-            end
-            ]]
-        end)
-        
-        lib:RegisterCustomCheckbox(MicroMenuContainer, "Use 10.0 style buttons (requires reload)", addon.EnableSkinMicroMenuBW, addon.DisableSkinMicroMenuBW, "10.0Style")
-        lib:RegisterCustomCheckbox(MicroMenuContainer, "Use Shadowlands style buttons (requires reload)", addon.EnableSkinMicroMenuSL, addon.DisableSkinMicroMenuSL, "SLStyle")
+        lib:RegisterCustomCheckbox(MicroMenuContainer, L["MENU_CHECKBOX_DF_BUTTONS_DESCRIPTION"], addon.EnableSkinMicroMenuBW, addon.DisableSkinMicroMenuBW, "10.0Style")
+        lib:RegisterCustomCheckbox(MicroMenuContainer, L["MENU_CHECKBOX_SL_BUTTONS_DESCRIPTION"], addon.EnableSkinMicroMenuSL, addon.DisableSkinMicroMenuSL, "SLStyle")
     end
     
     if db.EMEOptions.bags then
@@ -100,7 +80,7 @@ function addon:initMenuBar()
                     -- but trying SetUserPlaced causes an error
                     ContainerFrame1.Bg:SetFrameLevel(0)
                     
-                    lib:RegisterFrame(ContainerFrame1, "Main Bag", db.ContainerFrame1)
+                    lib:RegisterFrame(ContainerFrame1, BACKPACK_TOOLTIP, db.ContainerFrame1)
                     hooksecurefunc("UpdateContainerFrameAnchors", function()
                         if noInfinite then return end
                         if InCombatLockdown() then return end
@@ -118,7 +98,7 @@ function addon:initMenuBar()
                 if alreadyInit then return end
                 alreadyInit = true
                 addon:continueAfterCombatEnds(function()
-                    lib:RegisterFrame(ContainerFrameCombinedBags, "Combined Bags", db.ContainerFrameCombinedBags)
+                    lib:RegisterFrame(ContainerFrameCombinedBags, COMBINED_BAG_TITLE, db.ContainerFrameCombinedBags)
                     hooksecurefunc("UpdateContainerFrameAnchors", function()
                         if noInfinite then return end
                         if InCombatLockdown() then return end

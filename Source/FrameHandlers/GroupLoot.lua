@@ -1,5 +1,6 @@
 local addonName, addon = ...
 
+local L = LibStub("AceLocale-3.0"):GetLocale(addonName)
 local lib = LibStub:GetLibrary("EditModeExpanded-1.0")
 
 function addon:initGroupLoot()
@@ -16,7 +17,7 @@ function addon:initGroupLoot()
                 return
             end
             alreadyInitialized = true
-            lib:RegisterFrame(GroupLootContainer, "Group Loot Container", db.GroupLootContainer)
+            lib:RegisterFrame(GroupLootContainer, L["Group Loot Container"], db.GroupLootContainer)
             local noInfinite
             hooksecurefunc(GroupLootContainer, "SetPoint", function()
                 if noInfinite then return end

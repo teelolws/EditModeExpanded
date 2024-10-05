@@ -1,12 +1,13 @@
 local addonName, addon = ...
 
+local L = LibStub("AceLocale-3.0"):GetLocale(addonName)
 local lib = LibStub:GetLibrary("EditModeExpanded-1.0")
 
 function addon:initMinimap()
     local db = addon.db.global
     if db.EMEOptions.minimap then
         local isDefault = true
-        lib:RegisterCustomCheckbox(MinimapCluster, "Square",
+        lib:RegisterCustomCheckbox(MinimapCluster, RAID_TARGET_6,
             function()
                 isDefault = false
                 Minimap:SetMaskTexture("Interface\\BUTTONS\\WHITE8X8")
@@ -24,7 +25,7 @@ function addon:initMinimap()
         if ExpansionLandingPageMinimapButton then
             ExpansionLandingPageMinimapButton:SetParent(UIParent)
             ExpansionLandingPageMinimapButton:SetFrameStrata("MEDIUM")
-            lib:RegisterFrame(ExpansionLandingPageMinimapButton, "Expansion Button", db.ExpansionLandingPageMinimapButton)
+            lib:RegisterFrame(ExpansionLandingPageMinimapButton, L["Expansion Button"], db.ExpansionLandingPageMinimapButton)
             lib:RegisterResizable(ExpansionLandingPageMinimapButton)
             hooksecurefunc(ExpansionLandingPageMinimapButton, "UpdateIcon", function()
                 lib:RepositionFrame(ExpansionLandingPageMinimapButton)
@@ -73,7 +74,7 @@ function addon:initMinimap()
             end
         end)
     
-        lib:RegisterCustomCheckbox(MinimapCluster, "Hide",
+        lib:RegisterCustomCheckbox(MinimapCluster, HIDE,
             function()
                 hidden = true
                 if not EditModeManagerFrame.editModeActive then
@@ -86,7 +87,7 @@ function addon:initMinimap()
             end,
             "HidePermanently")
         
-        lib:RegisterCustomCheckbox(MinimapCluster, "Toggle In Combat",
+        lib:RegisterCustomCheckbox(MinimapCluster, L["Toggle In Combat"],
             function()
                 toggleInCombat = true
             end,
@@ -118,7 +119,7 @@ function addon:initMinimap()
     
     if db.EMEOptions.minimapHeader then
         MinimapCluster.BorderTop:SetParent(UIParent)
-        lib:RegisterFrame(MinimapCluster.BorderTop, "Zone Name", db.MinimapZoneName)
+        lib:RegisterFrame(MinimapCluster.BorderTop, L["Zone Name"], db.MinimapZoneName)
         lib:SetDontResize(MinimapCluster.BorderTop)
         addon:registerSecureFrameHideable(MinimapCluster.BorderTop)
         

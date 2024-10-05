@@ -169,13 +169,13 @@ local options = {
                     type = "toggle",
                 },
                 focusTargetOfTarget = {
-                    name = FOCUS.." "..SHOW_TARGET_OF_TARGET_TEXT,
-                    desc = string.format(L["TOGGLE_SUPPORT_STRING"], FOCUS.." "..SHOW_TARGET_OF_TARGET_TEXT),
+                    name = L["Focus ToT"],
+                    desc = string.format(L["TOGGLE_SUPPORT_STRING"], L["Focus ToT"]),
                     type = "toggle",
                 },
                 focusCast = {
-                    name = FOCUS.." "..HUD_EDIT_MODE_CAST_BAR_LABEL,
-                    desc = string.format(L["TOGGLE_SUPPORT_STRING"], FOCUS.." "..HUD_EDIT_MODE_CAST_BAR_LABEL),
+                    name = L["Focus Cast Bar"],
+                    desc = string.format(L["TOGGLE_SUPPORT_STRING"], L["Focus Cast Bar"]),
                     type = "toggle",
                 },
                 targetFrame = {

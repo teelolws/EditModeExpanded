@@ -11,7 +11,7 @@ function addon:initRaidFrames()
     hooksecurefunc("CompactRaidFrameManager_Expand", function()
         if InCombatLockdown() then return end
         --CompactRaidFrameManager:ClearPoint("TOPLEFT")
-        lib:RepositionFrame(CompactRaidFrameManager)
+        addon.ResetFrame(CompactRaidFrameManager)
         local db = lib.framesDB[CompactRaidFrameManager.system]
         if db.positionWasSavedWhileCollapsed then
             for i = 1, CompactRaidFrameManager:GetNumPoints() do
@@ -24,7 +24,7 @@ function addon:initRaidFrames()
     hooksecurefunc("CompactRaidFrameManager_Collapse", function()
         if InCombatLockdown() then return end
         --CompactRaidFrameManager:ClearPoint("TOPLEFT")
-        lib:RepositionFrame(CompactRaidFrameManager)
+        addon.ResetFrame(CompactRaidFrameManager)
         local db = lib.framesDB[CompactRaidFrameManager.system]
         if not db.positionWasSavedWhileCollapsed then
             for i = 1, CompactRaidFrameManager:GetNumPoints() do
@@ -64,31 +64,22 @@ function addon:initRaidFrames()
         CompactRaidFrameManager:SetShown(IsInGroup() or IsInRaid())
     end)
     
-    local noInfinite
     hooksecurefunc(CompactRaidFrameManager, "SetShown", function()
-        if noInfinite then return end
         if InCombatLockdown() then return end
         if EditModeManagerFrame.editModeActive then
             CompactRaidFrameManager:Show()
         else
-            noInfinite = true
-            --lib:RepositionFrame(CompactRaidFrameManager)
             if not (IsInGroup() or IsInRaid()) then
                 CompactRaidFrameManager:Hide()
             end
-            noInfinite = false
         end
     end)
     hooksecurefunc(CompactRaidFrameManager, "Show", function()
-        if noInfinite then return end
         if InCombatLockdown() then return end
         if not EditModeManagerFrame.editModeActive then
-            noInfinite = true
-            --lib:RepositionFrame(CompactRaidFrameManager)
             if not (IsInGroup() or IsInRaid()) then
                 CompactRaidFrameManager:Hide()
             end
-            noInfinite = false
         end
     end)
     

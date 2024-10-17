@@ -14,15 +14,11 @@ function addon:initChiBar()
         addon.registerAnchorToDropdown(MonkHarmonyBarFrame)
         hooksecurefunc(PlayerFrameBottomManagedFramesContainer, "Layout", function()
             if not EditModeManagerFrame.editModeActive then
-                lib:RepositionFrame(MonkHarmonyBarFrame)
+                addon.ResetFrame(MonkHarmonyBarFrame)
             end
         end)
-        local noInfinite
-        hooksecurefunc(MonkHarmonyBarFrame, "Show", function()
-            if noInfinite then return end
-            noInfinite = true
-            lib:RepositionFrame(MonkHarmonyBarFrame)
-            noInfinite = false
+        MonkHarmonyBarFrame:HookScript("OnShow", function()
+            addon.ResetFrame(MonkHarmonyBarFrame)
         end)
     end
 end

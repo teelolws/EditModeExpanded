@@ -14,15 +14,11 @@ function addon:initRogueComboPoints()
         addon.registerAnchorToDropdown(RogueComboPointBarFrame)
         hooksecurefunc(PlayerFrameBottomManagedFramesContainer, "Layout", function()
             if not EditModeManagerFrame.editModeActive then
-                lib:RepositionFrame(RogueComboPointBarFrame)
+                addon.ResetFrame(RogueComboPointBarFrame)
             end
         end)
-        local noInfinite
         hooksecurefunc(RogueComboPointBarFrame, "Show", function()
-            if noInfinite then return end
-            noInfinite = true
-            lib:RepositionFrame(RogueComboPointBarFrame)
-            noInfinite = false
+            addon.ResetFrame(RogueComboPointBarFrame)
         end)
     end
 end
@@ -39,16 +35,12 @@ function addon:initDruidComboPoints()
         hooksecurefunc(PlayerFrameBottomManagedFramesContainer, "Layout", function()
             if not DruidComboPointBarFrame:ShouldShowBar() then return end
             if not EditModeManagerFrame.editModeActive then
-                lib:RepositionFrame(DruidComboPointBarFrame)
+                addon.ResetFrame(DruidComboPointBarFrame)
             end
         end)
-        local noInfinite
         hooksecurefunc(DruidComboPointBarFrame, "Show", function()
-            if noInfinite then return end
             if not DruidComboPointBarFrame:ShouldShowBar() then return end
-            noInfinite = true
-            lib:RepositionFrame(DruidComboPointBarFrame)
-            noInfinite = false
+            addon.ResetFrame(DruidComboPointBarFrame)
         end)
     end
 end

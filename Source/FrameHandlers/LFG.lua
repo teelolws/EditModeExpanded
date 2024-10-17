@@ -10,7 +10,7 @@ function addon:initLFG()
         lib:RegisterFrame(QueueStatusButton, L["LFG"], db.QueueStatusButton)
         hooksecurefunc(MicroMenu, "UpdateQueueStatusAnchors", function()
             if InCombatLockdown() then return end
-            lib:RepositionFrame(QueueStatusButton)
+            addon.ResetFrame(QueueStatusButton)
         end)
         hooksecurefunc(MicroMenuContainer, "Layout", function()
             if InCombatLockdown() then return end
@@ -27,7 +27,7 @@ function addon:initLFG()
         addon:registerSecureFrameHideable(QueueStatusButton)
         
         C_Timer.After(1, function()
-            lib:RepositionFrame(QueueStatusButton)
+            addon.ResetFrame(QueueStatusButton)
         end)
     end
 end

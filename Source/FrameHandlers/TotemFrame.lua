@@ -14,6 +14,6 @@ function addon:initTotemFrame()
     lib:RegisterResizable(TotemFrame)
     
     EventRegistry:RegisterFrameEventAndCallbackWithHandle("PLAYER_TOTEM_UPDATE", function()
-        lib:RepositionFrame(TotemFrame)
+        addon.ResetFrame(TotemFrame)
     end)
 end

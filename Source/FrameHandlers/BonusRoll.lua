@@ -11,7 +11,7 @@ function addon:initBonusRoll()
         BonusRollFrame:HookScript("OnShow", function()
             if alreadyInitialized then
                 if BonusRollFrame.system then
-                    lib:RepositionFrame(BonusRollFrame)
+                    addon.ResetFrame(BonusRollFrame)
                 end
                 return
             end

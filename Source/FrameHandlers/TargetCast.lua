@@ -7,13 +7,13 @@ function addon:initTargetCastBar()
     if db.EMEOptions.targetCast then
         lib:RegisterFrame(TargetFrameSpellBar, "Target Cast Bar", db.TargetSpellBar, TargetFrame, "TOPLEFT")
         hooksecurefunc(TargetFrameSpellBar, "AdjustPosition", function(self)
-            lib:RepositionFrame(TargetFrameSpellBar)
+            addon.ResetFrame(TargetFrameSpellBar)
             if EditModeManagerFrame.editModeActive then
                 TargetFrameSpellBar:Show()
             end
         end)
         TargetFrameSpellBar:HookScript("OnShow", function(self)
-            lib:RepositionFrame(TargetFrameSpellBar)
+            addon.ResetFrame(TargetFrameSpellBar)
         end)
         lib:SetDontResize(TargetFrameSpellBar)
         lib:RegisterResizable(TargetFrameSpellBar)

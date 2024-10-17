@@ -14,15 +14,11 @@ function addon:initEssences()
         addon.registerAnchorToDropdown(EssencePlayerFrame)
         hooksecurefunc(PlayerFrameBottomManagedFramesContainer, "Layout", function()
             if not EditModeManagerFrame.editModeActive then
-                lib:RepositionFrame(EssencePlayerFrame)
+                addon.ResetFrame(EssencePlayerFrame)
             end
         end)
-        local noInfinite
-        hooksecurefunc(EssencePlayerFrame, "Show", function()
-            if noInfinite then return end
-            noInfinite = true
-            lib:RepositionFrame(EssencePlayerFrame)
-            noInfinite = false
+        EssencePlayerFrame:HookScript("OnShow", function()
+            addon.ResetFrame(EssencePlayerFrame)
         end)
     end
 end

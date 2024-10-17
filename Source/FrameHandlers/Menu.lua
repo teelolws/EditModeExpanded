@@ -69,7 +69,7 @@ function addon:initMenuBar()
         end)
         
         do
-            local alreadyInit, noInfinite
+            local alreadyInit
             ContainerFrame1:HookScript("OnShow", function()
                 if alreadyInit then return end
                 alreadyInit = true
@@ -82,29 +82,23 @@ function addon:initMenuBar()
                     
                     lib:RegisterFrame(ContainerFrame1, BACKPACK_TOOLTIP, db.ContainerFrame1)
                     hooksecurefunc("UpdateContainerFrameAnchors", function()
-                        if noInfinite then return end
                         if InCombatLockdown() then return end
-                        noInfinite = true
-                        lib:RepositionFrame(ContainerFrame1)
-                        noInfinite = false
+                        addon.ResetFrame(ContainerFrame1)
                     end)
                 end)
             end)
         end
         
         do
-            local alreadyInit, noInfinite
+            local alreadyInit
             ContainerFrameCombinedBags:HookScript("OnShow", function()
                 if alreadyInit then return end
                 alreadyInit = true
                 addon:continueAfterCombatEnds(function()
                     lib:RegisterFrame(ContainerFrameCombinedBags, COMBINED_BAG_TITLE, db.ContainerFrameCombinedBags)
                     hooksecurefunc("UpdateContainerFrameAnchors", function()
-                        if noInfinite then return end
                         if InCombatLockdown() then return end
-                        noInfinite = true
-                        lib:RepositionFrame(ContainerFrameCombinedBags)
-                        noInfinite = false
+                        addon.ResetFrame(ContainerFrameCombinedBags)
                     end)
                 end)
             end)

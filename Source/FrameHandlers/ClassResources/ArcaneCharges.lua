@@ -15,22 +15,18 @@ function addon:initArcaneCharges()
         hooksecurefunc(PlayerFrameBottomManagedFramesContainer, "Layout", function()
             if GetSpecialization() ~= 1 then return end
             if not EditModeManagerFrame.editModeActive then
-                lib:RepositionFrame(MageArcaneChargesFrame)
+                addon.ResetFrame(MageArcaneChargesFrame)
             end
         end)
         hooksecurefunc(MageArcaneChargesFrame, "HandleBarSetup", function()
             if GetSpecialization() ~= 1 then return end
             if not EditModeManagerFrame.editModeActive then
-                lib:RepositionFrame(MageArcaneChargesFrame)
+                addon.ResetFrame(MageArcaneChargesFrame)
             end
         end)
-        local noInfinite
-        hooksecurefunc(MageArcaneChargesFrame, "Show", function()
+        MageArcaneChargesFrame:HookScript("OnShow", function()
             if GetSpecialization() ~= 1 then return end
-            if noInfinite then return end
-            noInfinite = true
-            lib:RepositionFrame(MageArcaneChargesFrame)
-            noInfinite = false
+            addon.ResetFrame(MageArcaneChargesFrame)
         end)
     end
 end

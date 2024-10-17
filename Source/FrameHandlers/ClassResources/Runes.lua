@@ -14,15 +14,11 @@ function addon:initRunes()
     addon.registerAnchorToDropdown(RuneFrame)
     hooksecurefunc(PlayerFrameBottomManagedFramesContainer, "Layout", function()
         if not EditModeManagerFrame.editModeActive then
-            lib:RepositionFrame(RuneFrame)
+            addon.ResetFrame(RuneFrame)
         end
     end)
-    local noInfinite
-    hooksecurefunc(RuneFrame, "Show", function()
-        if noInfinite then return end
-        noInfinite = true
-        lib:RepositionFrame(RuneFrame)
-        noInfinite = false
+    RuneFrame:HookScript("OnShow", function()
+        addon.ResetFrame(RuneFrame)
     end)
     lib:RegisterCustomCheckbox(RuneFrame, "Unlink from Player Frame (may require reload)", 
         --onChecked

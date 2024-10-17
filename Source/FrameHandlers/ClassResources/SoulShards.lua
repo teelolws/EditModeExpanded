@@ -14,15 +14,11 @@ function addon:initSoulShards()
         addon.registerAnchorToDropdown(WarlockPowerFrame)
         hooksecurefunc(PlayerFrameBottomManagedFramesContainer, "Layout", function()
             if not EditModeManagerFrame.editModeActive then
-                lib:RepositionFrame(WarlockPowerFrame)
+                addon.ResetFrame(WarlockPowerFrame)
             end
         end)
-        local noInfinite
         hooksecurefunc(WarlockPowerFrame, "Show", function()
-            if noInfinite then return end
-            noInfinite = true
-            lib:RepositionFrame(WarlockPowerFrame)
-            noInfinite = false
+            addon.ResetFrame(WarlockPowerFrame)
         end)
     end
 end

@@ -12,10 +12,10 @@ function addon:initFocusCastBar()
             if EditModeManagerFrame.editModeActive then
                 FocusFrameSpellBar:Show()
             end
-            lib:RepositionFrame(FocusFrameSpellBar)
+            addon.ResetFrame(FocusFrameSpellBar)
         end)
         FocusFrameSpellBar:HookScript("OnShow", function(self)
-            lib:RepositionFrame(FocusFrameSpellBar)
+            addon.ResetFrame(FocusFrameSpellBar)
         end)
         lib:SetDontResize(FocusFrameSpellBar)
         lib:RegisterResizable(FocusFrameSpellBar)

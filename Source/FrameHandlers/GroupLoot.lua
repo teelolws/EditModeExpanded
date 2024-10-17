@@ -12,24 +12,20 @@ function addon:initGroupLoot()
         addon:continueAfterCombatEnds(function()
             if alreadyInitialized then
                 if GroupLootContainer.system then
-                    lib:RepositionFrame(GroupLootContainer)
+                    addon.ResetFrame(GroupLootContainer)
                 end
                 return
             end
             alreadyInitialized = true
             lib:RegisterFrame(GroupLootContainer, L["Group Loot Container"], db.GroupLootContainer)
-            local noInfinite
             hooksecurefunc(GroupLootContainer, "SetPoint", function()
-                if noInfinite then return end
-                noInfinite = true
-                lib:RepositionFrame(GroupLootContainer)
-                noFinite = nil
+                addon.ResetFrame(GroupLootContainer)
             end)
             hooksecurefunc("GroupLootContainer_Update", function()
-                lib:RepositionFrame(GroupLootContainer)
+                addon.ResetFrame(GroupLootContainer)
             end)
             hooksecurefunc(UIParentBottomManagedFrameContainer, "Layout", function()
-                lib:RepositionFrame(GroupLootContainer)
+                addon.ResetFrame(GroupLootContainer)
             end)
         end)
     end)

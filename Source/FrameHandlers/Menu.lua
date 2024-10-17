@@ -68,40 +68,30 @@ function addon:initMenuBar()
             end
         end)
         
-        do
-            local alreadyInit
-            ContainerFrame1:HookScript("OnShow", function()
-                if alreadyInit then return end
-                alreadyInit = true
-                addon:continueAfterCombatEnds(function()
-                    
-                    -- workaround for bug introduced in 10.2.5
-                    -- not sure why its happening, something to do with layout-local.txt
-                    -- but trying SetUserPlaced causes an error
-                    ContainerFrame1.Bg:SetFrameLevel(0)
-                    
-                    lib:RegisterFrame(ContainerFrame1, BACKPACK_TOOLTIP, db.ContainerFrame1)
-                    hooksecurefunc("UpdateContainerFrameAnchors", function()
-                        if InCombatLockdown() then return end
-                        addon.ResetFrame(ContainerFrame1)
-                    end)
+        addon.hookScriptOnce(ContainerFrame1, "OnShow", function()
+            addon:continueAfterCombatEnds(function()
+                
+                -- workaround for bug introduced in 10.2.5
+                -- not sure why its happening, something to do with layout-local.txt
+                -- but trying SetUserPlaced causes an error
+                ContainerFrame1.Bg:SetFrameLevel(0)
+                
+                lib:RegisterFrame(ContainerFrame1, BACKPACK_TOOLTIP, db.ContainerFrame1)
+                hooksecurefunc("UpdateContainerFrameAnchors", function()
+                    if InCombatLockdown() then return end
+                    addon.ResetFrame(ContainerFrame1)
                 end)
             end)
-        end
+        end)
         
-        do
-            local alreadyInit
-            ContainerFrameCombinedBags:HookScript("OnShow", function()
-                if alreadyInit then return end
-                alreadyInit = true
-                addon:continueAfterCombatEnds(function()
-                    lib:RegisterFrame(ContainerFrameCombinedBags, COMBINED_BAG_TITLE, db.ContainerFrameCombinedBags)
-                    hooksecurefunc("UpdateContainerFrameAnchors", function()
-                        if InCombatLockdown() then return end
-                        addon.ResetFrame(ContainerFrameCombinedBags)
-                    end)
+        addon.hookScriptOnce(ContainerFrameCombinedBags, "OnShow", function()
+            addon:continueAfterCombatEnds(function()
+                lib:RegisterFrame(ContainerFrameCombinedBags, COMBINED_BAG_TITLE, db.ContainerFrameCombinedBags)
+                hooksecurefunc("UpdateContainerFrameAnchors", function()
+                    if InCombatLockdown() then return end
+                    addon.ResetFrame(ContainerFrameCombinedBags)
                 end)
             end)
-        end
+        end)
     end
 end

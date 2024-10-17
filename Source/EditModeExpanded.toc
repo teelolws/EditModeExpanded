@@ -60,6 +60,7 @@ FrameHandlers\ClassResources\SoulShards.lua
 
 Options.lua
 ResetFrame.lua
+HookOnce.lua
 AnchorToDropdown.lua
 MicroMenu.lua
 RegisteredSystemFrames.lua

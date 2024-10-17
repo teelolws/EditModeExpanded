@@ -122,15 +122,12 @@ EventUtil.ContinueOnAddOnLoaded("Blizzard_AuctionHouseUI", function()
     local db = addon.db.global
     
     if db.EMEOptions.auctionMultisell then
-        local alreadyInitialized
-        AuctionHouseMultisellProgressFrame:HookScript("OnShow", function()
-            if alreadyInitialized then
-                addon.ResetFrame(AuctionHouseMultisellProgressFrame)
-                return
-            end
-            alreadyInitialized = true
+        addon.hookScriptOnce(AuctionHouseMultisellProgressFrame, "OnShow", function()
             lib:RegisterFrame(AuctionHouseMultisellProgressFrame, L["Auction Multisell"], db.AuctionHouseMultisellProgressFrame)
             hooksecurefunc(UIParentBottomManagedFrameContainer, "Layout", function()
+                addon.ResetFrame(AuctionHouseMultisellProgressFrame)
+            end)
+            AuctionHouseMultisellProgressFrame:HookScript("OnShow", function()
                 addon.ResetFrame(AuctionHouseMultisellProgressFrame)
             end)
         end)

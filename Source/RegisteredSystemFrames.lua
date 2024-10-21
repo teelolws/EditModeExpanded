@@ -77,6 +77,17 @@ function addon:registerSecureFrameHideable(frame)
         end
     end)
     
+    -- The position of some frames reset to default when spec is changed
+    -- Lets reset it back to the saved spot so we can shove it back off screen again
+    EventRegistry:RegisterFrameEventAndCallbackWithHandle("PLAYER_TALENT_UPDATE", function()
+        RunNextFrame(function()
+            if hidden then
+                show()
+                hide()
+            end
+        end)
+    end)
+    
     local onResetFunctionHide = lib:RegisterCustomCheckbox(frame, HIDE,
         function()
             hidden = true

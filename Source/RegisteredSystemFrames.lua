@@ -166,3 +166,17 @@ function addon:registerSecureFrameHideable(frame)
             return ( hidden and (not toggleInCombat) ) or ( hidden and toggleInCombat and (not InCombatLockdown()) ) or ( (not hidden) and toggleInCombat and InCombatLockdown() )
         end
 end
+
+-- Reparents the class resource to UIParent so player can move it independently of the player frame, and can hide the player frame without hiding the runes
+function addon.unlinkClassResourceFrame(frame)
+    lib:RegisterCustomCheckbox(frame, L["UNLINK_CLASS_RESOURCE_DESCRIPTION"], 
+        --onChecked
+        function()
+            frame:SetParent(UIParent)
+        end,
+        --onUnchecked
+        function()
+            frame:SetParent(PlayerFrameBottomManagedFramesContainer)
+        end
+    )
+end

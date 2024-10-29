@@ -20,14 +20,5 @@ function addon:initRunes()
     RuneFrame:HookScript("OnShow", function()
         addon.ResetFrame(RuneFrame)
     end)
-    lib:RegisterCustomCheckbox(RuneFrame, "Unlink from Player Frame (may require reload)", 
-        --onChecked
-        function()
-            RuneFrame:SetParent(UIParent)
-        end,
-        --onUnchecked
-        function()
-            RuneFrame:SetParent(PlayerFrameBottomManagedFramesContainer)
-        end
-    )
+    addon.unlinkClassResourceFrame(RuneFrame)
 end

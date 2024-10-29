@@ -9,18 +9,23 @@ function addon:initPlayerFrame()
         lib:RegisterHideable(PlayerFrame, PlayerFrame_OnEvent)
         lib:RegisterToggleInCombat(PlayerFrame)
         C_Timer.After(4, function()
-            if lib:IsFrameMarkedHidden(PlayerFrame) then
-                PlayerFrame:Hide()
-                PlayerFrame:SetScript("OnEvent", nil)
-            end
-            
-            -- From UIParent.lua
-            hooksecurefunc("UpdateUIElementsForClientScene", function(sceneType)
-                if sceneType == Enum.ClientSceneType.MinigameSceneType then return end
+            addon:continueAfterCombatEnds(function()
                 if lib:IsFrameMarkedHidden(PlayerFrame) then
+                    if InCombatLockdown() then return end
                     PlayerFrame:Hide()
                     PlayerFrame:SetScript("OnEvent", nil)
                 end
+            end)
+            
+            -- From UIParent.lua
+            hooksecurefunc("UpdateUIElementsForClientScene", function(sceneType)
+                addon:continueAfterCombatEnds(function()
+                    if sceneType == Enum.ClientSceneType.MinigameSceneType then return end
+                    if lib:IsFrameMarkedHidden(PlayerFrame) then
+                        PlayerFrame:Hide()
+                        PlayerFrame:SetScript("OnEvent", nil)
+                    end
+                end)
             end)
         end)
         

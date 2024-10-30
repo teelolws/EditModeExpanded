@@ -167,12 +167,17 @@ function addon:registerSecureFrameHideable(frame)
         end
 end
 
--- Reparents the class resource to UIParent so player can move it independently of the player frame, and can hide the player frame without hiding the runes
+-- Reparents the class resource to UIParent so player can move it independently of the player frame, and can hide the player frame without hiding the class resource
+
+-- See ClassPowerBar.lua\ClassPowerBar:GetUnit() for why I do this parentparent nonsense:
+local parentparent = CreateFrame("Frame", nil, UIParent)
+local parent = CreateFrame("Frame", nil, parentparent)
+
 function addon.unlinkClassResourceFrame(frame)
     lib:RegisterCustomCheckbox(frame, L["UNLINK_CLASS_RESOURCE_DESCRIPTION"], 
         --onChecked
         function()
-            frame:SetParent(UIParent)
+            frame:SetParent(parent)
         end,
         --onUnchecked
         function()

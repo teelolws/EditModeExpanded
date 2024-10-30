@@ -8,15 +8,6 @@ function addon:initSystemFrames()
         
     for _, frame in ipairs(EditModeManagerFrame.registeredSystemFrames) do
         local name = frame:GetName()
-        
-        -- Backward compatibility: frame name was changed from MicroMenu to MicroMenuContainer in 10.1
-        if name == "MicroMenuContainer" then
-            if db["MicroMenu"] and (not db[name]) then
-                db[name] = db["MicroMenu"]
-                db["MicroMenu"] = nil
-            end
-        end
-        
         if not db[name] then db[name] = {} end
         lib:RegisterFrame(frame, "", db[name])
     end

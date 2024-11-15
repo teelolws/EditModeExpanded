@@ -22,5 +22,6 @@ function addon:initHolyPower()
     PaladinPowerBarFrame:HookScript("OnShow", function()
         addon.ResetFrame(PaladinPowerBarFrame)
     end)
+    lib:RegisterResizable(PaladinPowerBarFrame)
     addon.unlinkClassResourceFrame(PaladinPowerBarFrame)
 end

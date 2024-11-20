@@ -167,13 +167,16 @@ local parentparent = CreateFrame("Frame", nil, UIParent)
 local parent = CreateFrame("Frame", nil, parentparent)
 
 function addon.unlinkClassResourceFrame(frame)
+    local wasChecked
     lib:RegisterCustomCheckbox(frame, L["UNLINK_CLASS_RESOURCE_DESCRIPTION"], 
         --onChecked
         function()
             frame:SetParent(parent)
+            wasChecked = true
         end,
         --onUnchecked
         function()
+            if not wasChecked then return end
             frame:SetParent(PlayerFrameBottomManagedFramesContainer)
         end
     )

@@ -2,7 +2,7 @@
 -- Internal variables
 --
 
-local MAJOR, MINOR = "EditModeExpanded-1.0", 86
+local MAJOR, MINOR = "EditModeExpanded-1.0", 87
 local lib = LibStub:NewLibrary(MAJOR, MINOR)
 if not lib then return end
 
@@ -484,7 +484,6 @@ function lib:RepositionFrame(frame)
                 frame:Show()
             else
                 -- should not get to here
-                -- print("error 37")
             end
         else
             if db.settings[ENUM_EDITMODEACTIONBARSETTING_HIDEABLE] == 1 then
@@ -684,6 +683,8 @@ function lib:RegisterCustomCheckbox(frame, name, onChecked, onUnchecked, interna
     else
         table.insert(customCheckboxCallDuringProfileInit, callLater)
     end
+
+    EventRegistry:RegisterFrameEventAndCallback("EDIT_MODE_LAYOUTS_UPDATED", callLater)
     
     return function()
         local db = framesDB[systemID]
@@ -1434,7 +1435,7 @@ function refreshCurrentProfile()
                 if framesDialogsKeys[systemID] and framesDialogsKeys[systemID][ENUM_EDITMODEACTIONBARSETTING_FRAMESIZE] and db.settings and db.settings[ENUM_EDITMODEACTIONBARSETTING_FRAMESIZE] then
                     frame:SetScaleOverride(db.settings[ENUM_EDITMODEACTIONBARSETTING_FRAMESIZE]/100)
                 end
-
+                
                 if not frame.EMESystemID then
                     
                     -- update position
@@ -1501,6 +1502,7 @@ do
             profilesInitialised = true
             refreshCurrentProfile()
             initialLayout = nop
+            EventRegistry:RegisterFrameEventAndCallback("EDIT_MODE_LAYOUTS_UPDATED", refreshCurrentProfile)
         end
     end
     initialLayout()
@@ -1508,6 +1510,7 @@ do
     hooksecurefunc(f, "OnLoad", function()
         initialLayout()
         EventUtil.RegisterOnceFrameEventAndCallback("EDIT_MODE_LAYOUTS_UPDATED", initialLayout)
+        RunNextFrame(initialLayout)
     end)
 end
 

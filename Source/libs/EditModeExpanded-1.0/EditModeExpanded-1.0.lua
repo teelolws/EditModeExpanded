@@ -1502,10 +1502,9 @@ do
             profilesInitialised = true
             refreshCurrentProfile()
             initialLayout = nop
-            EventRegistry:RegisterFrameEventAndCallback("EDIT_MODE_LAYOUTS_UPDATED", refreshCurrentProfile)
+            RunNextFrame(function() EventRegistry:RegisterFrameEventAndCallback("EDIT_MODE_LAYOUTS_UPDATED", refreshCurrentProfile) end)
         end
     end
-    initialLayout()
     
     hooksecurefunc(f, "OnLoad", function()
         initialLayout()

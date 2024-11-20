@@ -6,7 +6,7 @@ local lib = LibStub:GetLibrary("EditModeExpanded-1.0")
 function addon:initPlayerFrame()
     local db = addon.db.global
     if db.EMEOptions.playerFrame then
-        lib:RegisterHideable(PlayerFrame, PlayerFrame_OnEvent)
+        addon:registerSecureFrameHideable(PlayerFrame)
         lib:RegisterToggleInCombat(PlayerFrame)
         C_Timer.After(4, function()
             addon:continueAfterCombatEnds(function()

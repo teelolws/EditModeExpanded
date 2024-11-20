@@ -82,12 +82,14 @@ function addon:registerSecureFrameHideable(frame)
     local onResetFunctionHide = lib:RegisterCustomCheckbox(frame, HIDE,
         function()
             hidden = true
+            if InCombatLockdown() then return end
             if not EditModeManagerFrame.editModeActive then
                 hide()
             end
         end,
         function()
             hidden = false
+            if InCombatLockdown() then return end
             show()
         end,
         "HidePermanently")

@@ -2,7 +2,7 @@
 -- Internal variables
 --
 
-local MAJOR, MINOR = "EditModeExpanded-1.0", 88
+local MAJOR, MINOR = "EditModeExpanded-1.0", 89
 local lib = LibStub:NewLibrary(MAJOR, MINOR)
 if not lib then return end
 
@@ -527,7 +527,11 @@ end
 
 -- Call this to add a slider to the frames dialog box, allowing is to be resized using frame:SetScale
 -- param1: an edit mode registered frame, either one already registered by Blizz, or a custom one you have registered with lib:RegisterFrame
-function lib:RegisterResizable(frame)
+-- param2: minimum size, default will be 10
+-- param3: maximum size, default will be 200
+function lib:RegisterResizable(frame, minSize, maxSize)
+    minSize = minSize or 10
+    maxSize = maxSize or 200
     local systemID = getSystemID(frame)
     
     if not framesDialogs[systemID] then framesDialogs[systemID] = {} end
@@ -539,8 +543,8 @@ function lib:RegisterResizable(frame)
             setting = ENUM_EDITMODEACTIONBARSETTING_FRAMESIZE,
             name = HUD_EDIT_MODE_SETTING_UNIT_FRAME_FRAME_SIZE,
             type = Enum.EditModeSettingDisplayType.Slider,
-            minValue = 10,
-            maxValue = 200,
+            minValue = minSize,
+            maxValue = maxSize,
             stepSize = 5,
         })
     

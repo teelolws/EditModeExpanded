@@ -16,7 +16,7 @@ function addon:initTargetCastBar()
             addon.ResetFrame(TargetFrameSpellBar)
         end)
         lib:SetDontResize(TargetFrameSpellBar)
-        lib:RegisterResizable(TargetFrameSpellBar)
+        lib:RegisterResizable(TargetFrameSpellBar, 10, 500)
         lib:RegisterHideable(TargetFrameSpellBar)
         addon.registerAnchorToDropdown(TargetFrameSpellBar)            
     end

@@ -39,6 +39,7 @@ EventUtil.RegisterOnceFrameEventAndCallback("PLAYER_ENTERING_WORLD", function()
     addon:initGameMenu()
     addon:initTooltip()
     addon:initLossOfControl()
+    addon:initPet()
         
     local class = UnitClassBase("player")
         

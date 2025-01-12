@@ -52,6 +52,7 @@ local defaults = {
             gameMenu = true,
             gameTooltip = true,
             lossOfControl = true,
+            pet = true,
         },
         QueueStatusButton = {},
         TotemFrame = {},
@@ -99,6 +100,7 @@ local defaults = {
         TargetBuffs = {},
         GameMenuFrame = {},
         LOC = {},
+        PetFrame = {},
     }
 }
 
@@ -345,6 +347,11 @@ local options = {
         lossOfControl = {
             name = LOSS_OF_CONTROL,
             desc = string.format(L["TOGGLE_ADDITIONAL_OPTIONS_SUPPORT_STRING"], LOSS_OF_CONTROL),
+            type = "toggle",
+        },
+        pet = {
+            name = PET,
+            desc = string.format(L["TOGGLE_ADDITIONAL_OPTIONS_SUPPORT_STRING"], PET),
             type = "toggle",
         },
     },

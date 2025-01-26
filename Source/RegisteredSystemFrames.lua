@@ -26,7 +26,7 @@ local function getToggleInCombatText(hidden)
 end
     
 local actionbars = {[MainMenuBar]=true, [MultiBarBottomLeft]=true, [MultiBarBottomRight]=true, [MultiBarRight]=true, [MultiBarLeft]=true, [MultiBar5]=true, [MultiBar6]=true, [MultiBar7]=true}
-function addon:registerSecureFrameHideable(frame, usePoint)
+function addon:registerSecureFrameHideable(frame, usePoint, onHide, onShow)
     local hidden, toggleInCombat, x, y, point, parent, relativePoint
     local override
     
@@ -41,6 +41,10 @@ function addon:registerSecureFrameHideable(frame, usePoint)
         frame:ClearAllPoints()
         frame:SetClampedToScreen(false)
         frame:SetPoint("TOPRIGHT", UIParent, "BOTTOMLEFT", -1000, -1000)
+        
+        if onHide then
+            onHide()
+        end
     end
     
     local function show()
@@ -55,6 +59,10 @@ function addon:registerSecureFrameHideable(frame, usePoint)
         end
         
         x, y = nil, nil
+        
+        if onShow then
+            onShow()
+        end
     end
     
     EventRegistry:RegisterFrameEventAndCallbackWithHandle("PLAYER_REGEN_ENABLED", function()

@@ -14,14 +14,12 @@ function addon:initTooltip()
                 end
             end,
             function()
-                local _, relativeTo = GameTooltip:GetPoint(1)
-                if relativeTo == GameTooltipDefaultContainer then
-                    GameTooltip:SetClampedToScreen(true)
-                end
+                GameTooltip:SetClampedToScreen(true)
             end)
         
         hooksecurefunc(GameTooltip, "SetPoint", function(self, point, relativeTo, relativePoint)
-            if isHidden() then
+            local _, relativeTo = GameTooltip:GetPoint(1)
+            if isHidden() and (relativeTo == GameTooltipDefaultContainer) then
                 self:SetClampedToScreen(false)
                 self:ClearAllPoints()
             end
@@ -29,7 +27,7 @@ function addon:initTooltip()
         
         hooksecurefunc(GameTooltip, "SetOwner", function(self, anchorTo, anchorPoint)
             if isHidden() then
-                if anchorTo ~= UIParent then
+                if anchorTo ~= GameTooltipDefaultContainer then
                     self:SetClampedToScreen(true)
                 end
             end

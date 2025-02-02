@@ -71,11 +71,14 @@ function addon:registerSecureFrameHideable(frame, usePoint, onHide, onShow)
             if hidden then hide() end
         end
         
-        if not toggleInCombat then return end
-        if hidden then
+        if toggleInCombat then
+            if hidden then
+                hide()
+            else
+                show()
+            end
+        elseif hidden then
             hide()
-        else
-            show()
         end
     end)
     EventRegistry:RegisterFrameEventAndCallbackWithHandle("PLAYER_REGEN_DISABLED", function()

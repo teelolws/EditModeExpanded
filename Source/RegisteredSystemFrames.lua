@@ -94,6 +94,7 @@ function addon:registerSecureFrameHideable(frame, usePoint, onHide, onShow)
     -- Lets reset it back to the saved spot so we can shove it back off screen again
     EventRegistry:RegisterFrameEventAndCallbackWithHandle("PLAYER_TALENT_UPDATE", function()
         RunNextFrame(function()
+            if InCombatLockdown() then return end
             if hidden then
                 show()
                 hide()

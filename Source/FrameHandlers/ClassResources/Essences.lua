@@ -21,4 +21,12 @@ function addon:initEssences()
         addon.ResetFrame(EssencePlayerFrame)
     end)
     addon.unlinkClassResourceFrame(EssencePlayerFrame)
+    
+    -- check Blizzard_UnitFrame\EssenceFramePlayer.xml for spacing defaults to -1
+    local currentSpacing = -1
+    lib:RegisterSlider(EssencePlayerFrame, "Spacing", "Spacing", function(value)
+            if value == currentSpacing then return end
+            EssencePlayerFrame.spacing = value
+            EssencePlayerFrame:Layout()
+        end, -10, 20, 1)
 end

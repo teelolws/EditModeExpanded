@@ -2,7 +2,7 @@
 -- Internal variables
 --
 
-local MAJOR, MINOR = "EditModeExpanded-1.0", 89
+local MAJOR, MINOR = "EditModeExpanded-1.0", 90
 local lib = LibStub:NewLibrary(MAJOR, MINOR)
 if not lib then return end
 
@@ -55,7 +55,10 @@ local function Mixin(object, ...)
         local mixin = select(i, ...);
         for k, v in pairs(mixin) do
             if not object[k] then
-                object[k] = v;
+                -- 11.1: bugfix - need to not include AddSnappedFrame as this spreads taint and causes errors
+                if k ~= "AddSnappedFrame" then
+                    object[k] = v;
+                end
             end
         end
     end

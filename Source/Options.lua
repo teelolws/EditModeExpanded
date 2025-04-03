@@ -53,6 +53,7 @@ local defaults = {
             gameTooltip = true,
             lossOfControl = true,
             pet = true,
+            extraActionButton = true,
         },
         QueueStatusButton = {},
         TotemFrame = {},
@@ -101,6 +102,7 @@ local defaults = {
         GameMenuFrame = {},
         LOC = {},
         PetFrame = {},
+        ExtraActionButton = {},
     }
 }
 
@@ -352,6 +354,11 @@ local options = {
         pet = {
             name = PET,
             desc = string.format(L["TOGGLE_ADDITIONAL_OPTIONS_SUPPORT_STRING"], PET),
+            type = "toggle",
+        },
+        extraActionButton = {
+            name = BINDING_NAME_EXTRAACTIONBUTTON1,
+            desc = string.format(L["TOGGLE_ADDITIONAL_OPTIONS_SUPPORT_STRING"], BINDING_NAME_EXTRAACTIONBUTTON1),
             type = "toggle",
         },
     },

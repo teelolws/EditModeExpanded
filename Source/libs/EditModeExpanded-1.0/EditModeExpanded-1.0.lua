@@ -2,7 +2,7 @@
 -- Internal variables
 --
 
-local MAJOR, MINOR = "EditModeExpanded-1.0", 90
+local MAJOR, MINOR = "EditModeExpanded-1.0", 91
 local lib = LibStub:NewLibrary(MAJOR, MINOR)
 if not lib then return end
 
@@ -119,7 +119,9 @@ function lib:RegisterFrame(frame, name, db, anchorTo, anchorPoint, clamped)
     assert(type(db) == "table")
     
     if frame:IsUserPlaced() then
-        frame:SetUserPlaced(false)
+        if frame:IsMovable() or frame:IsResizable() then
+            frame:SetUserPlaced(false)
+        end
     end
     
     if not anchorTo then anchorTo = UIParent end

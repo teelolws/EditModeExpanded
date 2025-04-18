@@ -22,4 +22,6 @@ function addon:initFocusFrame()
         end,
         "HideName"
     )
+    
+    lib:RegisterResizable(FocusFrame)
 end

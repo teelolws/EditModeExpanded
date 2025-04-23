@@ -54,6 +54,7 @@ local defaults = {
             lossOfControl = true,
             pet = true,
             extraActionButton = true,
+            cooldownManager = true,
         },
         QueueStatusButton = {},
         TotemFrame = {},
@@ -103,6 +104,10 @@ local defaults = {
         LOC = {},
         PetFrame = {},
         ExtraActionButton = {},
+        EssentialCooldownViewer = {},
+        UtilityCooldownViewer = {},
+        BuffIconCooldownViewer = {},
+        BuffBarCooldownViewer = {},
     }
 }
 
@@ -359,6 +364,11 @@ local options = {
         extraActionButton = {
             name = BINDING_NAME_EXTRAACTIONBUTTON1,
             desc = string.format(L["TOGGLE_ADDITIONAL_OPTIONS_SUPPORT_STRING"], BINDING_NAME_EXTRAACTIONBUTTON1),
+            type = "toggle",
+        },
+        cooldownManager = {
+            name = "Cooldown Manager",
+            desc = "Cooldown Manager options",
             type = "toggle",
         },
     },

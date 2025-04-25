@@ -327,8 +327,8 @@ function addon:initCooldownManager()
     local db = addon.db.global
     if db.EMEOptions.cooldownManager then
         initFrame(EssentialCooldownViewer)
-        --initFrame(UtilityCooldownViewer)
-        --initFrame(BuffIconCooldownViewer)
-        --initFrame(BuffBarCooldownViewer)
+        initFrame(UtilityCooldownViewer)
+        initFrame(BuffIconCooldownViewer)
+        initFrame(BuffBarCooldownViewer)
     end
 end

@@ -7,7 +7,10 @@ local L = LibStub("AceLocale-3.0"):GetLocale(addonName)
 
 local defaults = {
     char = {
-        customCooldownSpellIDs = {},
+        EssentialCooldownViewerSpellIDs = {},
+        UtilityCooldownViewerSpellIDs = {},
+        BuffIconCooldownViewerSpellIDs = {},
+        BuffBarCooldownViewerSpellIDs = {},
     },
     global = {
         EMEOptions = {
@@ -124,38 +127,6 @@ local options = {
             type = "description",
             fontSize = "medium",
             order = 0,
-        },
-        cooldownManagerGroup = {
-            name = HUD_EDIT_MODE_COOLDOWN_VIEWER_LABEL,
-            type = "group",
-            args = {
-                customSpellIDs = {
-                    name = "Custom Spell IDs",
-                    desc = "Enter the Spell IDs of spells you want to add to the Cooldown Manager, separated by spaces or new lines.",
-                    type = "input",
-                    multiline = true,
-                    width = "full",
-                    validate = function(info, value)
-                        return not value:find("[^%d%s]")
-                    end,
-                    get = function()
-                        local spellIDs = addon.db.char.customCooldownSpellIDs
-                        local output = ""
-                        
-                        for _, spellID in ipairs(spellIDs) do
-                            output = output .. spellID .. "\n"
-                        end
-                        
-                        return output
-                    end,
-                    set = function(info, value)
-                        wipe(addon.db.char.customCooldownSpellIDs)
-                        for str in string.gmatch(value, "([^%s]+)") do
-                            table.insert(addon.db.char.customCooldownSpellIDs, tonumber(str))
-                        end
-                    end,
-                },
-            },
         },
         classResourceGroup = {
             name = L["Class Resources"],

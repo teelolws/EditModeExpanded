@@ -388,6 +388,14 @@ local function initFrame(frame, db, includeTrinkets)
         self:RefreshData()
     end)
     
+    frame:HookScript("OnEvent", function(self, event)
+        if event == TRAIT_CONFIG_UPDATED then
+            C_Timer.After(3, function()
+                self:RefreshLayout()
+            end)
+        end
+    end)
+    
     frame:RefreshLayout()
     
     lib:RegisterResizable(frame, nil, nil, 1)

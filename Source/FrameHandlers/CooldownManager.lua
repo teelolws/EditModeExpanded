@@ -364,6 +364,8 @@ local function initFrame(frame, db, includeTrinkets)
     end)
     
     frame:RefreshLayout()
+    
+    lib:RegisterResizable(frame, nil, nil, 1)
 end
 
 function addon:initCooldownManager()

@@ -4,6 +4,10 @@ local L = LibStub("AceLocale-3.0"):GetLocale(addonName)
 local lib = LibStub:GetLibrary("EditModeExpanded-1.0")
 local libDD = LibStub:GetLibrary("LibUIDropDownMenu-4.0")
 
+local function getCurrentLoadoutID()
+    return C_ClassTalents.GetLastSelectedSavedConfigID(PlayerUtil.GetCurrentSpecID()) or PlayerUtil.GetCurrentSpecID() or 0
+end
+
 local settingFrame = CreateFrame("Frame", "EMESettingFrame", UIParent, "VerticalLayoutFrame")
 settingFrame:SetPoint("CENTER", 0, -200)
 settingFrame.Border = CreateFrame("Frame", nil, settingFrame, "DialogBorderTranslucentTemplate")
@@ -258,15 +262,15 @@ local function hookRefreshSpellTexture(self)
     	    spellTexture = GetInventoryItemTexture("player", invSlotId)
         else
             spellTexture = C_Spell.GetSpellTexture(self.cooldownID * -1)
-        end
-        
-        self:GetIconTexture():SetTexture(spellTexture);
+        end        
+        self:GetIconTexture():SetTexture(spellTexture)
     end)
+    self:RefreshSpellTexture()
     
     refreshSpellTextureHooks[self] = true
 end
 
-local function integrityCheck(self, db)
+local function integrityCheck(self, db, includeTrinkets)
     local cooldownIDs = self:GetCooldownIDs()
     -- integrity check: if any cooldown IDs are missing from the local database, add them to the end
     for _, cooldownID in pairs(cooldownIDs) do
@@ -282,19 +286,21 @@ local function integrityCheck(self, db)
     end
     
     -- integrity check: add trinkets if they're missing, at slots -2 and -1
-    local found1, found2
-    for _, cooldownID in pairs(db) do
-        if cooldownID == -2 then
-            found2 = true
-        elseif cooldownID == -1 then
-            found1 = true
+    if includeTrinkets then
+        local found1, found2
+        for _, cooldownID in pairs(db) do
+            if cooldownID == -2 then
+                found2 = true
+            elseif cooldownID == -1 then
+                found1 = true
+            end
         end
-    end
-    if not found2 then
-        table.insert(db, -2)
-    end
-    if not found1 then
-        table.insert(db, -1)
+        if not found2 then
+            table.insert(db, -2)
+        end
+        if not found1 then
+            table.insert(db, -1)
+        end
     end
     
     -- integrity check: remove any duplicates
@@ -302,7 +308,6 @@ local function integrityCheck(self, db)
         for i2, cid2 in pairs(db) do
             if i1 ~= i2 then
                 if cooldownID == cid2 then
-                    print(4)
                     table.remove(db, i2)
                     break
                 end
@@ -311,7 +316,9 @@ local function integrityCheck(self, db)
     end
 end
 
-local function initFrame(frame, db)
+local function initFrame(frame, db, includeTrinkets)
+    db = db[getCurrentLoadoutID()]
+    
     lib:RegisterCustomButton(frame, "Rearrange Buttons", function()
         settingFrame:SetShown(not settingFrame:IsShown())
         settingFrame.viewer = frame
@@ -320,11 +327,12 @@ local function initFrame(frame, db)
     end)
     
     hooksecurefunc(frame, "RefreshData", function(self)
-        integrityCheck(self, db)
+        integrityCheck(self, db, includeTrinkets)
         
         local cooldownIDs = db
 
     	for itemFrame in self.itemFramePool:EnumerateActive() do
+            
     		local cooldownID = cooldownIDs and cooldownIDs[itemFrame.layoutIndex];
     		if cooldownID then
     			itemFrame:SetCooldownID(cooldownID);
@@ -333,7 +341,7 @@ local function initFrame(frame, db)
                     hookCacheCooldownValues(itemFrame)
                 end
     		else
-    			itemFrame:ClearCooldownID();
+                itemFrame:ClearCooldownID();
     		end
     	end
 
@@ -342,7 +350,7 @@ local function initFrame(frame, db)
     end)
     
     hooksecurefunc(frame, "RefreshLayout", function(self)
-    	integrityCheck(self, db)
+    	integrityCheck(self, db, includeTrinkets)
         
         self.itemFramePool:ReleaseAll();
         
@@ -361,8 +369,8 @@ end
 function addon:initCooldownManager()
     local db = addon.db.global
     if db.EMEOptions.cooldownManager then
-        initFrame(EssentialCooldownViewer, addon.db.char.EssentialCooldownViewerSpellIDs)
-        initFrame(UtilityCooldownViewer, addon.db.char.UtilityCooldownViewerSpellIDs)
+        initFrame(EssentialCooldownViewer, addon.db.char.EssentialCooldownViewerSpellIDs, true)
+        initFrame(UtilityCooldownViewer, addon.db.char.UtilityCooldownViewerSpellIDs, true)
         initFrame(BuffIconCooldownViewer, addon.db.char.BuffIconCooldownViewerSpellIDs)
         initFrame(BuffBarCooldownViewer, addon.db.char.BuffBarCooldownViewerSpellIDs)
     end

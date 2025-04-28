@@ -7,10 +7,19 @@ local L = LibStub("AceLocale-3.0"):GetLocale(addonName)
 
 local defaults = {
     char = {
-        EssentialCooldownViewerSpellIDs = {},
-        UtilityCooldownViewerSpellIDs = {},
-        BuffIconCooldownViewerSpellIDs = {},
-        BuffBarCooldownViewerSpellIDs = {},
+        EssentialCooldownViewerSpellIDs = {
+            -- current loadout ID from C_ClassTalents.GetLastSelectedSavedConfigID(PlayerUtil.GetCurrentSpecID())
+            ['*'] = {},
+        },
+        UtilityCooldownViewerSpellIDs = {
+            ['*'] = {},
+        },
+        BuffIconCooldownViewerSpellIDs = {
+            ['*'] = {},
+        },
+        BuffBarCooldownViewerSpellIDs = {
+            ['*'] = {},
+        },
     },
     global = {
         EMEOptions = {

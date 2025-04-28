@@ -117,6 +117,14 @@ function addon:registerSecureFrameHideable(frame, usePoint, onHide, onShow)
         end,
         "HidePermanently")
     
+    RunNextFrame(function()
+        if InCombatLockdown() then return end
+        if hidden then
+            show()
+            hide()
+        end
+    end)
+    
     local onResetFunctionToggle = lib:RegisterCustomCheckbox(frame, function() return getToggleInCombatText(hidden) end,
         function()
             toggleInCombat = true

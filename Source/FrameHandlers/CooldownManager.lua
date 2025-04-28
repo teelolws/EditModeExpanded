@@ -117,6 +117,22 @@ local function hideButtonOnClick(self)
         return
     end
     
+    if cooldownID > 0 then
+        local found
+        for _, cid2 in pairs(settingFrame.viewer:GetCooldownIDs()) do
+            if cooldownID == cid2 then
+                found = true
+            end
+        end
+        
+        if not found then
+            table.remove(cooldownIDs, layoutIndex)
+            settingFrame:RefreshSettingFrame()
+            settingFrame.viewer:RefreshLayout()
+            return
+        end
+    end
+    
     local newIndex = -1 * cooldownID
     if cooldownID < 0 then
         newIndex = cooldownID
@@ -314,12 +330,19 @@ local function integrityCheck(self, db, includeTrinkets)
             end
         end
     end
+    
+    -- integrity check: remove any cooldown IDs that have no data
+    for i = #db, 1, -1 do
+        local cooldownID = db[i]
+        if (cooldownID > 0) and (not C_CooldownViewer.GetCooldownViewerCooldownInfo(cooldownID)) then
+            table.remove(db, i)
+        end
+    end
 end
 
 local function initFrame(frame, db, includeTrinkets)
-    db = db[getCurrentLoadoutID()]
-    
     lib:RegisterCustomButton(frame, "Rearrange Buttons", function()
+        local db = db[getCurrentLoadoutID()]
         settingFrame:SetShown(not settingFrame:IsShown())
         settingFrame.viewer = frame
         settingFrame.db = db
@@ -327,6 +350,7 @@ local function initFrame(frame, db, includeTrinkets)
     end)
     
     hooksecurefunc(frame, "RefreshData", function(self)
+        local db = db[getCurrentLoadoutID()]
         integrityCheck(self, db, includeTrinkets)
         
         local cooldownIDs = db
@@ -350,6 +374,7 @@ local function initFrame(frame, db, includeTrinkets)
     end)
     
     hooksecurefunc(frame, "RefreshLayout", function(self)
+        local db = db[getCurrentLoadoutID()]
     	integrityCheck(self, db, includeTrinkets)
         
         self.itemFramePool:ReleaseAll();

@@ -4,8 +4,30 @@ local L = LibStub("AceLocale-3.0"):GetLocale(addonName)
 local lib = LibStub:GetLibrary("EditModeExpanded-1.0")
 local libDD = LibStub:GetLibrary("LibUIDropDownMenu-4.0")
 
+local isRefreshingUntilConfigIDAvailable
+local function refreshUntilConfigIDAvailable()
+    if isRefreshingUntilConfigIDAvailable then return end
+    local ticker
+    ticker = C_Timer.NewTicker(2, function()
+        local configID = C_ClassTalents.GetLastSelectedSavedConfigID(PlayerUtil.GetCurrentSpecID())
+        if configID then
+            ticker:Cancel()
+            isRefreshingUntilConfigIDAvailable = nil
+            
+            EssentialCooldownViewer:RefreshLayout()
+            UtilityCooldownViewer:RefreshLayout()
+            BuffIconCooldownViewer:RefreshLayout()
+            BuffBarCooldownViewer:RefreshLayout()
+        end
+    end)
+end
+
 local function getCurrentLoadoutID()
-    return C_ClassTalents.GetLastSelectedSavedConfigID(PlayerUtil.GetCurrentSpecID()) or PlayerUtil.GetCurrentSpecID() or 0
+    local configID = C_ClassTalents.GetLastSelectedSavedConfigID(PlayerUtil.GetCurrentSpecID())
+    if not configID then
+        refreshUntilConfigIDAvailable()
+    end
+    return configID or PlayerUtil.GetCurrentSpecID() or 0
 end
 
 local settingFrame = CreateFrame("Frame", "EMESettingFrame", UIParent, "VerticalLayoutFrame")

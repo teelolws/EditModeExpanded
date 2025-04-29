@@ -286,6 +286,85 @@ local function hookCacheCooldownValues(self)
     getCacheCooldownValues[self] = true
 end
 
+local refreshCooldownInfoHooks = {}
+local function hookRefreshCooldownInfo(self)
+    if refreshCooldownInfoHooks[self] then return end
+    if not self.RefreshCooldownInfo then return end
+    
+	if self:GetParent() == BuffIconCooldownViewer then
+        hooksecurefunc(self, "RefreshCooldownInfo", function(self)
+            if not self.cooldownID then return end
+            if self.cooldownID >= 0 then return end
+            
+            local cooldownFrame = self:GetCooldownFrame();
+
+        	local auraData = C_UnitAuras.GetPlayerAuraBySpellID(self.cooldownID * -1)
+            if not auraData then return end
+            local expirationTime, duration, timeMod = auraData.expirationTime, auraData.duration, auraData.timeMod
+        	local currentTime = expirationTime - GetTime();
+
+        	if currentTime > 0 then
+        		local startTime = expirationTime - duration;
+        		local isEnabled = 1;
+        		local forceShowDrawEdge = false;
+        		CooldownFrame_Set(cooldownFrame, startTime, duration, isEnabled, forceShowDrawEdge, timeMod);
+        	else
+        		CooldownFrame_Clear(cooldownFrame);
+        	end
+
+        	cooldownFrame:Resume();
+        end)
+    end
+    
+    if self:GetParent() == BuffBarCooldownViewer then
+        hooksecurefunc(self, "RefreshCooldownInfo", function(self)
+        	if not self.cooldownID then return end
+            if self.cooldownID >= 0 then return end
+            
+            local barFrame = self:GetBarFrame();
+        	local durationFontString = self:GetDurationFontString();
+        	local pipTexture = self:GetPipTexture();
+
+        	local auraData = C_UnitAuras.GetPlayerAuraBySpellID(self.cooldownID * -1)
+            if not auraData then return end
+            local expirationTime, duration = auraData.expirationTime, auraData.duration
+        	local currentTime = expirationTime - GetTime();
+
+        	if currentTime > 0 then
+        		barFrame:SetMinMaxValues(0, duration);
+        		barFrame:SetValue(currentTime);
+
+        		if durationFontString:IsShown() then
+        			local time = string.format(COOLDOWN_DURATION_SEC, currentTime);
+        			durationFontString:SetText(time);
+        		end
+
+        		pipTexture:SetShown(true);
+        	else
+        		barFrame:SetMinMaxValues(0, 0);
+        		barFrame:SetValue(0);
+
+        		if durationFontString:IsShown() then
+        			durationFontString:SetText("");
+        		end
+
+        		pipTexture:SetShown(false);
+        	end
+        end)
+        
+        hooksecurefunc(self, "RefreshName", function(self)
+        	if not self.cooldownID then return end
+            if self.cooldownID >= 0 then return end
+                    
+        	local nameFontString = self:GetNameFontString();
+        	if not nameFontString:IsShown() then
+        		return;
+        	end
+            nameFontString:SetText(C_Spell.GetSpellName(self.cooldownID * -1))
+        end)
+    end
+end
+
 local refreshSpellTextureHooks = {}
 local function hookRefreshSpellTexture(self)
     if refreshSpellTextureHooks[self] then return end
@@ -306,6 +385,35 @@ local function hookRefreshSpellTexture(self)
     self:RefreshSpellTexture()
     
     refreshSpellTextureHooks[self] = true
+end
+
+local refreshActiveHooks = {}
+local function hookRefreshActive(self)
+    if refreshActiveHooks[self] then return end
+    
+    if (self:GetParent() == BuffIconCooldownViewer) or (self:GetParent() == BuffBarCooldownViewer) then
+        hooksecurefunc(self, "RefreshActive", function()
+            if not self.cooldownID then return end
+            if self.cooldownID >= 0 then return end
+            
+            --local totemData = self:GetTotemData();
+        	--if totemData then
+        	--	return totemData.expirationTime > GetTime();
+        	--end
+            
+            local auraData = C_UnitAuras.GetPlayerAuraBySpellID(self.cooldownID * -1)
+        	if auraData then
+        		-- Auras with an expirationTime of 0 are infinite and considered active until they are removed.
+        		if auraData.expirationTime == 0 then
+        			return self:SetIsActive(true)
+        		end
+
+        		return self:SetIsActive(auraData.expirationTime > GetTime())
+        	end
+
+        	return self:SetIsActive(false)
+        end)
+    end
 end
 
 local function integrityCheck(self, db, includeTrinkets)
@@ -385,6 +493,8 @@ local function initFrame(frame, db, includeTrinkets)
                 if cooldownID < 0 then
                     hookRefreshSpellTexture(itemFrame)
                     hookCacheCooldownValues(itemFrame)
+                    hookRefreshActive(itemFrame)
+                    hookRefreshCooldownInfo(itemFrame)
                 end
     		else
                 itemFrame:ClearCooldownID();

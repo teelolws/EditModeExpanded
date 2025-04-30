@@ -517,6 +517,10 @@ local function initFrame(frame, db, includeTrinkets)
             self:OnAcquireItemFrame(itemFrame)
         end
         
+        if (frame == BuffIconCooldownViewer) or (frame == BuffBarCooldownViewer) then
+            self:GetItemContainerFrame().stride = #db
+        end
+        
         self:RefreshData()
     end)
     

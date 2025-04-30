@@ -9,6 +9,7 @@ local function refreshUntilConfigIDAvailable()
     if isRefreshingUntilConfigIDAvailable then return end
     local ticker
     ticker = C_Timer.NewTicker(2, function()
+        if not PlayerUtil.GetCurrentSpecID() then return end
         local configID = C_ClassTalents.GetLastSelectedSavedConfigID(PlayerUtil.GetCurrentSpecID())
         if configID then
             ticker:Cancel()

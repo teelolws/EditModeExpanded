@@ -364,6 +364,8 @@ local function hookRefreshCooldownInfo(self)
             nameFontString:SetText(C_Spell.GetSpellName(self.cooldownID * -1))
         end)
     end
+    
+    refreshCooldownInfoHooks[self] = true
 end
 
 local refreshSpellTextureHooks = {}
@@ -397,11 +399,6 @@ local function hookRefreshActive(self)
             if not self.cooldownID then return end
             if self.cooldownID >= 0 then return end
             
-            --local totemData = self:GetTotemData();
-        	--if totemData then
-        	--	return totemData.expirationTime > GetTime();
-        	--end
-            
             local auraData = C_UnitAuras.GetPlayerAuraBySpellID(self.cooldownID * -1)
         	if auraData then
         		-- Auras with an expirationTime of 0 are infinite and considered active until they are removed.
@@ -415,6 +412,38 @@ local function hookRefreshActive(self)
         	return self:SetIsActive(false)
         end)
     end
+    
+    refreshActiveHooks[self] = true
+end
+
+local refreshSpellChargeInfoHooks = {}
+local function hookRefreshSpellChargeInfo(self)
+    if refreshSpellChargeInfoHooks[self] then return end
+    
+    if (self:GetParent() == EssentialCooldownViewer) or (self:GetParent() == UtilityCooldownViewer) then
+        hooksecurefunc(self, "RefreshSpellChargeInfo", function()
+            if not self.cooldownID then return end
+            if self.cooldownID >= 0 then return end
+            
+            local spellChargeInfo = C_Spell.GetSpellCharges(self.cooldownID * -1)
+            if spellChargeInfo and spellChargeInfo.maxCharges > 1 then
+            	self.cooldownChargesShown = true;
+            	self.cooldownChargesCount = spellChargeInfo.currentCharges;
+            else
+                self.cooldownChargesCount = C_Spell.GetSpellCastCount(self.cooldownID * -1);
+                self.cooldownChargesShown = self.cooldownChargesCount > 0;
+            end
+
+          	local chargeCountFrame = self:GetChargeCountFrame();
+          	chargeCountFrame:SetShown(self.cooldownChargesShown);
+
+          	if self.cooldownChargesShown then
+          		chargeCountFrame.Current:SetText(self.cooldownChargesCount);
+          	end
+        end)
+    end
+
+    refreshSpellChargeInfoHooks[self] = true
 end
 
 local function integrityCheck(self, db, includeTrinkets)
@@ -487,7 +516,6 @@ local function initFrame(frame, db, includeTrinkets)
         local cooldownIDs = db
 
     	for itemFrame in self.itemFramePool:EnumerateActive() do
-            
     		local cooldownID = cooldownIDs and cooldownIDs[itemFrame.layoutIndex];
     		if cooldownID then
     			itemFrame:SetCooldownID(cooldownID);
@@ -496,6 +524,7 @@ local function initFrame(frame, db, includeTrinkets)
                     hookCacheCooldownValues(itemFrame)
                     hookRefreshActive(itemFrame)
                     hookRefreshCooldownInfo(itemFrame)
+                    hookRefreshSpellChargeInfo(itemFrame)
                 end
     		else
                 itemFrame:ClearCooldownID();

@@ -491,11 +491,19 @@ local function integrityCheck(self, db, includeTrinkets)
         end
     end
     
-    -- integrity check: remove any cooldown IDs that have no data
+    -- integrity check: remove any regular cooldown IDs that are not in the current default loadout set
     for i = #db, 1, -1 do
         local cooldownID = db[i]
-        if (cooldownID > 0) and (not C_CooldownViewer.GetCooldownViewerCooldownInfo(cooldownID)) then
-            table.remove(db, i)
+        if cooldownID > 0 then
+            local found
+            for _, cid2 in pairs(cooldownIDs) do
+                if cooldownID == cid2 then
+                    found = true
+                end
+            end
+            if not found then
+                table.remove(db, i)
+            end
         end
     end
 end

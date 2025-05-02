@@ -446,7 +446,9 @@ local function hookRefreshSpellChargeInfo(self)
     refreshSpellChargeInfoHooks[self] = true
 end
 
+local lockdown
 local function integrityCheck(self, db, includeTrinkets)
+    if lockdown then return end
     local cooldownIDs = self:GetCooldownIDs()
     -- integrity check: if any cooldown IDs are missing from the local database, add them to the end
     for _, cooldownID in pairs(cooldownIDs) do
@@ -584,3 +586,21 @@ function addon:initCooldownManager()
         initFrame(BuffBarCooldownViewer, addon.db.char.BuffBarCooldownViewerSpellIDs)
     end
 end
+
+hooksecurefunc(C_SpecializationInfo, "SetSpecialization", function()
+    lockdown = true
+end)
+
+EssentialCooldownViewer:RegisterEvent("SPECIALIZATION_CHANGE_CAST_FAILED")
+
+EssentialCooldownViewer:HookScript("OnEvent", function(self, event)
+    if event == "SPECIALIZATION_CHANGE_CAST_FAILED" then
+        lockdown = false
+    elseif event == "TRAIT_CONFIG_UPDATED" then
+        if lockdown then
+            C_Timer.After(2, function()
+                lockdown = false
+            end)
+        end
+    end
+end)

@@ -76,14 +76,10 @@ settingFrame.addRow.addFontString:SetText("Add spell ID:")
 
 settingFrame.addRow.addEditBox = CreateFrame("EditBox", nil, settingFrame.addRow, "EditModeDialogLayoutNameEditBoxTemplate")
 settingFrame.addRow.addEditBox.layoutIndex = 2
+settingFrame.addRow.addEditBox:SetNumeric(true)
 settingFrame.addRow.addEditBox:SetScript("OnEnterPressed", function(self)
-	local text = self:GetText()
-    
-    if string.find(text, "[^%d]") then
-        return
-    end
-    
-    table.insert(settingFrame.db, -1 * tonumber(text))
+    local input = self:GetNumber()
+    table.insert(settingFrame.db, -1 * input)
     settingFrame:RefreshSettingFrame()
     settingFrame.viewer:RefreshLayout()
 end)
@@ -374,7 +370,7 @@ local function hookRefreshSpellTexture(self)
     
     hooksecurefunc(self, "RefreshSpellTexture", function(self)
         if not self.cooldownID then return end
-        if self.cooldownID >= 0 then return end
+        if self.cooldownID > 0 then return end
         
         local spellTexture
         if self.cooldownID > -3 then
@@ -382,8 +378,15 @@ local function hookRefreshSpellTexture(self)
     	    spellTexture = GetInventoryItemTexture("player", invSlotId)
         else
             spellTexture = C_Spell.GetSpellTexture(self.cooldownID * -1)
-        end        
+        end
+        
         self:GetIconTexture():SetTexture(spellTexture)
+        for _, region in pairs({self:GetRegions()}) do
+            -- extra care here in case other non-Textures get added as regions
+            if (region:GetObjectType() == "Texture") and (region:GetAtlas() == "UI-HUD-CoolDownManager-IconOverlay") then
+                region:SetShown(spellTexture ~= nil)
+            end
+        end
     end)
     self:RefreshSpellTexture()
     
@@ -462,7 +465,7 @@ local function integrityCheck(self, db, includeTrinkets)
             table.insert(db, cooldownID)
         end
     end
-    
+
     -- integrity check: add trinkets if they're missing, at slots -2 and -1
     if includeTrinkets then
         local found1, found2

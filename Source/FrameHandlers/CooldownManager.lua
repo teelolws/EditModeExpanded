@@ -23,15 +23,55 @@ local function refreshUntilConfigIDAvailable()
     end)
 end
 
-local function getCurrentLoadoutID()
+local function getCurrentLoadoutID(db)
     local configID = C_ClassTalents.GetLastSelectedSavedConfigID(PlayerUtil.GetCurrentSpecID())
-    if not configID then
-        refreshUntilConfigIDAvailable()
+
+    if not PlayerSpellsFrame then
+        PlayerSpellsFrame_LoadUI();
+        PlayerSpellsFrame:Show()
+        PlayerSpellsFrame:Hide()
     end
-    return configID or PlayerUtil.GetCurrentSpecID() or 0
+    if PlayerSpellsFrame.TalentsFrame:GetTreeInfo() then
+        local loadoutString = PlayerSpellsFrame.TalentsFrame:GetLoadoutExportString()
+        
+        
+        if db[loadoutString] then
+            -- backup loadout string into config ID incase the loadout string changes in future patches
+            if configID then
+                db[configID] = db[loadoutString]
+            end
+        else
+            if configID then
+                if db[configID] then
+                    db[loadoutString] = db[configID]
+                else
+                    if db[PlayerUtil.GetCurrentSpecID()] then
+                        db[loadoutString] = db[PlayerUtil.GetCurrentSpecID()]
+                    else
+                        db[loadoutString] = {}
+                    end
+                end
+            else
+                db[loadoutString] = {}
+            end
+        end
+        
+        return loadoutString
+    end
+
+    if not configID then
+        configID = PlayerUtil.GetCurrentSpecID() or 0
+    end
+    
+    if not db[configID] then
+        db[configID] = {}
+    end
+    
+    refreshUntilConfigIDAvailable()
+    return configID
 end
 
-local settingFrame = CreateFrame("Frame", "EMESettingFrame", UIParent, "VerticalLayoutFrame")
+local settingFrame = CreateFrame("Frame", "EMECooldownManagerSettingFrame", UIParent, "VerticalLayoutFrame")
 settingFrame:SetPoint("CENTER", 0, -200)
 settingFrame.Border = CreateFrame("Frame", nil, settingFrame, "DialogBorderTranslucentTemplate")
 settingFrame.expand = true
@@ -515,7 +555,7 @@ end
 
 local function initFrame(frame, db, includeTrinkets)
     lib:RegisterCustomButton(frame, "Rearrange Buttons", function()
-        local db = db[getCurrentLoadoutID()]
+        local db = db[getCurrentLoadoutID(db)]
         settingFrame:SetShown(not settingFrame:IsShown())
         settingFrame.viewer = frame
         settingFrame.db = db
@@ -523,7 +563,7 @@ local function initFrame(frame, db, includeTrinkets)
     end)
     
     hooksecurefunc(frame, "RefreshData", function(self)
-        local db = db[getCurrentLoadoutID()]
+        local db = db[getCurrentLoadoutID(db)]
         integrityCheck(self, db, includeTrinkets)
         
         local cooldownIDs = db
@@ -549,7 +589,7 @@ local function initFrame(frame, db, includeTrinkets)
     end)
     
     hooksecurefunc(frame, "RefreshLayout", function(self)
-        local db = db[getCurrentLoadoutID()]
+        local db = db[getCurrentLoadoutID(db)]
     	integrityCheck(self, db, includeTrinkets)
         
         self.itemFramePool:ReleaseAll();

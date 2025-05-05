@@ -594,15 +594,27 @@ hooksecurefunc(C_SpecializationInfo, "SetSpecialization", function()
     lockdown = true
 end)
 
+hooksecurefunc(C_ClassTalents, "LoadConfig", function(configID, autoApply)
+    if not autoApply then return end
+    lockdown = true
+end)
+
 EssentialCooldownViewer:RegisterEvent("SPECIALIZATION_CHANGE_CAST_FAILED")
+EssentialCooldownViewer:RegisterEvent("CONFIG_COMMIT_FAILED")
 
 EssentialCooldownViewer:HookScript("OnEvent", function(self, event)
     if event == "SPECIALIZATION_CHANGE_CAST_FAILED" then
+        lockdown = false
+    elseif event == "CONFIG_COMMIT_FAILED" then
         lockdown = false
     elseif event == "TRAIT_CONFIG_UPDATED" then
         if lockdown then
             C_Timer.After(2, function()
                 lockdown = false
+                EssentialCooldownViewer:RefreshLayout()
+                UtilityCooldownViewer:RefreshLayout()
+                BuffIconCooldownViewer:RefreshLayout()
+                BuffBarCooldownViewer:RefreshLayout()
             end)
         end
     end

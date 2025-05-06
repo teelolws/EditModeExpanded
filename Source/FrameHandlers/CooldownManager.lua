@@ -11,79 +11,15 @@ local function refreshAll()
     BuffBarCooldownViewer:RefreshLayout()
 end
 
-local isRefreshingUntilConfigIDAvailable
-local function refreshUntilConfigIDAvailable()
-    if isRefreshingUntilConfigIDAvailable then return end
-    isRefreshingUntilConfigIDAvailable = true
-    local ticker
-    ticker = C_Timer.NewTicker(5, function()
-        if not PlayerUtil.GetCurrentSpecID() then return end
-        local configID = PlayerSpellsFrame.TalentsFrame:GetTreeInfo()
-        if configID then
-            ticker:Cancel()
-            isRefreshingUntilConfigIDAvailable = nil
-            refreshAll()
-        end
-    end)
-end
-
-local function IsInWarModeState()
-    local talentIDs = C_SpecializationInfo.GetAllSelectedPvpTalentIDs()
-    for _, talentID in ipairs(talentIDs) do
-        local talentID, name, icon, selected, available, spellID, unlocked, row, column, known, grantedByAura = GetPvpTalentInfoByID(talentID)
-        if IsSpellKnown(spellID) then return true end
+local function getCurrentLoadoutID(self, db)
+    local cooldownIDs = self:GetCooldownIDs()
+    
+    local loadoutString = ""
+    for _, cooldownID in ipairs(cooldownIDs) do
+        loadoutString = loadoutString..cooldownID.."-"
     end
     
-    return false
-end
-
-local function getCurrentLoadoutID(db)
-    local configID = C_ClassTalents.GetLastSelectedSavedConfigID(PlayerUtil.GetCurrentSpecID())
-    local warMode = IsInWarModeState() and "1" or "0"
-    
-    if not PlayerSpellsFrame then
-        PlayerSpellsFrame_LoadUI();
-        PlayerSpellsFrame:Show()
-        PlayerSpellsFrame:Hide()
-    end
-    if PlayerSpellsFrame.TalentsFrame:GetTreeInfo() then
-        local loadoutString = warMode .. PlayerSpellsFrame.TalentsFrame:GetLoadoutExportString()
-        
-        
-        if db[loadoutString] then
-            -- backup loadout string into config ID incase the loadout string changes in future patches
-            if configID then
-                db[configID] = db[loadoutString]
-            end
-        else
-            if configID then
-                if db[configID] then
-                    db[loadoutString] = db[configID]
-                else
-                    if db[PlayerUtil.GetCurrentSpecID()] then
-                        db[loadoutString] = db[PlayerUtil.GetCurrentSpecID()]
-                    else
-                        db[loadoutString] = {}
-                    end
-                end
-            else
-                db[loadoutString] = {}
-            end
-        end
-        
-        return loadoutString
-    end
-
-    if not configID then
-        configID = PlayerUtil.GetCurrentSpecID() or 0
-    end
-    
-    if not db[configID] then
-        db[configID] = {}
-    end
-    
-    refreshUntilConfigIDAvailable()
-    return configID
+    return loadoutString
 end
 
 local settingFrame = CreateFrame("Frame", "EMECooldownManagerSettingFrame", UIParent, "VerticalLayoutFrame")
@@ -570,7 +506,7 @@ end
 
 local function initFrame(frame, db, includeTrinkets)
     lib:RegisterCustomButton(frame, "Rearrange Buttons", function()
-        local db = db[getCurrentLoadoutID(db)]
+        local db = db[getCurrentLoadoutID(frame, db)]
         settingFrame:SetShown(not settingFrame:IsShown())
         settingFrame.viewer = frame
         settingFrame.db = db
@@ -578,7 +514,7 @@ local function initFrame(frame, db, includeTrinkets)
     end)
     
     hooksecurefunc(frame, "RefreshData", function(self)
-        local db = db[getCurrentLoadoutID(db)]
+        local db = db[getCurrentLoadoutID(frame, db)]
         integrityCheck(self, db, includeTrinkets)
         
         local cooldownIDs = db
@@ -604,7 +540,7 @@ local function initFrame(frame, db, includeTrinkets)
     end)
     
     hooksecurefunc(frame, "RefreshLayout", function(self)
-        local db = db[getCurrentLoadoutID(db)]
+        local db = db[getCurrentLoadoutID(frame, db)]
     	integrityCheck(self, db, includeTrinkets)
         
         self.itemFramePool:ReleaseAll();
@@ -657,6 +593,7 @@ end)
 EssentialCooldownViewer:RegisterEvent("SPECIALIZATION_CHANGE_CAST_FAILED")
 EssentialCooldownViewer:RegisterEvent("CONFIG_COMMIT_FAILED")
 EssentialCooldownViewer:RegisterEvent("UI_INFO_MESSAGE")
+EssentialCooldownViewer:RegisterEvent("PLAYER_ENTERING_WORLD")
 
 EssentialCooldownViewer:HookScript("OnEvent", function(self, event, ...)
     if event == "SPECIALIZATION_CHANGE_CAST_FAILED" then
@@ -675,5 +612,7 @@ EssentialCooldownViewer:HookScript("OnEvent", function(self, event, ...)
         if (errorMsg == ERR_PVP_WARMODE_TOGGLE_ON) or (errorMsg == ERR_PVP_WARMODE_TOGGLE_OFF) then
             C_Timer.After(2, refreshAll)
         end
+    elseif event == "PLAYER_ENTERING_WORLD" then
+        C_Timer.After(2, refreshAll)
     end
 end)

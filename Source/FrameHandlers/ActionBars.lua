@@ -55,8 +55,6 @@ function addon:initActionBars()
                 end,
                 "HideMacroName"
             )
-            
-            lib:RegisterResizable(bar, nil, nil, 1)
         end
     end)
 end

@@ -14,10 +14,11 @@ end
 local isRefreshingUntilConfigIDAvailable
 local function refreshUntilConfigIDAvailable()
     if isRefreshingUntilConfigIDAvailable then return end
+    isRefreshingUntilConfigIDAvailable = true
     local ticker
-    ticker = C_Timer.NewTicker(2, function()
+    ticker = C_Timer.NewTicker(5, function()
         if not PlayerUtil.GetCurrentSpecID() then return end
-        local configID = C_ClassTalents.GetLastSelectedSavedConfigID(PlayerUtil.GetCurrentSpecID())
+        local configID = PlayerSpellsFrame.TalentsFrame:GetTreeInfo()
         if configID then
             ticker:Cancel()
             isRefreshingUntilConfigIDAvailable = nil

@@ -394,8 +394,8 @@ function addon:initCooldownManager()
             
             if (self:GetParent() == BuffIconCooldownViewer) or (self:GetParent() == BuffBarCooldownViewer) then
                 hooksecurefunc(self, "RefreshActive", function()
-                    if not self.cooldownID then return end
-                    if self.cooldownID >= 0 then return end
+                    if not self.cooldownID then return self:SetIsActive(false) end
+                    if self.cooldownID >= 0 then return self:SetIsActive(false) end
                     
                     local auraData = C_UnitAuras.GetPlayerAuraBySpellID(self.cooldownID * -1)
                 	if auraData then
@@ -520,11 +520,9 @@ function addon:initCooldownManager()
             hooksecurefunc(frame, "RefreshData", function(self)
                 local db = db[getCurrentLoadoutID(frame, db)]
                 integrityCheck(self, db, includeTrinkets)
-                
-                local cooldownIDs = db
 
             	for itemFrame in self.itemFramePool:EnumerateActive() do
-            		local cooldownID = cooldownIDs and cooldownIDs[itemFrame.layoutIndex];
+            		local cooldownID = db and db[itemFrame.layoutIndex];
             		if cooldownID then
             			itemFrame:SetCooldownID(cooldownID);
                         if cooldownID < 0 then
@@ -615,5 +613,67 @@ function addon:initCooldownManager()
         initFrame(UtilityCooldownViewer, addon.db.char.UtilityCooldownViewerSpellIDs, true)
         initFrame(BuffIconCooldownViewer, addon.db.char.BuffIconCooldownViewerSpellIDs)
         initFrame(BuffBarCooldownViewer, addon.db.char.BuffBarCooldownViewerSpellIDs)
+        
+        local dropdown, getSettingDB = lib:RegisterDropdown(BuffBarCooldownViewer, libDD, "Resort")
+        local dropdownOptions = {"None", "Top by duration", "Bottom by duration"}
+        
+        libDD:UIDropDownMenu_Initialize(dropdown, function(self, level, menuList)
+            local db = getSettingDB()
+            local info = libDD:UIDropDownMenu_CreateInfo()        
+            
+            if db.checked == nil then db.checked = "None" end
+            
+            for _, f in ipairs(dropdownOptions) do
+                info.text = f
+                info.checked = db.checked == f
+                info.func = function()
+                    if db.checked == f then
+                        db.checked = nil
+                    else
+                        db.checked = f
+                    end
+                end
+                libDD:UIDropDownMenu_AddButton(info)
+            end
+        end)
+        libDD:UIDropDownMenu_SetWidth(dropdown, 100)
+        libDD:UIDropDownMenu_SetText(dropdown, "Sort Icons:")
+        
+        BuffBarCooldownViewer:HookScript("OnEvent", function(self)
+            local settingDB = getSettingDB()
+            if settingDB.checked == "None" then return end
+            
+            if settingDB.checked == "Top by duration" then
+                self.layoutFramesGoingUp = false
+            else
+                self.layoutFramesGoingUp = true
+            end
+            
+            local include = {}
+            for itemFrame in self.itemFramePool:EnumerateActive() do
+                if itemFrame:IsActive() then
+                    table.insert(include, itemFrame)
+                else
+                    itemFrame.layoutIndex = 999
+                end
+            end
+            
+            table.sort(include, function(a, b)
+                local aExpirationTime, aDuration, aPaused = a:GetCooldownValues()
+                local aCurrentTime = aExpirationTime - GetTime()
+                local bExpirationTime, bDuration, bPaused = b:GetCooldownValues()
+                local bCurrentTime = bExpirationTime - GetTime()
+                
+                if aCurrentTime == bCurrentTime then
+                    return a.cooldownID < b.cooldownID
+                end
+                
+                return aCurrentTime < bCurrentTime
+            end)
+            
+            for index, itemFrame in ipairs(include) do
+                itemFrame.layoutIndex = index
+            end
+        end)
     end
 end

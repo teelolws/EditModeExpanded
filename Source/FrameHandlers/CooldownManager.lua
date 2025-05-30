@@ -260,10 +260,12 @@ function addon:initCooldownManager()
                     self.cooldownModRate = 1
                 else
                     local cooldownInfo = C_Spell.GetSpellCooldown(self.cooldownID * -1)
-                    self.cooldownEnabled = cooldownInfo.isEnabled;
-        		    self.cooldownStartTime = cooldownInfo.startTime;
-        		    self.cooldownDuration = cooldownInfo.duration;
-        		    self.cooldownModRate = cooldownInfo.modRate;
+                    if cooldownInfo then
+                        self.cooldownEnabled = cooldownInfo.isEnabled;
+            		    self.cooldownStartTime = cooldownInfo.startTime;
+            		    self.cooldownDuration = cooldownInfo.duration;
+            		    self.cooldownModRate = cooldownInfo.modRate;
+                    end
         		end
                 
         		self.cooldownSwipeColor = CreateColor(0, 0, 0, 0.7);

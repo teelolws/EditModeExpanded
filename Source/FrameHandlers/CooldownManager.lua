@@ -569,9 +569,7 @@ function addon:initCooldownManager()
                     end)
                 end
             end)
-            
-            frame:RefreshLayout()
-            
+
             lib:RegisterResizable(frame, nil, nil, 1)
         end
 
@@ -615,6 +613,8 @@ function addon:initCooldownManager()
         initFrame(UtilityCooldownViewer, addon.db.char.UtilityCooldownViewerSpellIDs, true)
         initFrame(BuffIconCooldownViewer, addon.db.char.BuffIconCooldownViewerSpellIDs)
         initFrame(BuffBarCooldownViewer, addon.db.char.BuffBarCooldownViewerSpellIDs)
+        
+        C_Timer.After(3, refreshAll)
         
         local dropdown, getSettingDB = lib:RegisterDropdown(BuffBarCooldownViewer, libDD, "Resort")
         local dropdownOptions = {"None", "Top by duration", "Bottom by duration"}

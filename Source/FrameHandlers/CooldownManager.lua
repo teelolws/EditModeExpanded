@@ -539,7 +539,6 @@ function addon:initCooldownManager()
             		end
             	end
 
-            	self:RefreshItemsShown()
                 self:GetItemContainerFrame():Layout()
             end)
             

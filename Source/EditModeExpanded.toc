@@ -33,7 +33,7 @@ Locales\esES.lua
 Locales\ruRU.lua
 Locales\zhCN.lua
 Locales\zhTW.lua
-Locakes\koKR.lua
+Locales\koKR.lua
 
 FrameHandlers\ActionBars.lua
 FrameHandlers\AlertFrame.lua

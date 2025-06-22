@@ -52,3 +52,5 @@ L["Hide Level"] = true
 L["Raid Manager"] = true
 L["Hide Names"] = true
 L["UNLINK_CLASS_RESOURCE_DESCRIPTION"] = "Unlink from Player Frame (may require reload)"
+L["Reset Cooldown Manager DB"] = true
+L["TARGET_CAST_BAR"] = TARGET.." "..HUD_EDIT_MODE_CAST_BAR_LABEL

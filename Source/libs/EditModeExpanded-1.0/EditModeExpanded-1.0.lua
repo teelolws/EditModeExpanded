@@ -2,7 +2,7 @@
 -- Internal variables
 --
 
-local MAJOR, MINOR = "EditModeExpanded-1.0", 92
+local MAJOR, MINOR = "EditModeExpanded-1.0", 93
 local lib = LibStub:NewLibrary(MAJOR, MINOR)
 if not lib then return end
 
@@ -1089,7 +1089,7 @@ hooksecurefunc(f, "OnLoad", function()
         end
     end)
     
-    checkButtonFrame.Text:SetText("Disable highlighting")
+    checkButtonFrame.Text:SetText(DISABLE.." "..string.gsub(HIGHLIGHTING, ":", ""))
     checkButtonFrame.Text:SetFontObject(GameFontHighlightMedium)
     checkButtonFrame:SetSize(32, 32)
     checkButtonFrame:SetPoint("TOPLEFT", EditModeManagerExpandedFrame.AccountSettings, "TOPLEFT", 20, 0)

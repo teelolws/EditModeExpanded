@@ -18,5 +18,5 @@ function addon:initChatButtons()
     lib:SetDontResize(ChatFrameMenuButton)
     lib:RegisterHideable(ChatFrameMenuButton)
     
-    lib:GroupOptions({QuickJoinToastButton, ChatFrameChannelButton, ChatFrameMenuButton}, "Chat Buttons")
+    lib:GroupOptions({QuickJoinToastButton, ChatFrameChannelButton, ChatFrameMenuButton}, L["Chat Buttons"])
 end

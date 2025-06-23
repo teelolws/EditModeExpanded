@@ -1,5 +1,5 @@
 local addonName, addon = ...
-local L = LibStub("AceLocale-3.0"):NewLocale(addonName, "koKR")
+local L = LibStub("AceLocale-3.0"):NewLocale(addonName, "koKR", false)
 if not L then return end
 
 L["Toggle(Show) During Combat"] = "전투 중 표시 전환"
@@ -37,7 +37,9 @@ L["ACTION_BARS_CHECKBOX_HIDE_NAMES_DESCRIPTION"] = "매크로/단축키 이름 �
 L["PvP Objectives"] = "PvP 목표"
 L["BG Targets"] = "전장 대상"
 L["Chat Menu"] = "채팅 메뉴"
+L["Focus Cast Bar"] = FOCUS.." "..HUD_EDIT_MODE_CAST_BAR_LABEL															  
 L["Hide Name"] = "이름 숨기기"
+L["Focus ToT"] = FOCUS.." "..SHOW_TARGET_OF_TARGET_TEXT													   
 L["LFG"] = "파티 찾기"
 L["MENU_CHECKBOX_DF_BUTTONS_DESCRIPTION"] = "10.0 스타일 버튼 사용 (재시작 필요)"
 L["MENU_CHECKBOX_SL_BUTTONS_DESCRIPTION"] = "어둠땅 스타일 버튼 사용 (재시작 필요)"
@@ -50,4 +52,5 @@ L["Hide Level"] = "레벨 숨기기"
 L["Raid Manager"] = "공격대 관리자"
 L["Hide Names"] = "이름 숨기기"
 L["UNLINK_CLASS_RESOURCE_DESCRIPTION"] = "플레이어 창의 연결 해제 (재시작 필요)"
---L["Reset Cooldown Manager DB"] = true
+L["Reset Cooldown Manager DB"] = "쿨다운 설정 자료 초기화"
+L["TARGET_CAST_BAR"] = TARGET.." "..HUD_EDIT_MODE_CAST_BAR_LABEL																

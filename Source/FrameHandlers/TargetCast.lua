@@ -1,6 +1,7 @@
 local addonName, addon = ...
 
 local lib = LibStub:GetLibrary("EditModeExpanded-1.0")
+local L = LibStub("AceLocale-3.0"):GetLocale(addonName)
 
 function addon:initTargetCastBar()
     local db = addon.db.global

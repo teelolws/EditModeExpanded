@@ -130,21 +130,29 @@ function addon:initRaidFrames()
         "HideRaidNames"
     )
     
-    lib:RegisterSlider(CompactRaidFrameContainer, "Name Scale", "Name Scale",
-        function(newValue)
-            for groupID = 1, 8 do
-                local group = _G["CompactRaidGroup"..groupID]
-                if group then
-                    for playerID = 1, 5 do
-                        local player = _G["CompactRaidGroup"..groupID.."Member"..playerID]
-                        if player then
-                            player.name:SetScale(newValue)
-                        end
+    local raidFrameNamesSize = 1
+    
+    local function updateRaidFrameNamesSizes()
+        for groupID = 1, 8 do
+            local group = _G["CompactRaidGroup"..groupID]
+            if group then
+                for playerID = 1, 5 do
+                    local player = _G["CompactRaidGroup"..groupID.."Member"..playerID]
+                    if player then
+                        player.name:SetScale(raidFrameNamesSize)
                     end
                 end
             end
+        end
+    end
+    
+    lib:RegisterSlider(CompactRaidFrameContainer, "Name Scale", "Name Scale",
+        function(newValue)
+            raidFrameNamesSize = newValue
+            updateRaidFrameNamesSizes()
         end,
         0.5, 3, 0.1)
 
     hooksecurefunc("CompactUnitFrame_UpdateName", updateHideRaidFrameNames)
+    hooksecurefunc("CompactUnitFrame_UpdateName", updateRaidFrameNamesSizes)
 end

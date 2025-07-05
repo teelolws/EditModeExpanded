@@ -82,6 +82,7 @@ function addon:initRaidFrames()
             end
         end
     end)
+    ]]
     
     local partyFrameNamesWereHidden
     lib:RegisterCustomCheckbox(PartyFrame, L["Hide Names"],
@@ -128,6 +129,22 @@ function addon:initRaidFrames()
         end,
         "HideRaidNames"
     )
+    
+    lib:RegisterSlider(CompactRaidFrameContainer, "Name Scale", "Name Scale",
+        function(newValue)
+            for groupID = 1, 8 do
+                local group = _G["CompactRaidGroup"..groupID]
+                if group then
+                    for playerID = 1, 5 do
+                        local player = _G["CompactRaidGroup"..groupID.."Member"..playerID]
+                        if player then
+                            player.name:SetScale(newValue)
+                        end
+                    end
+                end
+            end
+        end,
+        0.5, 3, 0.1)
 
-    hooksecurefunc("CompactUnitFrame_UpdateName", updateHideRaidFrameNames)]]
+    hooksecurefunc("CompactUnitFrame_UpdateName", updateHideRaidFrameNames)
 end

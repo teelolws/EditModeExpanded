@@ -55,6 +55,24 @@ function addon:initActionBars()
                 end,
                 "HideMacroName"
             )
+            
+            local namesSize = 1
+    
+            local function updateNamesSizes()
+                for _, button in pairs(bar.actionButtons) do
+                    button.HotKey:SetScale(namesSize)
+                    button.Count:SetScale(namesSize)
+                end
+            end
+
+            lib:RegisterSlider(bar, "Name Scale", "Name Scale",
+                function(newValue)
+                    namesSize = newValue
+                    updateNamesSizes()
+                end,
+                0.5, 2, 0.05)
+
+            hooksecurefunc("CompactUnitFrame_UpdateName", updateNamesSizes)
         end
     end)
 end

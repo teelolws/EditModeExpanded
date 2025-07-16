@@ -62,6 +62,7 @@ function addon:initActionBars()
                 for _, button in pairs(bar.actionButtons) do
                     button.HotKey:SetScale(namesSize)
                     button.Count:SetScale(namesSize)
+                    button.Name:SetScale(namesSize)
                 end
             end
 

@@ -18,19 +18,23 @@ function addon:initMenuBar()
         local dropdownOptions = {-4, -3, -2, -1, 0, 1, 2, 3, 4, 5}
         
         local function updatePadding()
-           local db = getSettingDB()
-           if not db.checked then return end
-           
-           for key, button in ipairs(MicroMenu:GetLayoutChildren()) do
-                if key ~= 1 then
-                    local a, b, c, d, e = button:GetPoint(1)
-                    button:ClearAllPoints()
-                    button:SetPoint(a, b, c, (db.checked + button:GetWidth() - 3) * (key-1), e)
-                end
+            local db = getSettingDB()
+            if not db.checked then return end
+            
+            local padding = db.checked - 3
+            
+            if MicroMenu.isHorizontal then
+                MicroMenu.childXPadding = padding
+                MicroMenu:Layout()
+                MicroMenuContainer:SetWidth(MicroMenu:GetWidth()*MicroMenu:GetScale())
+            else
+                MicroMenu.childYPadding = padding
+                MicroMenu:Layout()
+                MicroMenuContainer:SetHeight(MicroMenu:GetHeight()*MicroMenu:GetScale())
             end
-            MicroMenu:SetWidth(MicroMenu:GetWidth() - 30)
-            MicroMenuContainer:SetWidth(MicroMenu:GetWidth()*MicroMenu:GetScale())
         end
+        
+        hooksecurefunc(MicroMenuContainer, "Layout", updatePadding)
         
         libDD:UIDropDownMenu_Initialize(dropdown, function(self, level, menuList)
             local db = getSettingDB()

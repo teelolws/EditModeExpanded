@@ -20,17 +20,32 @@ function addon:initMenuBar()
         local function updatePadding()
             local db = getSettingDB()
             if not db.checked then return end
+            if MicroMenu.overrideScale then return end
             
             local padding = db.checked - 3
             
             if MicroMenu.isHorizontal then
-                MicroMenu.childXPadding = padding
-                MicroMenu:Layout()
-                MicroMenuContainer:SetWidth(MicroMenu:GetWidth()*MicroMenu:GetScale())
+                for key, button in ipairs(MicroMenu:GetLayoutChildren()) do
+                    if key ~= 1 then
+                        local a, b, c, d, e = button:GetPoint(1)
+                        button:ClearAllPoints()
+                        button:SetPoint(a, b, c, (db.checked + button:GetWidth() - 3) * (key-1), e)
+                    end
+                end
+                
+                -- This is a simpler, alternative method I tried. 
+                -- Turns out, it spreads taint into Override Actions Bars. Do not use.
+                --MicroMenu.childXPadding = padding
+                --MicroMenu:Layout()
+                --MicroMenuContainer:SetWidth(MicroMenu:GetWidth()*MicroMenu:GetScale())
             else
-                MicroMenu.childYPadding = padding
-                MicroMenu:Layout()
-                MicroMenuContainer:SetHeight(MicroMenu:GetHeight()*MicroMenu:GetScale())
+                for key, button in ipairs(MicroMenu:GetLayoutChildren()) do
+                    if key ~= 1 then
+                        local a, b, c, d, e = button:GetPoint(1)
+                        button:ClearAllPoints()
+                        button:SetPoint(a, b, c, d, -1 * (db.checked + button:GetHeight() - 3) * (key-1))
+                    end
+                end
             end
         end
         

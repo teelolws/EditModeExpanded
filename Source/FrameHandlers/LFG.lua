@@ -15,6 +15,7 @@ function addon:initLFG()
         hooksecurefunc(MicroMenuContainer, "Layout", function()
             if InCombatLockdown() then return end
             MicroMenuContainer:SetWidth(MicroMenu:GetWidth()*MicroMenu:GetScale())
+            MicroMenuContainer:SetHeight(MicroMenu:GetHeight()*MicroMenu:GetScale())
         end)
         MicroMenuContainer:SetWidth(MicroMenu:GetWidth()*MicroMenu:GetScale())
         

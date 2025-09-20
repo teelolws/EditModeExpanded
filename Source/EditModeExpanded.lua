@@ -42,31 +42,20 @@ EventUtil.RegisterOnceFrameEventAndCallback("PLAYER_ENTERING_WORLD", function()
     addon:initPet()
     addon:initExtraActionButton()
     addon:initCooldownManager()
+    addon:initTotemFrame()
         
     local class = UnitClassBase("player")
         
     if class == "PALADIN" then
         addon:initHolyPower()
-        -- Consecration
-        addon:initTotemFrame()
-        
     elseif class == "WARLOCK" then
         addon:initSoulShards()
-        -- Summon Darkglare
-        addon:initTotemFrame()
-        
-    elseif class == "SHAMAN" then
-        addon:initTotemFrame()
         
     elseif class == "MONK" then
-        -- Summon black ox
-        addon:initTotemFrame()
         addon:initChiBar()
             
     elseif class == "DEATHKNIGHT" then
         addon:initRunes()
-        -- Ghoul
-        addon:initTotemFrame()
     
     elseif class == "MAGE" then
         addon:initArcaneCharges()
@@ -77,14 +66,9 @@ EventUtil.RegisterOnceFrameEventAndCallback("PLAYER_ENTERING_WORLD", function()
     elseif class == "ROGUE" then
         addon:initRogueComboPoints()
         
-    elseif class == "PRIEST" then
-        -- shadowfiend
-        addon:initTotemFrame()
-        
     elseif class == "DRUID" then
         addon:initDruidComboPoints()
-        -- Effloresence
-        addon:initTotemFrame()
+
     end
 end)
 

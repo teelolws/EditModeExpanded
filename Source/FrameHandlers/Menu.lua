@@ -76,6 +76,24 @@ function addon:initMenuBar()
         
         lib:RegisterCustomCheckbox(MicroMenuContainer, L["MENU_CHECKBOX_DF_BUTTONS_DESCRIPTION"], addon.EnableSkinMicroMenuBW, addon.DisableSkinMicroMenuBW, "10.0Style")
         lib:RegisterCustomCheckbox(MicroMenuContainer, L["MENU_CHECKBOX_SL_BUTTONS_DESCRIPTION"], addon.EnableSkinMicroMenuSL, addon.DisableSkinMicroMenuSL, "SLStyle")
+        
+        RunNextFrame(function()
+            if InCombatLockdown() then return end
+            
+            -- check if the sound file has already been muted by something else, if it has, lets skip the mute/unmute
+            local soundFileID = 567481
+            local willPlay, soundHandle = PlaySoundFile(soundFileID)
+            if willPlay then
+                StopSound(soundHandle)
+                MuteSoundFile(soundFileID)
+                ShowUIPanel(EditModeManagerFrame, true)
+                HideUIPanel(EditModeManagerFrame)
+                UnmuteSoundFile(soundFileID)
+            else
+                ShowUIPanel(EditModeManagerFrame, true)
+                HideUIPanel(EditModeManagerFrame)
+            end
+        end)
     end
     
     if db.EMEOptions.bags then

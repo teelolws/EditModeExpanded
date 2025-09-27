@@ -42,6 +42,7 @@ FrameHandlers\BonusRoll.lua
 FrameHandlers\Buffs.lua
 FrameHandlers\ChatButtons.lua
 FrameHandlers\CooldownManager.lua
+FrameHandlers\DurationBars.lua
 FrameHandlers\ExtraActionButton.lua
 FrameHandlers\FocusCast.lua
 FrameHandlers\FocusFrame.lua

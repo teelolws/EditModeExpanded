@@ -69,6 +69,7 @@ local defaults = {
             pet = true,
             extraActionButton = true,
             cooldownManager = true,
+            durationBars = true,
         },
         QueueStatusButton = {},
         TotemFrame = {},
@@ -122,6 +123,7 @@ local defaults = {
         UtilityCooldownViewer = {},
         BuffIconCooldownViewer = {},
         BuffBarCooldownViewer = {},
+        MirrorTimerContainer = {},
     }
 }
 
@@ -398,6 +400,11 @@ local options = {
                 BuffIconCooldownViewer:RefreshLayout()
                 BuffBarCooldownViewer:RefreshLayout()
             end,
+        },
+        durationBars = {
+            name = HUD_EDIT_MODE_TIMER_BARS_LABEL,
+            desc = string.format(L["TOGGLE_ADDITIONAL_OPTIONS_SUPPORT_STRING"], HUD_EDIT_MODE_TIMER_BARS_LABEL),
+            type = "toggle",
         },
     },
 }

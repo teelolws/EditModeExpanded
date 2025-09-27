@@ -5,9 +5,9 @@ local lib = LibStub:GetLibrary("EditModeExpanded-1.0")
 
 function addon:initFocusFrame()
     local db = addon.db.global
-    if db.EMEOptions.focusFrame then
-        addon:registerSecureFrameHideable(FocusFrame)
-    end
+    if not db.EMEOptions.focusFrame then return end
+    
+    addon:registerSecureFrameHideable(FocusFrame)
     
     local nameWasHidden
     lib:RegisterCustomCheckbox(FocusFrame, L["Hide Name"],

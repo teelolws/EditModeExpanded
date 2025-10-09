@@ -68,6 +68,7 @@ local defaults = {
             lossOfControl = true,
             pet = true,
             extraActionButton = true,
+            cooldownManager = true,
             durationBars = true,
         },
         QueueStatusButton = {},
@@ -118,6 +119,10 @@ local defaults = {
         LOC = {},
         PetFrame = {},
         ExtraActionButton = {},
+        EssentialCooldownViewer = {},
+        UtilityCooldownViewer = {},
+        BuffIconCooldownViewer = {},
+        BuffBarCooldownViewer = {},
         MirrorTimerContainer = {},
     }
 }
@@ -376,6 +381,25 @@ local options = {
             name = BINDING_NAME_EXTRAACTIONBUTTON1,
             desc = string.format(L["TOGGLE_ADDITIONAL_OPTIONS_SUPPORT_STRING"], BINDING_NAME_EXTRAACTIONBUTTON1),
             type = "toggle",
+        },
+        cooldownManager = {
+            name = COOLDOWN_VIEWER_LABEL,
+            desc = string.format(L["TOGGLE_ADDITIONAL_OPTIONS_SUPPORT_STRING"], COOLDOWN_VIEWER_LABEL),
+            type = "toggle",
+        },
+        cooldownManagerReset = {
+            type = "execute",
+            name = L["Reset Cooldown Manager DB"],
+            func = function()
+                wipe(addon.db.char.EssentialCooldownViewerSpellIDs)
+                wipe(addon.db.char.UtilityCooldownViewerSpellIDs)
+                wipe(addon.db.char.BuffIconCooldownViewerSpellIDs)
+                wipe(addon.db.char.BuffBarCooldownViewerSpellIDs)
+                EssentialCooldownViewer:RefreshLayout()
+                UtilityCooldownViewer:RefreshLayout()
+                BuffIconCooldownViewer:RefreshLayout()
+                BuffBarCooldownViewer:RefreshLayout()
+            end,
         },
         durationBars = {
             name = HUD_EDIT_MODE_TIMER_BARS_LABEL,

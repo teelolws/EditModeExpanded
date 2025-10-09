@@ -41,6 +41,7 @@ EventUtil.RegisterOnceFrameEventAndCallback("PLAYER_ENTERING_WORLD", function()
     addon:initLossOfControl()
     addon:initPet()
     addon:initExtraActionButton()
+    addon:initCooldownManager()
     addon:initTotemFrame()
     addon:initDurationBars()
         

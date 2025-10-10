@@ -115,7 +115,6 @@ function addon:initCooldownManager()
             local layoutIndex = self.icon.layoutIndex
             local cooldownID = self.icon:GetCooldownID()
             local cooldownIDs = settingFrame.db
-            print(cooldownID)
             
             if cooldownID > 0 then
                 print("EME: Use Blizzard's UI to hide this icon")
@@ -480,7 +479,6 @@ function addon:initCooldownManager()
             
             -- integrity check: remove any regular cooldown IDs that are not in the current default loadout set
             for i = #db, 1, -1 do
-                print("e", i, cooldownID)
                 local cooldownID = db[i]
                 if cooldownID > 0 then
                     local found

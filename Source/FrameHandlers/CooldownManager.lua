@@ -38,22 +38,14 @@ function addon:initCooldownManager()
         settingFrame:Hide()
         settingFrame:SetFrameStrata("TOOLTIP")
 
+        -- Formerly used for displayed which icons are enabled, repurposed to icons added via this addon but using the old name
         settingFrame.activeFontString = settingFrame:CreateFontString(nil, nil, "GameTooltipText")
         settingFrame.activeFontString:SetText("Active Icons")
         settingFrame.activeFontString.layoutIndex = 1
 
         settingFrame.activeIcons = CreateFrame("Frame", nil, settingFrame, "HorizontalLayoutFrame")
         settingFrame.activeIcons.layoutIndex = 2
-
-        settingFrame.inactiveFontString = settingFrame:CreateFontString(nil, nil, "GameTooltipText")
-        settingFrame.inactiveFontString:SetText("Inactive Icons")
-        settingFrame.inactiveFontString.layoutIndex = 3
-
-        settingFrame.inactiveIcons = CreateFrame("Frame", nil, settingFrame, "HorizontalLayoutFrame")
-        settingFrame.inactiveIcons.layoutIndex = 4
-
         settingFrame.activeIcons.framePool = CreateFramePool("Frame", settingFrame.activeIcons, EssentialCooldownViewer.itemTemplate)
-        settingFrame.inactiveIcons.framePool = CreateFramePool("Frame", settingFrame.inactiveIcons, EssentialCooldownViewer.itemTemplate)
 
         settingFrame.closeButton = CreateFrame("Button", nil, settingFrame, "UIPanelCloseButton")
         settingFrame.closeButton.ignoreInLayout = true
@@ -62,7 +54,7 @@ function addon:initCooldownManager()
         hooksecurefunc(EditModeManagerFrame, "ExitEditMode", function() settingFrame:Hide() end)
 
         settingFrame.addRow = CreateFrame("Frame", nil, settingFrame, "HorizontalLayoutFrame")
-        settingFrame.addRow.layoutIndex = 5
+        settingFrame.addRow.layoutIndex = 3
         settingFrame.addRow.spacing = 10
 
         settingFrame.addRow.addFontString = settingFrame.addRow:CreateFontString(nil, nil, "GameTooltipText")
@@ -104,7 +96,7 @@ function addon:initCooldownManager()
                 db[newIndex] = cooldownID
             end
         end
-
+        
         local function onSettingIconStop(self)
             for icon in settingFrame.activeIcons.framePool:EnumerateActive() do
                 if (icon ~= self) and icon:IsMouseOver() then
@@ -118,19 +110,26 @@ function addon:initCooldownManager()
                 settingFrame.viewer:RefreshLayout()
             end)
         end
-
+        
         local function hideButtonOnClick(self)
             local layoutIndex = self.icon.layoutIndex
             local cooldownID = self.icon:GetCooldownID()
             local cooldownIDs = settingFrame.db
+            print(cooldownID)
             
-            if cooldownID < -2 then
+            if cooldownID > 0 then
+                print("EME: Use Blizzard's UI to hide this icon")
+                return
+            elseif cooldownID < -2 then
                 table.remove(cooldownIDs, layoutIndex)
                 settingFrame:RefreshSettingFrame()
                 settingFrame.viewer:RefreshLayout()
                 return
             end
             
+            
+            
+            --[[
             if cooldownID > 0 then
                 local found
                 for _, cid2 in pairs(settingFrame.viewer:GetCooldownIDs()) do
@@ -145,7 +144,7 @@ function addon:initCooldownManager()
                     settingFrame.viewer:RefreshLayout()
                     return
                 end
-            end
+            end]]
             
             local newIndex = -1 * cooldownID
             if cooldownID < 0 then
@@ -208,30 +207,7 @@ function addon:initCooldownManager()
                     icon.hideButton.icon = icon
                     icon.hideButton:SetScript("OnClick", hideButtonOnClick)
                 end
-            end
-            
-            settingFrame.inactiveIcons.framePool:ReleaseAll()
-            
-            local layoutIndex = 1
-            for i, cooldownID in pairs(cooldownIDs) do
-                if i < 1 then
-                    local icon = settingFrame.inactiveIcons.framePool:Acquire()
-                    icon.layoutIndex = layoutIndex
-                    layoutIndex = layoutIndex + 1
-                    icon:SetCooldownID(cooldownID)
-                    if cooldownID == -2 then
-                	    local spellTexture = GetInventoryItemTexture("player", INVSLOT_TRINKET1)
-                        icon:GetIconTexture():SetTexture(spellTexture)
-                    end
-                    if cooldownID == -1 then
-                        local spellTexture = GetInventoryItemTexture("player", INVSLOT_TRINKET2)
-                        icon:GetIconTexture():SetTexture(spellTexture)
-                    end
-                    icon:Show()
-                    
-                    icon:EnableMouse(true)
-                    icon:SetScript("OnMouseUp", restoreButtonOnClick)
-                end
+                icon.hideButton:SetShown(cooldownID < 0)
             end
             
             settingFrame:Layout()
@@ -360,7 +336,7 @@ function addon:initCooldownManager()
             
             refreshCooldownInfoHooks[self] = true
         end
-
+        
         local refreshSpellTextureHooks = {}
         local function hookRefreshSpellTexture(self)
             if refreshSpellTextureHooks[self] then return end
@@ -450,6 +426,15 @@ function addon:initCooldownManager()
         local function integrityCheck(self, db, includeTrinkets)
             if lockdown then return end
             local cooldownIDs = self:GetCooldownIDs()
+            
+            -- integrity check: remove any nils that snuck into the dataset
+            for index = #db, 1, -1 do
+                local cooldownID = db[index]
+                if not cooldownID then
+                    table.remove(db, index)
+                end
+            end
+            
             -- integrity check: if any cooldown IDs are missing from the local database, add them to the end
             for _, cooldownID in pairs(cooldownIDs) do
                 local found
@@ -495,6 +480,7 @@ function addon:initCooldownManager()
             
             -- integrity check: remove any regular cooldown IDs that are not in the current default loadout set
             for i = #db, 1, -1 do
+                print("e", i, cooldownID)
                 local cooldownID = db[i]
                 if cooldownID > 0 then
                     local found
@@ -509,9 +495,9 @@ function addon:initCooldownManager()
                 end
             end
         end
-
+        
         local function initFrame(frame, db, includeTrinkets)
-            lib:RegisterCustomButton(frame, "Rearrange Buttons", function()
+            lib:RegisterCustomButton(frame, "Add more icons", function()
                 local db = db[getCurrentLoadoutID(frame, db)]
                 settingFrame:SetShown(not settingFrame:IsShown())
                 settingFrame.viewer = frame
@@ -522,7 +508,7 @@ function addon:initCooldownManager()
             hooksecurefunc(frame, "RefreshData", function(self)
                 local db = db[getCurrentLoadoutID(frame, db)]
                 integrityCheck(self, db, includeTrinkets)
-
+                
             	for itemFrame in self.itemFramePool:EnumerateActive() do
             		local cooldownID = db and db[itemFrame.layoutIndex];
             		if cooldownID then
@@ -575,7 +561,7 @@ function addon:initCooldownManager()
         hooksecurefunc(C_SpecializationInfo, "SetSpecialization", function()
             lockdown = true
         end)
-
+        
         hooksecurefunc(C_ClassTalents, "LoadConfig", function(configID, autoApply)
             if not autoApply then return end
             lockdown = true
@@ -585,7 +571,7 @@ function addon:initCooldownManager()
         EssentialCooldownViewer:RegisterEvent("CONFIG_COMMIT_FAILED")
         EssentialCooldownViewer:RegisterEvent("UI_INFO_MESSAGE")
         EssentialCooldownViewer:RegisterEvent("PLAYER_ENTERING_WORLD")
-
+        
         EssentialCooldownViewer:HookScript("OnEvent", function(self, event, ...)
             if event == "SPECIALIZATION_CHANGE_CAST_FAILED" then
                 lockdown = false
@@ -607,7 +593,7 @@ function addon:initCooldownManager()
                 C_Timer.After(2, refreshAll)
             end
         end)
-
+        
         initFrame(EssentialCooldownViewer, addon.db.char.EssentialCooldownViewerSpellIDs, true)
         initFrame(UtilityCooldownViewer, addon.db.char.UtilityCooldownViewerSpellIDs, true)
         initFrame(BuffIconCooldownViewer, addon.db.char.BuffIconCooldownViewerSpellIDs)
@@ -678,5 +664,18 @@ function addon:initCooldownManager()
             
             self:GetItemContainerFrame():Layout()
         end)
+        
+        -- Needed to prevent taint error - original code tries to hide edit mode manager frame which tries to clear target, but execution path is tainted
+        function CooldownViewerSettings:ShowUIPanel(fromEditMode)
+        	if fromEditMode then
+        		if EditModeManagerFrame:IsEditModeActive() then
+            		EditModeManagerFrame:ClearSelectedSystem();
+            		HideUIPanel(EditModeManagerFrame);
+                    EditModeManagerFrame:HideSystemSelections()
+            	end
+        	end
+
+        	ShowUIPanel(self);
+        end
     end
 end

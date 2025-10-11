@@ -145,12 +145,17 @@ function addon:initCooldownManager()
                 end
             end]]
             
-            local newIndex = -1 * cooldownID
-            if cooldownID < 0 then
-                newIndex = cooldownID
+            --local newIndex = -1 * cooldownID
+            --if cooldownID < 0 then
+            --    newIndex = cooldownID
+            --end
+            --cooldownIDs[newIndex] = cooldownID
+            for k, v in pairs(cooldownIDs) do
+                if (v == cooldownID) or (v == (-1 * cooldownID)) then
+                    table.remove(cooldownIDs, k)
+                end
             end
-            cooldownIDs[newIndex] = cooldownID
-            table.remove(cooldownIDs, layoutIndex)
+            
             
             settingFrame:RefreshSettingFrame()
             settingFrame.viewer:RefreshLayout()
@@ -422,7 +427,7 @@ function addon:initCooldownManager()
         end
 
         local lockdown
-        local function integrityCheck(self, db, includeTrinkets)
+        local function integrityCheck(self, db)
             if lockdown then return end
             local cooldownIDs = self:GetCooldownIDs()
             
@@ -431,6 +436,13 @@ function addon:initCooldownManager()
                 local cooldownID = db[index]
                 if not cooldownID then
                     table.remove(db, index)
+                end
+            end
+            
+            -- integrity check: indexes below 0 no longer used
+            for k, v in pairs(db) do
+                if k <= 0 then
+                    db[k] = nil
                 end
             end
             
@@ -444,24 +456,6 @@ function addon:initCooldownManager()
                 end
                 if not found then
                     table.insert(db, cooldownID)
-                end
-            end
-
-            -- integrity check: add trinkets if they're missing, at slots -2 and -1
-            if includeTrinkets then
-                local found1, found2
-                for _, cooldownID in pairs(db) do
-                    if cooldownID == -2 then
-                        found2 = true
-                    elseif cooldownID == -1 then
-                        found1 = true
-                    end
-                end
-                if not found2 then
-                    table.insert(db, -2)
-                end
-                if not found1 then
-                    table.insert(db, -1)
                 end
             end
             
@@ -494,8 +488,8 @@ function addon:initCooldownManager()
             end
         end
         
-        local function initFrame(frame, db, includeTrinkets)
-            lib:RegisterCustomButton(frame, "Add more icons", function()
+        local function initFrame(frame, db)
+            lib:RegisterCustomButton(frame, "Add/remove custom icons", function()
                 local db = db[getCurrentLoadoutID(frame, db)]
                 settingFrame:SetShown(not settingFrame:IsShown())
                 settingFrame.viewer = frame
@@ -505,7 +499,7 @@ function addon:initCooldownManager()
             
             hooksecurefunc(frame, "RefreshData", function(self)
                 local db = db[getCurrentLoadoutID(frame, db)]
-                integrityCheck(self, db, includeTrinkets)
+                integrityCheck(self, db)
                 
             	for itemFrame in self.itemFramePool:EnumerateActive() do
             		local cooldownID = db and db[itemFrame.layoutIndex];
@@ -528,7 +522,7 @@ function addon:initCooldownManager()
             
             hooksecurefunc(frame, "RefreshLayout", function(self)
                 local db = db[getCurrentLoadoutID(frame, db)]
-            	integrityCheck(self, db, includeTrinkets)
+            	integrityCheck(self, db)
                 
                 self.itemFramePool:ReleaseAll();
                 
@@ -554,6 +548,36 @@ function addon:initCooldownManager()
             end)
 
             lib:RegisterResizable(frame, nil, nil, 1)
+            
+            lib:RegisterCustomButton(frame, "Add trinkets", function()
+                local db = db[getCurrentLoadoutID(frame, db)]
+                
+                -- integrity check: add trinkets if they're missing, at slots -2 and -1
+                local found1, found2
+                for i, cooldownID in pairs(db) do
+                    if cooldownID == -2 then
+                        found2 = true
+                    elseif cooldownID == -1 then
+                        found1 = true
+                    elseif cooldownID == 2 then
+                        db[i] = -2
+                        found2 = true
+                    elseif cooldownID == 1 then
+                        db[i] = -1
+                        found1 = true
+                    end
+                end
+                if not found2 then
+                    table.insert(db, -2)
+                end
+                if not found1 then
+                    table.insert(db, -1)
+                end
+                
+                frame:RefreshLayout()
+                settingFrame:RefreshSettingFrame()
+                settingFrame.viewer:RefreshLayout()
+            end)
         end
 
         hooksecurefunc(C_SpecializationInfo, "SetSpecialization", function()

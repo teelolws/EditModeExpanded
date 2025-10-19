@@ -4,6 +4,8 @@ local L = LibStub("AceLocale-3.0"):GetLocale(addonName)
 local lib = LibStub:GetLibrary("EditModeExpanded-1.0")
 local libDD = LibStub:GetLibrary("LibUIDropDownMenu-4.0")
 
+local ITEM_ID_PADDING = 9999999
+
 function addon:initCooldownManager()
     local db = addon.db.global
     if db.EMEOptions.cooldownManager then
@@ -75,6 +77,30 @@ function addon:initCooldownManager()
         end)
         settingFrame.addRow.addEditBox:SetScript("OnTextChanged", nop)
         settingFrame.addRow.addEditBox:SetAutoFocus(false)
+        
+        settingFrame.addItemRow = CreateFrame("Frame", nil, settingFrame, "HorizontalLayoutFrame")
+        settingFrame.addItemRow.layoutIndex = 4
+        settingFrame.addItemRow.spacing = 10
+        
+        settingFrame.addItemRow.addFontString = settingFrame.addItemRow:CreateFontString(nil, nil, "GameTooltipText")
+        settingFrame.addItemRow.addFontString.layoutIndex = 1
+        settingFrame.addItemRow.addFontString:SetText("Add Item ID:")
+        
+        settingFrame.addItemRow.addEditBox = CreateFrame("EditBox", nil, settingFrame.addItemRow, "EditModeDialogLayoutNameEditBoxTemplate")
+        settingFrame.addItemRow.addEditBox.layoutIndex = 2
+        settingFrame.addItemRow.addEditBox:SetNumeric(true)
+        settingFrame.addItemRow.addEditBox:SetScript("OnEnterPressed", function(self)
+            local input = self:GetNumber()
+            -- crude way to implement a different datatype but its only for 2 patches then all this goes *poof*
+            table.insert(settingFrame.db, ITEM_ID_PADDING + input)
+            settingFrame:RefreshSettingFrame()
+            settingFrame.viewer:RefreshLayout()
+        end)
+        settingFrame.addItemRow.addEditBox:SetScript("OnEscapePressed", function(self)
+            self:ClearFocus()
+        end)
+        settingFrame.addItemRow.addEditBox:SetScript("OnTextChanged", nop)
+        settingFrame.addItemRow.addEditBox:SetAutoFocus(false)
 
         local function onSettingIconDrag(self, button)
             self:StartMoving()
@@ -116,16 +142,15 @@ function addon:initCooldownManager()
             local cooldownID = self.icon:GetCooldownID()
             local cooldownIDs = settingFrame.db
             
-            if cooldownID > 0 then
-                print("EME: Use Blizzard's UI to hide this icon")
-                return
-            elseif cooldownID < -2 then
+            if (cooldownID > ITEM_ID_PADDING) or (cooldownID < -2) then
                 table.remove(cooldownIDs, layoutIndex)
                 settingFrame:RefreshSettingFrame()
                 settingFrame.viewer:RefreshLayout()
                 return
+            elseif cooldownID >= 0 then
+                print("EME: Use Blizzard's UI to hide this icon")
+                return
             end
-            
             
             
             --[[
@@ -161,22 +186,6 @@ function addon:initCooldownManager()
             settingFrame.viewer:RefreshLayout()
         end
 
-        local function restoreButtonOnClick(self)
-            local layoutIndex = self.layoutIndex
-            local cooldownID = self:GetCooldownID()
-            local cooldownIDs = settingFrame.db
-            
-            local oldIndex = -1 * cooldownID
-            if cooldownID < 0 then
-                oldIndex = cooldownID
-            end
-            cooldownIDs[oldIndex] = nil
-            table.insert(cooldownIDs, cooldownID)
-            
-            settingFrame:RefreshSettingFrame()
-            settingFrame.viewer:RefreshLayout()
-        end
-
         local a = true
         function settingFrame:RefreshSettingFrame()
             settingFrame.activeIcons.framePool:ReleaseAll()
@@ -193,8 +202,11 @@ function addon:initCooldownManager()
                     local spellTexture = GetInventoryItemTexture("player", INVSLOT_TRINKET2)
                     icon:GetIconTexture():SetTexture(spellTexture)
                 elseif cooldownID < -2 then
-                    spellTexture = C_Spell.GetSpellTexture(cooldownID * -1)
+                    local spellTexture = C_Spell.GetSpellTexture(cooldownID * -1)
                     icon:GetIconTexture():SetTexture(spellTexture)
+                elseif cooldownID > ITEM_ID_PADDING then
+                    local itemName, itemLink, itemQuality, itemLevel, itemMinLevel, itemType, itemSubType, itemStackCount, itemEquipLoc, itemTexture, sellPrice, classID, subclassID, bindType, expansionID, setID, isCraftingReagent = C_Item.GetItemInfo(cooldownID - ITEM_ID_PADDING)
+                    icon:GetIconTexture():SetTexture(itemTexture)
                 end
                 
                 icon:Show()
@@ -211,7 +223,7 @@ function addon:initCooldownManager()
                     icon.hideButton.icon = icon
                     icon.hideButton:SetScript("OnClick", hideButtonOnClick)
                 end
-                icon.hideButton:SetShown(cooldownID < 0)
+                icon.hideButton:SetShown((cooldownID < 0) or (cooldownID > ITEM_ID_PADDING))
             end
             
             settingFrame:Layout()
@@ -229,9 +241,15 @@ function addon:initCooldownManager()
             
             hooksecurefunc(self, "CacheCooldownValues", function(self)
                 if not self.cooldownID then return end
-                if self.cooldownID >= 0 then return end
+                if (self.cooldownID >= 0) and (self.cooldownID < ITEM_ID_PADDING) then return end
             	
-                if self.cooldownID > -3 then
+                if self.cooldownID > ITEM_ID_PADDING then
+                    local startTimeSeconds, durationSeconds, enableCooldownTimer = C_Item.GetItemCooldown(self.cooldownID - ITEM_ID_PADDING)
+                    self.cooldownEnabled = enableCooldownTimer
+                    self.cooldownStartTime = startTimeSeconds
+                    self.cooldownDuration = durationSeconds
+                    self.cooldownModRate = 1
+                elseif self.cooldownID > -3 then
                     local invSlotId = (self.cooldownID == -2) and INVSLOT_TRINKET1 or INVSLOT_TRINKET2
                     local start, duration, enable = GetInventoryItemCooldown("player", invSlotId)
         		    self.cooldownEnabled = start
@@ -347,10 +365,13 @@ function addon:initCooldownManager()
             
             hooksecurefunc(self, "RefreshSpellTexture", function(self)
                 if not self.cooldownID then return end
-                if self.cooldownID > 0 then return end
+                if (self.cooldownID >= 0) and (self.cooldownID < ITEM_ID_PADDING) then return end
                 
                 local spellTexture
-                if self.cooldownID > -3 then
+                if self.cooldownID > ITEM_ID_PADDING then
+                    local itemName, itemLink, itemQuality, itemLevel, itemMinLevel, itemType, itemSubType, itemStackCount, itemEquipLoc, itemTexture, sellPrice, classID, subclassID, bindType, expansionID, setID, isCraftingReagent = C_Item.GetItemInfo(self.cooldownID - ITEM_ID_PADDING)
+                    spellTexture = itemTexture
+                elseif self.cooldownID > -3 then
                     local invSlotId = (self.cooldownID == -2) and INVSLOT_TRINKET1 or INVSLOT_TRINKET2
             	    spellTexture = GetInventoryItemTexture("player", invSlotId)
                 else
@@ -474,7 +495,7 @@ function addon:initCooldownManager()
             -- integrity check: remove any regular cooldown IDs that are not in the current default loadout set
             for i = #db, 1, -1 do
                 local cooldownID = db[i]
-                if cooldownID > 0 then
+                if (cooldownID > 0) and (cooldownID < ITEM_ID_PADDING) then
                     local found
                     for _, cid2 in pairs(cooldownIDs) do
                         if cooldownID == cid2 then
@@ -505,7 +526,7 @@ function addon:initCooldownManager()
             		local cooldownID = db and db[itemFrame.layoutIndex];
             		if cooldownID then
             			itemFrame:SetCooldownID(cooldownID);
-                        if cooldownID < 0 then
+                        if (cooldownID < 0) or (cooldownID > ITEM_ID_PADDING) then
                             hookRefreshSpellTexture(itemFrame)
                             hookCacheCooldownValues(itemFrame)
                             hookRefreshActive(itemFrame)

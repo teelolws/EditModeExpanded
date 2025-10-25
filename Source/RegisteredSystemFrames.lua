@@ -10,6 +10,9 @@ function addon:initSystemFrames()
         local name = frame:GetName()
         if not db[name] then db[name] = {} end
         lib:RegisterFrame(frame, "", db[name])
+        if db.EMEOptions.allowSetCoordinates then
+            lib:RegisterCoordinates(frame)
+        end
     end
     
     -- The earlier RegisterFrame will :SetShown(true) the TalkingHeadFrame if it was set to Hide then unset.

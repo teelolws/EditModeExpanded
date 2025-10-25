@@ -70,6 +70,7 @@ local defaults = {
             extraActionButton = true,
             cooldownManager = true,
             durationBars = true,
+            allowSetCoordinates = false,
         },
         QueueStatusButton = {},
         TotemFrame = {},
@@ -279,6 +280,11 @@ local options = {
         showCoordinates = {
             name = L["Show Coordinates"],
             desc = L["SHOW_COORDINATES_DESCRIPTION"],
+            type = "toggle",
+        },
+        allowSetCoordinates = {
+            name = "Allow custom coordinates",
+            desc = "Allows frames to be positioned using screen coordinates entered into text fields",
             type = "toggle",
         },
         playerFrame = {

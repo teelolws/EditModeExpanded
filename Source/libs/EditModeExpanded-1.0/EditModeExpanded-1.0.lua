@@ -748,6 +748,7 @@ function lib:RegisterCoordinates(frame)
     coordinatePanel.fixedHeight = 28
     coordinatePanel.SetupSetting = nop
     coordinatePanel.spacing = 20
+    table.insert(extraDialogItems, coordinatePanel)
     
     coordinatePanel.label = coordinatePanel:CreateFontString(nil, nil, "GameTooltipText")
     local label = coordinatePanel.label
@@ -771,7 +772,30 @@ function lib:RegisterCoordinates(frame)
     yEditBox:SetAutoFocus(false)
     
     local function onEnterPressed()
-        print(xEditBox:GetText(), yEditBox:GetText())
+        local db = framesDB[getSystemID(frame)]
+        local x, y = tonumber(xEditBox:GetText()), tonumber(yEditBox:GetText())
+        if (type(x) ~= "number") or (type(y) ~= "number") then return end
+        
+        if frame.EMESystemID then
+            -- Frame is a base UI frame already handled by Edit Mode
+            -- So we need to store the new coordinates into the Edit Mode profile
+            frame:ClearAllPoints()
+            frame:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", x, y)
+            frame:SetUserPlaced(true)
+            --EditModeSystemSettingsDialog:UpdateSettings(frame)
+            EditModeManagerFrame:OnSystemPositionChange(frame)
+        else
+            db.x, db.y = x, y
+            frame.EMEanchorTo = UIParent
+            frame.EMEanchorPoint = "BOTTOMLEFT"
+            
+            frame:ClearAllPoints()
+            frame:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", x, y)
+            
+            if frame:IsUserPlaced() then
+                frame:SetUserPlaced(false)
+            end
+        end
     end
     
     xEditBox:SetScript("OnEnterPressed", onEnterPressed)

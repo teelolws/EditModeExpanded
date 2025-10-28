@@ -6,7 +6,7 @@ local lib = LibStub:GetLibrary("EditModeExpanded-1.0")
 function addon:initHolyPower()
     local db = addon.db.global
     if not db.EMEOptions.holyPower then return end
-    lib:RegisterFrame(PaladinPowerBarFrame, HOLY_POWER, db.HolyPower)
+    addon:registerFrame(PaladinPowerBarFrame, HOLY_POWER, db.HolyPower)
     C_Timer.After(4, function() addon.ResetFrame(PaladinPowerBarFrame) end)
     lib:RegisterHideable(PaladinPowerBarFrame)
     lib:RegisterToggleInCombat(PaladinPowerBarFrame)

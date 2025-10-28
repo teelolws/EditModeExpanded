@@ -7,7 +7,7 @@ function addon:initTotemFrame()
     if not db.EMEOptions.totem then return end
     
     TotemFrame:SetParent(UIParent)
-    lib:RegisterFrame(TotemFrame, TUTORIAL_TITLE47, db.TotemFrame)
+    addon:registerFrame(TotemFrame, TUTORIAL_TITLE47, db.TotemFrame)
     lib:SetDefaultSize(TotemFrame, 100, 40)
     lib:RegisterHideable(TotemFrame)
     lib:RegisterToggleInCombat(TotemFrame)

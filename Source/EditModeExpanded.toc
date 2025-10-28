@@ -76,6 +76,7 @@ FrameHandlers\ClassResources\Runes.lua
 FrameHandlers\ClassResources\SoulShards.lua
 
 Options.lua
+RegisterFrame.lua
 ResetFrame.lua
 HookOnce.lua
 AnchorToDropdown.lua

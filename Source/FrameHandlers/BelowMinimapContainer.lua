@@ -8,10 +8,10 @@ function addon:initBelowMinimapContainer()
     if db.EMEOptions.UIWidgetBelowMinimapContainerFrame then
         if UIWidgetBelowMinimapContainerFrame then
             UIWidgetBelowMinimapContainerFrame:SetParent(UIParent)
-            lib:RegisterFrame(UIWidgetBelowMinimapContainerFrame, L["PvP Objectives"], db.UIWidgetBelowMinimapContainerFrame)
+            addon:registerFrame(UIWidgetBelowMinimapContainerFrame, L["PvP Objectives"], db.UIWidgetBelowMinimapContainerFrame)
             lib:RegisterResizable(UIWidgetBelowMinimapContainerFrame)
             ArenaEnemyFramesContainer:SetParent(UIParent)
-            lib:RegisterFrame(ArenaEnemyFramesContainer, L["BG Targets"], db.ArenaEnemyFramesContainer)
+            addon:registerFrame(ArenaEnemyFramesContainer, L["BG Targets"], db.ArenaEnemyFramesContainer)
         end
     end
 end

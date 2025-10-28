@@ -7,7 +7,7 @@ function addon:initLFG()
     local db = addon.db.global
     if db.EMEOptions.lfg then
         QueueStatusButton:SetParent(UIParent)
-        lib:RegisterFrame(QueueStatusButton, L["LFG"], db.QueueStatusButton)
+        addon:registerFrame(QueueStatusButton, L["LFG"], db.QueueStatusButton)
         hooksecurefunc(MicroMenu, "UpdateQueueStatusAnchors", function()
             if InCombatLockdown() then return end
             addon.ResetFrame(QueueStatusButton)

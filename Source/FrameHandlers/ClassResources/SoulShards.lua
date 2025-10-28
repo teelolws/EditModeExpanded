@@ -6,7 +6,7 @@ local lib = LibStub:GetLibrary("EditModeExpanded-1.0")
 function addon:initSoulShards()
     local db = addon.db.global
     if not db.EMEOptions.soulShards then return end
-    lib:RegisterFrame(WarlockPowerFrame, SOUL_SHARDS_POWER, db.SoulShards)
+    addon:registerFrame(WarlockPowerFrame, SOUL_SHARDS_POWER, db.SoulShards)
     lib:RegisterHideable(WarlockPowerFrame)
     lib:RegisterToggleInCombat(WarlockPowerFrame)
     lib:SetDontResize(WarlockPowerFrame)

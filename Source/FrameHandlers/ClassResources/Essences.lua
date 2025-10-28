@@ -6,7 +6,7 @@ local lib = LibStub:GetLibrary("EditModeExpanded-1.0")
 function addon:initEssences()
     local db = addon.db.global
     if not db.EMEOptions.evokerEssences then return end
-    lib:RegisterFrame(EssencePlayerFrame, POWER_TYPE_ESSENCE, db.EvokerEssences)
+    addon:registerFrame(EssencePlayerFrame, POWER_TYPE_ESSENCE, db.EvokerEssences)
     lib:SetDontResize(EssencePlayerFrame)
     lib:RegisterHideable(EssencePlayerFrame)
     lib:RegisterToggleInCombat(EssencePlayerFrame)

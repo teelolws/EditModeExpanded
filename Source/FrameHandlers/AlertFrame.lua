@@ -23,7 +23,7 @@ function addon:initAlertFrame()
     if ( not AchievementFrame ) then
         AchievementFrame_LoadUI()
     end
-    lib:RegisterFrame(AlertFrame, L["Alert"], db.Achievements)
+    addon:registerFrame(AlertFrame, L["Alert"], db.Achievements)
     lib:SetDefaultSize(AlertFrame, 20, 20)
     lib:RegisterResizable(AlertFrame)
     AlertFrame.Selection:HookScript("OnMouseDown", function()

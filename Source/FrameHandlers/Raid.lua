@@ -6,7 +6,7 @@ local lib = LibStub:GetLibrary("EditModeExpanded-1.0")
 function addon:initRaidFrames()
     local db = addon.db.global
     if not db.EMEOptions.compactRaidFrameContainer then return end
-    lib:RegisterFrame(CompactRaidFrameManager, L["Raid Manager"], db.CompactRaidFrameManager, nil, "TOPLEFT", false)
+    addon:registerFrame(CompactRaidFrameManager, L["Raid Manager"], db.CompactRaidFrameManager, nil, "TOPLEFT", false)
                 --[[
     hooksecurefunc("CompactRaidFrameManager_Expand", function()
         if InCombatLockdown() then return end

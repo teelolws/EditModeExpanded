@@ -6,7 +6,7 @@ local lib = LibStub:GetLibrary("EditModeExpanded-1.0")
 function addon:initArcaneCharges()
     local db = addon.db.global
     if not db.EMEOptions.arcaneCharges then return end
-    lib:RegisterFrame(MageArcaneChargesFrame, POWER_TYPE_ARCANE_CHARGES, db.ArcaneCharges)
+    addon:registerFrame(MageArcaneChargesFrame, POWER_TYPE_ARCANE_CHARGES, db.ArcaneCharges)
     lib:RegisterHideable(MageArcaneChargesFrame)
     lib:RegisterToggleInCombat(MageArcaneChargesFrame)
     lib:SetDontResize(MageArcaneChargesFrame)

@@ -113,7 +113,7 @@ function addon:initMenuBar()
                 -- but trying SetUserPlaced causes an error
                 ContainerFrame1.Bg:SetFrameLevel(0)
                 
-                lib:RegisterFrame(ContainerFrame1, BACKPACK_TOOLTIP, db.ContainerFrame1)
+                addon:registerFrame(ContainerFrame1, BACKPACK_TOOLTIP, db.ContainerFrame1)
                 hooksecurefunc("UpdateContainerFrameAnchors", function()
                     if InCombatLockdown() then return end
                     addon.ResetFrame(ContainerFrame1)
@@ -123,7 +123,7 @@ function addon:initMenuBar()
         
         addon.hookScriptOnce(ContainerFrameCombinedBags, "OnShow", function()
             addon:continueAfterCombatEnds(function()
-                lib:RegisterFrame(ContainerFrameCombinedBags, COMBINED_BAG_TITLE, db.ContainerFrameCombinedBags)
+                addon:registerFrame(ContainerFrameCombinedBags, COMBINED_BAG_TITLE, db.ContainerFrameCombinedBags)
                 hooksecurefunc("UpdateContainerFrameAnchors", function()
                     if InCombatLockdown() then return end
                     addon.ResetFrame(ContainerFrameCombinedBags)

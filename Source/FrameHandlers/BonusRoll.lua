@@ -8,7 +8,7 @@ function addon:initBonusRoll()
     if db.EMEOptions.bonusRoll then
         addon.hookScriptOnce(BonusRollFrame, "OnShow", function()
             addon:continueAfterCombatEnds(function()
-                lib:RegisterFrame(BonusRollFrame, L["Bonus Roll"], db.BonusRoll)
+                addon:registerFrame(BonusRollFrame, L["Bonus Roll"], db.BonusRoll)
                 lib:HideByDefault(BonusRollFrame)
                 BonusRollFrame.Selection:SetFrameStrata("TOOLTIP")
                 BonusRollFrame:HookScript("OnShow", function()

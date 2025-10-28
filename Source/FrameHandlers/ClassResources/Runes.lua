@@ -6,7 +6,7 @@ local lib = LibStub:GetLibrary("EditModeExpanded-1.0")
 function addon:initRunes()
     local db = addon.db.global
     if not db.EMEOptions.runes then return end
-    lib:RegisterFrame(RuneFrame, RUNES, db.Runes)
+    addon:registerFrame(RuneFrame, RUNES, db.Runes)
     lib:RegisterHideable(RuneFrame)
     lib:RegisterToggleInCombat(RuneFrame)
     lib:SetDontResize(RuneFrame)

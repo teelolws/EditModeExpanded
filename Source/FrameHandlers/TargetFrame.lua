@@ -10,7 +10,7 @@ function addon:initTargetFrame()
             local targetBuffsFrame = CreateFrame("Frame", "TargetFrameBuffs", TargetFrame)
             targetBuffsFrame:SetPoint("TOPLEFT", TargetFrame, "BOTTOMLEFT", 5, -10)
             targetBuffsFrame:SetSize(100, 10)
-            lib:RegisterFrame(targetBuffsFrame, "Target Buffs", db.TargetBuffs)
+            addon:registerFrame(targetBuffsFrame, "Target Buffs", db.TargetBuffs)
             lib:SetDontResize(targetBuffsFrame)
             
             hooksecurefunc("TargetFrame_UpdateDebuffAnchor", function(self, buff, index, numBuffs, anchorBuff, anchorIndex, size, offsetX, offsetY, mirrorVertically)

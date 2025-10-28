@@ -25,7 +25,7 @@ function addon:initMinimap()
         if ExpansionLandingPageMinimapButton then
             ExpansionLandingPageMinimapButton:SetParent(UIParent)
             ExpansionLandingPageMinimapButton:SetFrameStrata("MEDIUM")
-            lib:RegisterFrame(ExpansionLandingPageMinimapButton, L["Expansion Button"], db.ExpansionLandingPageMinimapButton)
+            addon:registerFrame(ExpansionLandingPageMinimapButton, L["Expansion Button"], db.ExpansionLandingPageMinimapButton)
             lib:RegisterResizable(ExpansionLandingPageMinimapButton)
             hooksecurefunc(ExpansionLandingPageMinimapButton, "UpdateIcon", function()
                 addon.ResetFrame(ExpansionLandingPageMinimapButton)
@@ -119,7 +119,7 @@ function addon:initMinimap()
     
     if db.EMEOptions.minimapHeader then
         MinimapCluster.BorderTop:SetParent(UIParent)
-        lib:RegisterFrame(MinimapCluster.BorderTop, L["Zone Name"], db.MinimapZoneName)
+        addon:registerFrame(MinimapCluster.BorderTop, L["Zone Name"], db.MinimapZoneName)
         lib:SetDontResize(MinimapCluster.BorderTop)
         addon:registerSecureFrameHideable(MinimapCluster.BorderTop)
         

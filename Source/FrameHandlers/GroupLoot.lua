@@ -9,7 +9,7 @@ function addon:initGroupLoot()
     
     addon.hookScriptOnce(GroupLootContainer, "OnShow", function()
         addon:continueAfterCombatEnds(function()
-            lib:RegisterFrame(GroupLootContainer, L["Group Loot Container"], db.GroupLootContainer)
+            addon:registerFrame(GroupLootContainer, L["Group Loot Container"], db.GroupLootContainer)
             hooksecurefunc(GroupLootContainer, "SetPoint", function()
                 addon.ResetFrame(GroupLootContainer)
             end)

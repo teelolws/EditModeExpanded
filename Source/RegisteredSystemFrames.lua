@@ -25,7 +25,7 @@ local function getToggleInCombatText(hidden)
     end
 end
     
-local actionbars = {[MainMenuBar]=true, [MultiBarBottomLeft]=true, [MultiBarBottomRight]=true, [MultiBarRight]=true, [MultiBarLeft]=true, [MultiBar5]=true, [MultiBar6]=true, [MultiBar7]=true}
+local actionbars = {[MainActionBar]=true, [MultiBarBottomLeft]=true, [MultiBarBottomRight]=true, [MultiBarRight]=true, [MultiBarLeft]=true, [MultiBar5]=true, [MultiBar6]=true, [MultiBar7]=true}
 function addon:registerSecureFrameHideable(frame, usePoint, onHide, onShow)
     local hidden, toggleInCombat, x, y, point, parent, relativePoint
     local override

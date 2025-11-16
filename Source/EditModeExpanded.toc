@@ -1,4 +1,4 @@
-## Interface: 110205
+## Interface: 110207
 ## Title: Edit Mode Expanded
 ## Version: @project-version@
 ## Notes: Expands Edit Mode to apply to other frames

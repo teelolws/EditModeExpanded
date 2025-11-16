@@ -596,8 +596,10 @@ function addon:initCooldownManager()
                 end
                 
                 frame:RefreshLayout()
-                settingFrame:RefreshSettingFrame()
-                settingFrame.viewer:RefreshLayout()
+                if settingFrame.db then
+                    settingFrame:RefreshSettingFrame()
+                    settingFrame.viewer:RefreshLayout()
+                end
             end)
         end
 

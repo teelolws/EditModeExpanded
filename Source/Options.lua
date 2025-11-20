@@ -19,6 +19,7 @@ local defaults = {
         BuffBarCooldownViewerSpellIDs = {
             ["*"] = {},
         },
+        AutoLayoutSwitching = {},
     },
     global = {
         EMEOptions = {
@@ -71,6 +72,7 @@ local defaults = {
             cooldownManager = true,
             durationBars = true,
             allowSetCoordinates = false,
+            raidSizeLayoutSwitching = false,
         },
         QueueStatusButton = {},
         TotemFrame = {},
@@ -411,6 +413,11 @@ local options = {
             name = HUD_EDIT_MODE_TIMER_BARS_LABEL,
             desc = string.format(L["TOGGLE_ADDITIONAL_OPTIONS_SUPPORT_STRING"], HUD_EDIT_MODE_TIMER_BARS_LABEL),
             type = "toggle",
+        },
+        raidSizeLayoutSwitching = {
+            name = "Layout Switching",
+            type = "group",
+            args = addon.GetLayoutChangeOptions(),
         },
     },
 }

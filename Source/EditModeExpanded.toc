@@ -75,6 +75,7 @@ FrameHandlers\ClassResources\HolyPower.lua
 FrameHandlers\ClassResources\Runes.lua
 FrameHandlers\ClassResources\SoulShards.lua
 
+AutoLayoutChanges.lua
 Options.lua
 RegisterFrame.lua
 ResetFrame.lua

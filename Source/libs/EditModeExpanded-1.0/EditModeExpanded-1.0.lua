@@ -2,7 +2,7 @@
 -- Internal variables
 --
 
-local MAJOR, MINOR = "EditModeExpanded-1.0", 96
+local MAJOR, MINOR = "EditModeExpanded-1.0", 97
 local lib = LibStub:NewLibrary(MAJOR, MINOR)
 if not lib then return end
 
@@ -911,6 +911,34 @@ local function clearSelectedSystem(index, systemFrame)
 end
 
 hooksecurefunc(f, "OnLoad", function()
+    -- this will stop the handlers being called more than once if multiple versions of this library exist
+    -- will only work from version 97 onward, implemented just before expansion Midnight
+    f.hookScriptWrappers = f.hookScriptWrappers or {}
+    local function hookScriptWrapper(frame, event, hookfunc)
+        f.hookScriptWrappers[frame] = f.hookScriptWrappers[frame] or {}
+        f.hookScriptWrappers[frame][event] = f.hookScriptWrappers[frame][event] or {}
+        wipe(f.hookScriptWrappers[frame][event])
+        f.hookScriptWrappers[frame][event][MINOR] = hookfunc
+        frame:HookScript(event, function(...)
+            if f.hookScriptWrappers[frame][event][MINOR] then
+                f.hookScriptWrappers[frame][event][MINOR](...)
+            end
+        end)
+    end
+    
+    f.hooksecurefuncWrappers = f.hooksecurefuncWrappers or {}
+    local function hooksecurefuncWrapper(frame, functionName, hookfunc)
+        f.hooksecurefuncWrappers[frame] = f.hooksecurefuncWrappers[frame] or {}
+        f.hooksecurefuncWrappers[frame][functionName] = f.hooksecurefuncWrappers[frame][functionName] or {}
+        wipe(f.hooksecurefuncWrappers[frame][functionName])
+        f.hooksecurefuncWrappers[frame][functionName][MINOR] = hookfunc
+        hooksecurefunc(frame, functionName, function(...)
+            if f.hooksecurefuncWrappers[frame][functionName][MINOR] then
+                f.hooksecurefuncWrappers[frame][functionName][MINOR](...)
+            end
+        end)
+    end
+    
     if not EditModeManagerExpandedFrame then
         CreateFrame("Frame", "EditModeManagerExpandedFrame", nil, UIParent)
     end
@@ -935,11 +963,11 @@ hooksecurefunc(f, "OnLoad", function()
     EditModeManagerExpandedFrame.CloseButton = EditModeManagerExpandedFrame.CloseButton or CreateFrame("Button", nil, EditModeManagerExpandedFrame, "UIPanelCloseButton")
     EditModeManagerExpandedFrame.CloseButton:SetPoint("TOPRIGHT")
     
-    EditModeManagerFrame:HookScript("OnShow", function()
+    hookScriptWrapper(EditModeManagerFrame, "OnShow", function()
         EditModeManagerExpandedFrame:Show()
     end)
     
-    EditModeManagerFrame:HookScript("OnHide", function()
+    hookScriptWrapper(EditModeManagerFrame, "OnHide", function()
         EditModeManagerExpandedFrame:Hide()
     end)
     
@@ -948,7 +976,7 @@ hooksecurefunc(f, "OnLoad", function()
         EditModeExpandedSystemSettingsDialog:Hide()
     end
 
-    hooksecurefunc(EditModeManagerFrame, "EnterEditMode", function(self)
+    hooksecurefuncWrapper(EditModeManagerFrame, "EnterEditMode", function(self)
         -- can cause errors if the player is in combat - eg trying to move or show/hide protected frames
         if InCombatLockdown() then return end
         if not EditModeManagerExpandedFrame then return end -- happens if library is embedded but nothing has been registered
@@ -988,7 +1016,7 @@ hooksecurefunc(f, "OnLoad", function()
         end
     end)
 
-    hooksecurefunc(EditModeManagerFrame, "ExitEditMode", function()
+    hooksecurefuncWrapper(EditModeManagerFrame, "ExitEditMode", function(self)
         if InCombatLockdown() then
             print("EditModeExpanded Error: could not hide Edit Mode properly - you were in combat!")
             return
@@ -1035,7 +1063,7 @@ hooksecurefunc(f, "OnLoad", function()
         EditModeExpandedSystemSettingsDialog:Hide()
     end)
 
-    hooksecurefunc(EditModeManagerFrame, "SelectSystem", function(self, systemFrame)
+    hooksecurefuncWrapper(EditModeManagerFrame, "SelectSystem", function(self, systemFrame)
         if EditModeExpandedSystemSettingsDialog and EditModeExpandedSystemSettingsDialog.attachedToSystem ~= systemFrame then
             EditModeExpandedSystemSettingsDialog:Hide()
         end
@@ -1047,7 +1075,7 @@ hooksecurefunc(f, "OnLoad", function()
         end
     end)
     
-    hooksecurefunc(EditModeManagerFrame, "MakeNewLayout", function(self, newLayoutInfo, layoutType, layoutName, isLayoutImported)
+    hooksecurefuncWrapper(EditModeManagerFrame, "MakeNewLayout", function(self, newLayoutInfo, layoutType, layoutName, isLayoutImported)
         local oldProfileName = previousProfileNames[2]
         if not oldProfileName then
             oldProfileName = previousProfileNames[1]
@@ -1096,7 +1124,7 @@ hooksecurefunc(f, "OnLoad", function()
     frame:SetPoint("TOPLEFT")
     frame.widthPadding = 40
     frame.heightPadding = 10
-    frame.Title = frame:CreateFontString(nil, "ARTWORK", "GameFontHighlightLarge")
+    frame.Title = frame.Title or frame:CreateFontString(nil, "ARTWORK", "GameFontHighlightLarge")
     frame.Title:SetPoint("TOP", 0, -15)
     frame.Border = frame.Border or CreateFrame("Frame", nil, frame, "DialogBorderTranslucentTemplate")
     frame.Border.ignoreInLayout = true

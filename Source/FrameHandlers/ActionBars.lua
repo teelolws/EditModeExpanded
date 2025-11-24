@@ -10,7 +10,7 @@ function addon:initActionBars()
         if InCombatLockdown() then return end 
         local bars = {MainMenuBar, MultiBarBottomLeft, MultiBarBottomRight, MultiBarRight, MultiBarLeft, MultiBar5, MultiBar6, MultiBar7}
 
-        for _, bar in ipairs(bars) do
+        for barIndex, bar in ipairs(bars) do
             
             --[[
             -- setting.buttonPadding causes taint to spread and cause issues
@@ -73,6 +73,38 @@ function addon:initActionBars()
                 end,
                 0.5, 2, 0.05)
 
+            local secureHandlerFrame = CreateFrame("Frame", nil, nil, "SecureHandlerEnterLeaveTemplate")
+            secureHandlerFrame:SetPoint("TOPLEFT", bar, "TOPLEFT")
+            secureHandlerFrame:SetPoint("BOTTOMRIGHT", bar, "BOTTOMRIGHT")
+            secureHandlerFrame:SetFrameRef("bar", bar)
+            secureHandlerFrame:SetFrameStrata("TOOLTIP")
+            secureHandlerFrame:EnableMouse(false)
+            secureHandlerFrame:EnableMouseMotion(true)
+            secureHandlerFrame:SetPropagateMouseMotion(true)
+            
+            local skipInit
+            lib:RegisterCustomCheckbox(bar, L["HIDE_WHEN_NOT_MOUSEOVER_DESCRIPTION"],
+                function()
+                    secureHandlerFrame:SetAttribute("_onenter", "self:GetFrameRef('bar'):Show()")
+                    secureHandlerFrame:SetAttribute("_onleave", "self:GetFrameRef('bar'):Hide()")
+                    if not skipInit then
+                        skipInit = true
+                        return
+                    end
+                    bar:Hide()
+                end,
+                function()
+                    secureHandlerFrame:SetAttribute("_onenter", "")
+                    secureHandlerFrame:SetAttribute("_onleave", "")
+                    if not skipInit then
+                        skipInit = true
+                        return
+                    end
+                    bar:Show()
+                end,
+                "HideUntilMouseover"
+            )
+            
             hooksecurefunc("CompactUnitFrame_UpdateName", updateNamesSizes)
         end
     end)

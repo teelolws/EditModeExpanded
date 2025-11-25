@@ -2,7 +2,7 @@
 -- Internal variables
 --
 
-local MAJOR, MINOR = "EditModeExpanded-1.0", 97
+local MAJOR, MINOR = "EditModeExpanded-1.0", 98
 local lib = LibStub:NewLibrary(MAJOR, MINOR)
 if not lib then return end
 
@@ -36,6 +36,7 @@ local ENUM_EDITMODEACTIONBARSETTING_FRAMESIZE = 16 -- Enum.EditModeUnitFrameSett
 local ENUM_EDITMODEACTIONBARSETTING_DROPDOWN = 17
 local ENUM_EDITMODEACTIONBARSETTING_SLIDER = 18
 local ENUM_EDITMODEACTIONBARSETTING_COORDINATES = 19
+local ENUM_EDITMODEACTIONBARSETTING_HIDDENUNTILMOUSEOVER = 20
 
 -- run OnLoad the first time RegisterFrame is called by an addon
 local f = lib.internalOnLoadFrame or {}
@@ -1215,6 +1216,34 @@ local function GetSystemSettingDisplayInfo(dialogs)
     return dialogs
 end
 
+local function hideFrameUntilMouseover(frame)
+    local handler = frame.EMESecureHandlerEnterLeave
+    if not handler then
+        frame.EMESecureHandlerEnterLeave = CreateFrame("Frame", nil, nil, "SecureHandlerEnterLeaveTemplate")
+        handler = frame.EMESecureHandlerEnterLeave
+        handler:SetPoint("TOPLEFT", frame, "TOPLEFT")
+        handler:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT")
+        handler:SetFrameRef("parent", frame)
+        handler:SetFrameStrata("TOOLTIP")
+        handler:EnableMouse(false)
+        handler:EnableMouseMotion(true)
+        handler:SetPropagateMouseMotion(true)
+    end
+    
+    handler:SetAttribute("_onenter", "self:GetFrameRef('parent'):Show()")
+    handler:SetAttribute("_onleave", "self:GetFrameRef('parent'):Hide()")
+    frame:Hide()
+end
+
+local function pauseHideFrameUntilMouseover(frame)
+    local handler = frame.EMESecureHandlerEnterLeave
+    if not handler then return end
+    
+    handler:SetAttribute("_onenter", "")
+    handler:SetAttribute("_onleave", "")
+    frame:Show()
+end
+
 hooksecurefunc(f, "OnLoad", function()
     function EditModeExpandedSystemSettingsDialog:UpdateSettings(systemFrame)
         if systemFrame == self.attachedToSystem then
@@ -1374,6 +1403,22 @@ hooksecurefunc(f, "OnLoad", function()
                                     framesDB[systemID].settings[displayInfo.setting] = 1
                                 else
                                     framesDB[systemID].settings[displayInfo.setting] = 0
+                                end
+                            end)
+                        end
+                        
+                        if displayInfo.setting == ENUM_EDITMODEACTIONBARSETTING_HIDDENUNTILMOUSEOVER then
+                            savedValue = framesDB[systemID].settings[displayInfo.setting]
+                            if savedValue == nil then savedValue = 0 end
+                            settingFrame.Button:SetChecked(savedValue)
+                            settingFrame.Button:SetScript("OnClick", function()
+                                if settingFrame.Button:GetChecked() then
+                                    framesDB[systemID].settings[displayInfo.setting] = 1
+                                    hideFrameUntilMouseover(systemFrame)
+                                else
+                                    framesDB[systemID].settings[displayInfo.setting] = 0
+                                    pauseHideFrameUntilMouseover(systemFrame)
+                                    systemFrame:Show()
                                 end
                             end)
                         end
@@ -2015,4 +2060,42 @@ function lib:GroupOptions(frames, name)
             frame.EMEResetButton:Hide()
         end
     end
+end
+
+-- Adds the option to make this frame hidden except while mouseover
+-- @param 2: localized description for the checkbox to show
+function lib:RegisterHiddenUntilMouseover(frame, name)
+    local systemID = getSystemID(frame)
+    
+    if not framesDialogs[systemID] then framesDialogs[systemID] = {} end
+    if framesDialogsKeys[systemID] and framesDialogsKeys[systemID][ENUM_EDITMODEACTIONBARSETTING_HIDDENUNTILMOUSEOVER] then return end
+    if not framesDialogsKeys[systemID] then framesDialogsKeys[systemID] = {} end
+    framesDialogsKeys[systemID][ENUM_EDITMODEACTIONBARSETTING_HIDDENUNTILMOUSEOVER] = true
+    table.insert(framesDialogs[systemID],
+        {
+            setting = ENUM_EDITMODEACTIONBARSETTING_HIDDENUNTILMOUSEOVER,
+            name = name or "Hide Until Mouseover",
+            type = Enum.EditModeSettingDisplayType.Checkbox,
+        }
+    )
+    
+    local function callLater()
+        local db = framesDB[systemID]
+        if not db.settings then db.settings = {} end
+        if not db.settings[ENUM_EDITMODEACTIONBARSETTING_HIDDENUNTILMOUSEOVER] then db.settings[ENUM_EDITMODEACTIONBARSETTING_HIDDENUNTILMOUSEOVER] = {} end
+        
+        if db.settings[ENUM_EDITMODEACTIONBARSETTING_HIDDENUNTILMOUSEOVER] == 1 then
+            hideFrameUntilMouseover(frame)
+        else
+            pauseHideFrameUntilMouseover(frame)
+        end
+    end
+    
+    if profilesInitialised then
+        callLater()
+    else
+        table.insert(customCheckboxCallDuringProfileInit, callLater)
+    end
+
+    EventRegistry:RegisterFrameEventAndCallback("EDIT_MODE_LAYOUTS_UPDATED", callLater)
 end

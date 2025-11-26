@@ -13,7 +13,6 @@ function addon:initCooldownManager()
         local function refreshAll()
             EssentialCooldownViewer:RefreshLayout()
             UtilityCooldownViewer:RefreshLayout()
-            BuffIconCooldownViewer:RefreshLayout()
             BuffBarCooldownViewer:RefreshLayout()
         end
 
@@ -283,31 +282,6 @@ function addon:initCooldownManager()
             if refreshCooldownInfoHooks[self] then return end
             if not self.RefreshCooldownInfo then return end
             
-        	if self:GetParent() == BuffIconCooldownViewer then
-                hooksecurefunc(self, "RefreshCooldownInfo", function(self)
-                    if not self.cooldownID then return end
-                    if self.cooldownID >= 0 then return end
-                    
-                    local cooldownFrame = self:GetCooldownFrame();
-
-                	local auraData = C_UnitAuras.GetPlayerAuraBySpellID(self.cooldownID * -1)
-                    if not auraData then return end
-                    local expirationTime, duration, timeMod = auraData.expirationTime, auraData.duration, auraData.timeMod
-                	local currentTime = expirationTime - GetTime();
-
-                	if currentTime > 0 then
-                		local startTime = expirationTime - duration;
-                		local isEnabled = 1;
-                		local forceShowDrawEdge = false;
-                		CooldownFrame_Set(cooldownFrame, startTime, duration, isEnabled, forceShowDrawEdge, timeMod);
-                	else
-                		CooldownFrame_Clear(cooldownFrame);
-                	end
-
-                	cooldownFrame:Resume();
-                end)
-            end
-            
             if self:GetParent() == BuffBarCooldownViewer then
                 hooksecurefunc(self, "RefreshCooldownInfo", function(self)
                 	if not self.cooldownID then return end
@@ -395,7 +369,7 @@ function addon:initCooldownManager()
         local function hookRefreshActive(self)
             if refreshActiveHooks[self] then return end
             
-            if (self:GetParent() == BuffIconCooldownViewer) or (self:GetParent() == BuffBarCooldownViewer) then
+            if self:GetParent() == BuffBarCooldownViewer then
                 hooksecurefunc(self, "RefreshActive", function()
                     if not self.cooldownID then return self:SetIsActive(false) end
                     if self.cooldownID >= 0 then return self:SetIsActive(false) end
@@ -553,7 +527,7 @@ function addon:initCooldownManager()
                     self:OnAcquireItemFrame(itemFrame)
                 end
                 
-                if (frame == BuffIconCooldownViewer) or (frame == BuffBarCooldownViewer) then
+                if frame == BuffBarCooldownViewer then
                     self:GetItemContainerFrame().stride = #db
                 end
                 
@@ -641,7 +615,6 @@ function addon:initCooldownManager()
         
         initFrame(EssentialCooldownViewer, addon.db.char.EssentialCooldownViewerSpellIDs, true)
         initFrame(UtilityCooldownViewer, addon.db.char.UtilityCooldownViewerSpellIDs, true)
-        initFrame(BuffIconCooldownViewer, addon.db.char.BuffIconCooldownViewerSpellIDs)
         initFrame(BuffBarCooldownViewer, addon.db.char.BuffBarCooldownViewerSpellIDs)
         
         C_Timer.After(3, refreshAll)

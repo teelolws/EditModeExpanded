@@ -140,7 +140,7 @@ do
         
         -- Housing button did not exist in Shadowlands, so using custom textures
         if self == HousingMicroButton then
-            local path = "Interface\\AddOns\\EditModeExpanded\\textures\\UI-MicroButton-Housing-"
+            local path = "Interface\\AddOns\\"..addonName.."\\textures\\UI-MicroButton-Housing-"
             self:SetNormalTexture(path.."Up")
             self:SetPushedTexture(path.."Down")
             self:SetDisabledTexture(path.."Disabled")
@@ -249,7 +249,7 @@ do
             end)
         end
         hooksecurefunc(data.button, "SetPushed", replaceAllAtlases)
-        hooksecurefunc(data.button, "SetNormal", replaceAllAtlases)     
+        hooksecurefunc(data.button, "SetNormal", replaceAllAtlases)
     end
 
     CreateFrame("Frame", "GuildMicroButtonTabard", GuildMicroButton)

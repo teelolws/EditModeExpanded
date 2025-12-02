@@ -777,7 +777,7 @@ function addon:initVigorBar()
     if not db.EMEOptions.vigorBar then return end
     
     container = CreateFrame("Frame", "EMEVigorContainer", UIParent, "UIWidgetContainerTemplate")
-    container:SetPoint("CENTER", 0, -200)
+    container:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", (UIParent:GetWidth()/2) - 152, (UIParent:GetHeight()/2) - 200)
     container:RegisterForWidgetSet(widgetSetID)
     container:SetScript("OnEvent", nop)
     addon:registerFrame(container, L["Vigor Bar"], db.VigorBar)

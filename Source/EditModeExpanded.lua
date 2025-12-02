@@ -44,6 +44,7 @@ EventUtil.RegisterOnceFrameEventAndCallback("PLAYER_ENTERING_WORLD", function()
     addon:initCooldownManager()
     addon:initTotemFrame()
     addon:initDurationBars()
+    addon:initVigorBar()
         
     local class = UnitClassBase("player")
         

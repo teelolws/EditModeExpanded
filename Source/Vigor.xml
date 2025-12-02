@@ -1,0 +1,179 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+    <!-- Adapted from Blizzard_UIWidgetTemplateBase.xml -->
+	<Frame name="EMEWidgetTemplateTooltipFrame" virtual="true" mixin="EMEWidgetTemplateTooltipFrameMixin">
+		<!--Change this on inheriting frames to adjust where the tooltip anchors to-->
+		<KeyValues>
+			<KeyValue key="defaultTooltipAnchor" value="ANCHOR_BOTTOMLEFT" type="string"/>
+			<KeyValue key="tooltipXOffset" value="0" type="number"/>
+			<KeyValue key="tooltipYOffset" value="0" type="number"/>
+		</KeyValues>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Frame>
+	<AnimationGroup name="EMEWidgetInAnimation" virtual="true">
+		<Scripts>
+			<OnFinished>
+				self:GetParent():InAnimFinished();
+			</OnFinished>
+		</Scripts>
+	</AnimationGroup>
+	<AnimationGroup name="EMEWidgetOutAnimation" virtual="true">
+		<Scripts>
+			<OnFinished>
+				self:GetParent():OutAnimFinished();
+			</OnFinished>
+		</Scripts>
+	</AnimationGroup>
+	<Frame name="EMEWidgetBaseTemplate" inherits="EMEWidgetTemplateTooltipFrame" virtual="true" hidden="true" mixin="EMEWidgetBaseTemplateMixin">
+		<Animations>
+			<AnimationGroup parentKey="FadeInAnim" inherits="EMEWidgetInAnimation" setToFinalAlpha="true">
+				<Alpha fromAlpha="0" toAlpha="1" duration="0.25"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="FadeOutAnim" inherits="EMEWidgetOutAnimation" setToFinalAlpha="true">
+				<Alpha fromAlpha="1" toAlpha="0" duration="0.25"/>
+			</AnimationGroup>
+		</Animations>
+	</Frame>
+    
+    <!-- Adapted from Blizzard_UIWidgetTemplateFillUpFrames.xml -->
+	<StatusBar name="EMEWidgetFillUpFrameTemplate" inherits="ResizeLayoutFrame" mixin="EMEWidgetFillUpFrameTemplateMixin" orientation="VERTICAL" virtual="true">
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="BG">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="Spark" alphaMode="ADD">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<MaskTexture parentKey="SparkMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="Spark"/>
+					</MaskedTextures>
+				</MaskTexture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<Texture parentKey="Frame">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Flash" alphaMode="ADD" alpha="0">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<Animations>
+						<AnimationGroup parentKey="FlashAnim" setToFinalAlpha="true">
+							<Alpha parentKey="FadeIn" duration="0.5" fromAlpha="0" toAlpha="1" order="1"/>
+							<Alpha parentKey="FadeOut" duration="0.5" fromAlpha="1" toAlpha="0" order="2"/>
+						</AnimationGroup>
+						<AnimationGroup parentKey="PulseAnim" setToFinalAlpha="true" looping="REPEAT">
+							<Alpha parentKey="FadeIn" duration="1.5" fromAlpha="0" toAlpha="1" order="1"/>
+							<Alpha parentKey="FadeOut" duration="1.5" fromAlpha="1" toAlpha="0" order="2" endDelay="0.8"/>
+						</AnimationGroup>
+					</Animations>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<StatusBar parentKey="Bar" orientation="VERTICAL" useParentLevel="true">
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="Flipbook" setAllPoints="true" hidden="true"/>
+						<MaskTexture parentKey="FlipbookMask" atlas="AlphaMask2" useAtlasSize="true" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+							<Anchors>
+								<Anchor point="TOP"/>
+							</Anchors>
+							<MaskedTextures>
+								<MaskedTexture childKey="Flipbook"/>
+							</MaskedTextures>
+						</MaskTexture>
+						<Texture parentKey="FilledFlipbook" alphaMode="ADD" setAllPoints="true" hidden="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY" textureSubLevel="2">
+						<Texture parentKey="BurstFlipbook" setAllPoints="true" hidden="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Animations>
+					<AnimationGroup parentKey="FillupFlipbookAnim" looping="REPEAT">
+						<FlipBook childKey="Flipbook" startDelay="0" endDelay="0" smoothing="NONE" duration="1.2" flipBookRows="5" flipBookColumns="4" flipBookFrames="20" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+					</AnimationGroup>
+					<AnimationGroup parentKey="BurstFlipbookAnim" mixin="EMEBurstFlipbookAnimMixin">
+						<FlipBook childKey="BurstFlipbook" duration="0.55" flipBookRows="4" flipBookColumns="4" flipBookFrames="16"/>
+						<Scripts>
+							<OnFinished method="OnAnimFinished"/>
+						</Scripts>
+					</AnimationGroup>
+					<AnimationGroup parentKey="FilledFlipbookAnim" mixin="EMEFilledFlipbookAnimMixin">
+						<FlipBook childKey="FilledFlipbook" duration="0.6" flipBookRows="2" flipBookColumns="4" flipBookFrames="8"/>
+						<Scripts>
+							<OnFinished method="OnAnimFinished"/>
+						</Scripts>
+					</AnimationGroup>
+				</Animations>
+			</StatusBar>	
+		</Frames>
+	</StatusBar>
+	
+	<Frame name="EMEWidgetTemplateFillUpFrames" inherits="EMEWidgetBaseTemplate, HorizontalLayoutFrame" virtual="true" mixin="EMEWidgetTemplateFillUpFramesMixin">
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="DecorLeft">
+					<KeyValues>
+						<KeyValue key="layoutIndex" value="0" type="number"/>
+					</KeyValues>
+					<TexCoords left="1" right="0" top="0" bottom="1"/>
+				</Texture>
+				<Texture parentKey="DecorRight">
+					<KeyValues>
+						<KeyValue key="layoutIndex" value="10" type="number"/>
+					</KeyValues>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="DecorFlipbookLeft" alphaMode="ADD" setAllPoints="true" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.DecorLeft"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="DecorFlipbookRight" alphaMode="ADD" setAllPoints="true" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.DecorRight"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="DecorFlipbookAnim" mixin ="EMEDecorFlipbookAnimMixin">
+				<FlipBook childKey="DecorFlipbookLeft" duration="0.3" flipBookRows="2" flipBookColumns="4" flipBookFrames="8"/>
+				<FlipBook childKey="DecorFlipbookRight" duration="0.3" flipBookRows="2" flipBookColumns="4" flipBookFrames="8"/>
+				<Scripts>
+					<OnFinished method="OnAnimFinished"/>
+				</Scripts>
+			</AnimationGroup>
+		</Animations>
+	</Frame>
+</Ui>

@@ -127,8 +127,34 @@ local SLSkinEnabled = false
 do
     local prefix = "hud-microbutton-"
     	
+    local function housingChangeTextureSizes(texture)
+        texture:SetAlpha(1)
+        texture:SetSize(28, 36)
+        texture:SetTexCoord(0, 1, 0.36, 1)
+    end
+    
     local function replaceAtlases(self, name)
         if not SLSkinEnabled then return end
+        
+        self:SetHighlightAtlas("hud-microbutton-highlight")
+        
+        -- Housing button did not exist in Shadowlands, so using custom textures
+        if self == HousingMicroButton then
+            local path = "Interface\\AddOns\\"..addonName.."\\textures\\UI-MicroButton-Housing-"
+            self:SetNormalTexture(path.."Up")
+            self:SetPushedTexture(path.."Down")
+            self:SetDisabledTexture(path.."Disabled")
+            
+            housingChangeTextureSizes(self:GetNormalTexture())
+            housingChangeTextureSizes(self:GetPushedTexture())
+            housingChangeTextureSizes(self:GetDisabledTexture())
+            
+            -- May not be needed, as of Midnight beta does not seem to change anything
+            --self.FlashContent:SetAtlas(prefix.."CharacterInfo-Up", true)
+            
+            return
+        end
+        
         -- code from 9.2 version of FrameXML\MainMenuBarMicroButtons.lua
         self:SetNormalAtlas(prefix..name.."-Up", true)
         self:SetPushedAtlas(prefix..name.."-Down", true)
@@ -156,7 +182,6 @@ do
         end
         
     	self:SetDisabledAtlas(prefix..name.."-Disabled", true)
-    	self:SetHighlightAtlas("hud-microbutton-highlight")
         
         local normalTexture = self:GetNormalTexture();
     	if(normalTexture) then 
@@ -179,6 +204,7 @@ do
         {button = EJMicroButton, name = "EJ"},
         {button = StoreMicroButton, name = "BStore"},  
         {button = MainMenuMicroButton, name = "MainMenu"},
+        {button = HousingMicroButton},
     }
 
     local function replaceAllAtlases()
@@ -223,7 +249,7 @@ do
             end)
         end
         hooksecurefunc(data.button, "SetPushed", replaceAllAtlases)
-        hooksecurefunc(data.button, "SetNormal", replaceAllAtlases)     
+        hooksecurefunc(data.button, "SetNormal", replaceAllAtlases)
     end
 
     CreateFrame("Frame", "GuildMicroButtonTabard", GuildMicroButton)

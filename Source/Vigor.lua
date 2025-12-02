@@ -734,6 +734,9 @@ local SURGE_FORWARD_SPELL_ID = 372608
 local function shouldShow(widgetID)
     local isGliding, canGlide, forwardSpeed = C_PlayerInfo.GetGlidingInfo()
     
+    -- TODO: Algari Storm is 5145
+    -- Detect if mounted on that one instead
+    
     if widgetID == 4460 then
         return canGlide
     end

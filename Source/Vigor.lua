@@ -786,6 +786,7 @@ function addon:initVigorBar()
     container:SetScript("OnEvent", nop)
     addon:registerFrame(container, L["Vigor Bar"], db.VigorBar)
     lib:RegisterResizable(container)
+    lib:SetDefaultSize(container, 305, 66)
     container:Show()
     
     local vigorFrames = {}

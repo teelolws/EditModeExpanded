@@ -272,7 +272,7 @@ end
 --
 
 local widgetIDs = {
-    --5145, -- Algari dark
+    5145, -- Algari dark
     4460, -- Dragonriding
     --5144, -- Algari bronze
     --5143, -- Algari silver
@@ -730,16 +730,21 @@ function EMEBurstFlipbookAnimMixin:OnAnimFinished()
 end
 
 local SURGE_FORWARD_SPELL_ID = 372608
+local ALGARI_STORMRIDER_SPELL_ID = 417888
 
 local function shouldShow(widgetID)
     local isGliding, canGlide, forwardSpeed = C_PlayerInfo.GetGlidingInfo()
     
-    -- TODO: Algari Storm is 5145
-    -- Detect if mounted on that one instead
-    
-    if widgetID == 4460 then
+    local stormriderAura = C_UnitAuras.GetPlayerAuraBySpellID(ALGARI_STORMRIDER_SPELL_ID)
+    if (widgetID == 5145) and stormriderAura then
         return canGlide
     end
+    
+    if (widgetID == 4460) and (not stormriderAura) then
+        return canGlide
+    end
+    
+    return false
 end
 
 local container
@@ -760,15 +765,14 @@ local function updateWidget(vigorFrame, widgetID)
         
         widgetInfos[widgetID].numTotalFrames = chargeInfo.maxCharges
         widgetInfos[widgetID].numFullFrames = chargeInfo.currentCharges
+        widgetInfos[widgetID].pulseFillingFrame = false
         if chargeInfo.cooldownStartTime > 0 then
             widgetInfos[widgetID].fillValue = 100 * (GetTime() - chargeInfo.cooldownStartTime) / chargeInfo.cooldownDuration
-            vigorFrame:Setup(widgetInfos[widgetID], container)
             if widgetInfos[widgetID].fillValue < 100 then
                 widgetInfos[widgetID].pulseFillingFrame = true
-            else
-                widgetInfos[widgetID].pulseFillingFrame = false
             end
         end
+        vigorFrame:Setup(widgetInfos[widgetID], container)
     end
 end
 
@@ -782,6 +786,7 @@ function addon:initVigorBar()
     container:SetScript("OnEvent", nop)
     addon:registerFrame(container, L["Vigor Bar"], db.VigorBar)
     lib:RegisterResizable(container)
+    container:Show()
     
     local vigorFrames = {}
     for _, widgetID in ipairs(widgetIDs) do
@@ -795,7 +800,7 @@ function addon:initVigorBar()
         vigorFrame:SetScript("OnEvent", function(self, event, ...)
             updateWidget(self, widgetID)
         end)
-        vigorFrame:SetScript("OnUpdate", function(self)
+        vigorFrame:HookScript("OnUpdate", function(self)
             updateWidget(self, widgetID)
         end)
     end

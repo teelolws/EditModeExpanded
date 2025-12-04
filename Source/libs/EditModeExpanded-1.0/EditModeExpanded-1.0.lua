@@ -534,7 +534,7 @@ function lib:ReanchorFrame(frame, anchorTo, anchorPoint)
     frame:SetPoint(anchorPoint, anchorTo, anchorPoint, x, y)
 end
 
--- Call this to add a slider to the frames dialog box, allowing is to be resized using frame:SetScale
+-- Call this to add a slider to the frames dialog box, allowing it to be resized using frame:SetScale
 -- param1: an edit mode registered frame, either one already registered by Blizz, or a custom one you have registered with lib:RegisterFrame
 -- param2: minimum size, default will be 10
 -- param3: maximum size, default will be 200
@@ -594,6 +594,7 @@ end
  
 -- Call this to add a checkbox to the frames dialog box, allowing the frame to be permanently hidden outside of Edit Mode
 -- param1: an edit mode registered frame, either one already registered by Blizz, or a custom one you have registered with lib:RegisterFrame
+-- onEventHandler: optional function that is called when an event is fired for this frame, while it is shown. This will replace any existing event handlers, so it is useful to disable events on frames while it is hidden, and re-enable them while it is shown.
 function lib:RegisterHideable(frame, onEventHandler)
     local systemID = getSystemID(frame)
     
@@ -611,6 +612,7 @@ function lib:RegisterHideable(frame, onEventHandler)
     frame.EMEOnEventHandler = onEventHandler
 end
 
+-- Call this to find out if the user has marked the frame hidden by their lib:RegisterHideable setting
 function lib:IsFrameMarkedHidden(frame)
     local systemID = getSystemID(frame)
     
@@ -641,7 +643,7 @@ function lib:IsRegistered(frame)
     return true
 end
 
--- Is the Expanded frame checkbox checked for this frame?
+-- Is the Expanded frame checkbox checked for this frame, making it visible during Edit Mode?
 function lib:IsFrameEnabled(frame)
     local db = framesDB[frame.system]
     return db.enabled

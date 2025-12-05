@@ -805,4 +805,5 @@ function addon:initVigorBar()
             updateWidget(self, widgetID)
         end)
     end
+    container.Layout = nop
 end

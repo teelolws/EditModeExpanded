@@ -9,7 +9,7 @@ jobs:
       - name: Luacheck linter - LibEME
         uses: lunarmodules/luacheck@v1
         with:
-          args: libs/EditModeExpanded-1.0/EditModeExpanded-1.0.lua --no-max-line-length --no-global --ignore 6 self addonName
+          args: Source/libs/EditModeExpanded-1.0/EditModeExpanded-1.0.lua --no-max-line-length --no-global --ignore 6 self addonName
       - name: Luacheck linter
         uses: lunarmodules/luacheck@v1
         with:

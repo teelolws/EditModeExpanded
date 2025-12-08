@@ -1145,7 +1145,7 @@ hooksecurefunc(f, "OnLoad", function()
     frame.Buttons.RevertChangesButton:SetText(HUD_EDIT_MODE_REVERT_CHANGES)
     frame.Buttons.RevertChangesButton.layoutIndex = 1
     frame.Buttons.Divider = frame.Buttons:CreateTexture(nil, "ARTWORK")
-    frame.Buttons.Divider:SetMask("Interface\FriendsFrame\UI-FriendsFrame-OnlineDivider")
+    frame.Buttons.Divider:SetMask("Interface/FriendsFrame/UI-FriendsFrame-OnlineDivider")
     frame.Buttons.Divider:Hide()
     frame.Buttons.Divider:SetSize(330, 16)
     frame.Buttons.Divider.layoutIndex = 2

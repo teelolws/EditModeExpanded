@@ -5,8 +5,8 @@ local lib = LibStub:GetLibrary("EditModeExpanded-1.0")
 local libDD = LibStub:GetLibrary("LibUIDropDownMenu-4.0")
 
 function addon:initMenuBar()
-    local db = addon.db.global
-    if db.EMEOptions.menu then
+    local globaldb = addon.db.global
+    if globaldb.EMEOptions.menu then
         lib:RegisterHideable(MicroMenuContainer)
         lib:RegisterToggleInCombat(MicroMenuContainer)
         C_Timer.After(1, function()
@@ -22,12 +22,12 @@ function addon:initMenuBar()
             if not db.checked then return end
             if MicroMenu.overrideScale then return end
             
-            local padding = db.checked - 3
+            -- local padding = db.checked - 3
             
             if MicroMenu.isHorizontal then
                 for key, button in ipairs(MicroMenu:GetLayoutChildren()) do
                     if key ~= 1 then
-                        local a, b, c, d, e = button:GetPoint(1)
+                        local a, b, c, _, e = button:GetPoint(1)
                         button:ClearAllPoints()
                         button:SetPoint(a, b, c, (db.checked + button:GetWidth() - 3) * (key-1), e)
                     end
@@ -41,7 +41,7 @@ function addon:initMenuBar()
             else
                 for key, button in ipairs(MicroMenu:GetLayoutChildren()) do
                     if key ~= 1 then
-                        local a, b, c, d, e = button:GetPoint(1)
+                        local a, b, c, d = button:GetPoint(1)
                         button:ClearAllPoints()
                         button:SetPoint(a, b, c, d, -1 * (db.checked + button:GetHeight() - 3) * (key-1))
                     end
@@ -51,7 +51,7 @@ function addon:initMenuBar()
         
         hooksecurefunc(MicroMenuContainer, "Layout", updatePadding)
         
-        libDD:UIDropDownMenu_Initialize(dropdown, function(self, level, menuList)
+        libDD:UIDropDownMenu_Initialize(dropdown, function(self)
             local db = getSettingDB()
             local info = libDD:UIDropDownMenu_CreateInfo()        
             
@@ -96,7 +96,7 @@ function addon:initMenuBar()
         end)
     end
     
-    if db.EMEOptions.bags then
+    if globaldb.EMEOptions.bags then
         lib:RegisterHideable(BagsBar)
         lib:RegisterToggleInCombat(BagsBar)
         C_Timer.After(1, function()
@@ -113,7 +113,7 @@ function addon:initMenuBar()
                 -- but trying SetUserPlaced causes an error
                 ContainerFrame1.Bg:SetFrameLevel(0)
                 
-                addon:registerFrame(ContainerFrame1, BACKPACK_TOOLTIP, db.ContainerFrame1)
+                addon:registerFrame(ContainerFrame1, BACKPACK_TOOLTIP, globaldb.ContainerFrame1)
                 hooksecurefunc("UpdateContainerFrameAnchors", function()
                     if InCombatLockdown() then return end
                     addon.ResetFrame(ContainerFrame1)
@@ -123,7 +123,7 @@ function addon:initMenuBar()
         
         addon.hookScriptOnce(ContainerFrameCombinedBags, "OnShow", function()
             addon:continueAfterCombatEnds(function()
-                addon:registerFrame(ContainerFrameCombinedBags, COMBINED_BAG_TITLE, db.ContainerFrameCombinedBags)
+                addon:registerFrame(ContainerFrameCombinedBags, COMBINED_BAG_TITLE, globaldb.ContainerFrameCombinedBags)
                 hooksecurefunc("UpdateContainerFrameAnchors", function()
                     if InCombatLockdown() then return end
                     addon.ResetFrame(ContainerFrameCombinedBags)

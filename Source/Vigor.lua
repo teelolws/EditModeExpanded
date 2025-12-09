@@ -279,7 +279,6 @@ local widgetIDs = {
     --5140, -- Algari gold
 }
 local widgetSetID = 283
-local widgetType = 24
 
 local widgetInfos = {
     [5140] = {
@@ -535,7 +534,7 @@ function EMEWidgetTemplateFillUpFramesMixin:Setup(widgetInfo, widgetContainer)
 	self:Layout();
 end
 
-function EMEWidgetTemplateFillUpFramesMixin:ApplyEffects(widgetInfo)
+function EMEWidgetTemplateFillUpFramesMixin:ApplyEffects()--widgetInfo)
 	-- Intentionally empty, we apply the effect on the frames themselves when they are full
 end
 
@@ -733,7 +732,7 @@ local SURGE_FORWARD_SPELL_ID = 372608
 local ALGARI_STORMRIDER_SPELL_ID = 417888
 
 local function shouldShow(widgetID)
-    local isGliding, canGlide, forwardSpeed = C_PlayerInfo.GetGlidingInfo()
+    local _, canGlide = C_PlayerInfo.GetGlidingInfo()
     
     local stormriderAura = C_UnitAuras.GetPlayerAuraBySpellID(ALGARI_STORMRIDER_SPELL_ID)
     if (widgetID == 5145) and stormriderAura then
@@ -789,16 +788,14 @@ function addon:initVigorBar()
     lib:SetDefaultSize(container, 305, 66)
     container:Show()
     
-    local vigorFrames = {}
     for _, widgetID in ipairs(widgetIDs) do
         local vigorFrame = CreateFrame("Frame", "EMEVigorFrame"..widgetID, container, "EMEWidgetTemplateFillUpFrames")
-        vigorFrames[widgetID] = vigorFrame
         vigorFrame:Setup(widgetInfos[widgetID], container)
         DefaultWidgetLayout(container, {vigorFrame})
         vigorFrame:SetShown(shouldShow(widgetID))
         vigorFrame:RegisterEvent("PLAYER_CAN_GLIDE_CHANGED")
         vigorFrame:RegisterEvent("ACTIONBAR_UPDATE_COOLDOWN")
-        vigorFrame:SetScript("OnEvent", function(self, event, ...)
+        vigorFrame:SetScript("OnEvent", function(self)
             updateWidget(self, widgetID)
         end)
         vigorFrame:HookScript("OnUpdate", function(self)

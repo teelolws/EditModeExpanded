@@ -10,7 +10,7 @@ function addon:initActionBars()
         if InCombatLockdown() then return end 
         local bars = {MainMenuBar, MultiBarBottomLeft, MultiBarBottomRight, MultiBarRight, MultiBarLeft, MultiBar5, MultiBar6, MultiBar7}
 
-        for barIndex, bar in ipairs(bars) do
+        for _, bar in ipairs(bars) do
             
             --[[
             -- setting.buttonPadding causes taint to spread and cause issues

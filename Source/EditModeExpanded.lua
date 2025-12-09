@@ -1,7 +1,6 @@
 local addonName, addon = ...
 
 local L = LibStub("AceLocale-3.0"):GetLocale(addonName)
-local lib = LibStub:GetLibrary("EditModeExpanded-1.0")
 
 EventUtil.RegisterOnceFrameEventAndCallback("PLAYER_ENTERING_WORLD", function()
     addon:registerSecureFrameHideable(BossTargetFrameContainer)
@@ -90,7 +89,7 @@ do
             if EditModeManagerFrame.EnableSnapCheckButton:IsControlChecked() then
                 EditModeExpandedWarningFrame:Show()
             end
-            hooksecurefunc(EditModeManagerFrame, "SetEnableSnap", function(self, enableSnap, isUserInput)
+            hooksecurefunc(EditModeManagerFrame, "SetEnableSnap", function(self, enableSnap)
                 if enableSnap then
                     EditModeExpandedWarningFrame:Show()
                 else
@@ -124,7 +123,7 @@ EventUtil.ContinueOnAddOnLoaded("Blizzard_AuctionHouseUI", function()
 end)
 
 EventUtil.ContinueOnAddOnLoaded("Blizzard_UIWidgets", function()
-    local loading, finished = C_AddOns.IsAddOnLoaded(addonName)
+    local _, finished = C_AddOns.IsAddOnLoaded(addonName)
     if not finished then return end
     addon:initBelowMinimapContainer()
 end)

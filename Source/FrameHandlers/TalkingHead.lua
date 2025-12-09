@@ -4,8 +4,7 @@ local lib = LibStub:GetLibrary("EditModeExpanded-1.0")
 local libDD = LibStub:GetLibrary("LibUIDropDownMenu-4.0")
 
 function addon:initTalkingHead()
-    local db = addon.db.global
-    if db.EMEOptions.talkingHead then
+    if addon.db.EMEOptions.talkingHead then
         local function hideDialogKeepSound()
             TalkingHeadFrame:ClearAllPoints()
             TalkingHeadFrame:SetClampedToScreen(false)
@@ -19,7 +18,7 @@ function addon:initTalkingHead()
 
         local shouldHideDialog, shouldMuteSound, hideOnlyInCombat
         
-        TalkingHeadFrame:HookScript("OnEvent", function(...)
+        TalkingHeadFrame:HookScript("OnEvent", function()
             if hideOnlyInCombat and (not InCombatLockdown()) then
                 return
             end
@@ -41,7 +40,7 @@ function addon:initTalkingHead()
         
         local dropdown, getSettingDB = lib:RegisterDropdown(TalkingHeadFrame, libDD, "HideDD")
         
-        libDD:UIDropDownMenu_Initialize(dropdown, function(self, level, menuList)
+        libDD:UIDropDownMenu_Initialize(dropdown, function(self)
             local db = getSettingDB()
             local info = libDD:UIDropDownMenu_CreateInfo()        
             

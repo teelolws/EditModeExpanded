@@ -15,7 +15,7 @@ function addon.registerAnchorToDropdown(frame)
         end
     end
     
-    libDD:UIDropDownMenu_Initialize(dropdown, function(self, level, menuList)
+    libDD:UIDropDownMenu_Initialize(dropdown, function(self) --, level, menuList)
         local db = getSettingDB()
         local info = libDD:UIDropDownMenu_CreateInfo()        
         

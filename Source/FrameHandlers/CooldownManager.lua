@@ -1,14 +1,13 @@
 local addonName, addon = ...
 
-local L = LibStub("AceLocale-3.0"):GetLocale(addonName)
 local lib = LibStub:GetLibrary("EditModeExpanded-1.0")
 local libDD = LibStub:GetLibrary("LibUIDropDownMenu-4.0")
 
 local ITEM_ID_PADDING = 9999999
 
 function addon:initCooldownManager()
-    local db = addon.db.global
-    if db.EMEOptions.cooldownManager then
+    local globalDB = addon.db.global
+    if globalDB.EMEOptions.cooldownManager then
 
         local function refreshAll()
             EssentialCooldownViewer:RefreshLayout()
@@ -16,7 +15,7 @@ function addon:initCooldownManager()
             BuffBarCooldownViewer:RefreshLayout()
         end
 
-        local function getCurrentLoadoutID(self, db)
+        local function getCurrentLoadoutID(self)
             local cooldownIDs = self:GetCooldownIDs()
             
             local loadoutString = ""
@@ -101,7 +100,7 @@ function addon:initCooldownManager()
         settingFrame.addItemRow.addEditBox:SetScript("OnTextChanged", nop)
         settingFrame.addItemRow.addEditBox:SetAutoFocus(false)
 
-        local function onSettingIconDrag(self, button)
+        local function onSettingIconDrag(self)
             self:StartMoving()
         end
 
@@ -185,7 +184,6 @@ function addon:initCooldownManager()
             settingFrame.viewer:RefreshLayout()
         end
 
-        local a = true
         function settingFrame:RefreshSettingFrame()
             settingFrame.activeIcons.framePool:ReleaseAll()
             
@@ -204,7 +202,7 @@ function addon:initCooldownManager()
                     local spellTexture = C_Spell.GetSpellTexture(cooldownID * -1)
                     icon:GetIconTexture():SetTexture(spellTexture)
                 elseif cooldownID > ITEM_ID_PADDING then
-                    local itemName, itemLink, itemQuality, itemLevel, itemMinLevel, itemType, itemSubType, itemStackCount, itemEquipLoc, itemTexture, sellPrice, classID, subclassID, bindType, expansionID, setID, isCraftingReagent = C_Item.GetItemInfo(cooldownID - ITEM_ID_PADDING)
+                    local _, _, _, _, _, _, _, _, _, itemTexture = C_Item.GetItemInfo(cooldownID - ITEM_ID_PADDING)
                     icon:GetIconTexture():SetTexture(itemTexture)
                 end
                 
@@ -250,7 +248,7 @@ function addon:initCooldownManager()
                     self.cooldownModRate = 1
                 elseif self.cooldownID > -3 then
                     local invSlotId = (self.cooldownID == -2) and INVSLOT_TRINKET1 or INVSLOT_TRINKET2
-                    local start, duration, enable = GetInventoryItemCooldown("player", invSlotId)
+                    local start, duration = GetInventoryItemCooldown("player", invSlotId)
         		    self.cooldownEnabled = start
         		    self.cooldownStartTime = start
         		    self.cooldownDuration = duration
@@ -343,7 +341,7 @@ function addon:initCooldownManager()
                 
                 local spellTexture
                 if self.cooldownID > ITEM_ID_PADDING then
-                    local itemName, itemLink, itemQuality, itemLevel, itemMinLevel, itemType, itemSubType, itemStackCount, itemEquipLoc, itemTexture, sellPrice, classID, subclassID, bindType, expansionID, setID, isCraftingReagent = C_Item.GetItemInfo(self.cooldownID - ITEM_ID_PADDING)
+                    local _, _, _, _, _, _, _, _, _, itemTexture = C_Item.GetItemInfo(self.cooldownID - ITEM_ID_PADDING)
                     spellTexture = itemTexture
                 elseif self.cooldownID > -3 then
                     local invSlotId = (self.cooldownID == -2) and INVSLOT_TRINKET1 or INVSLOT_TRINKET2
@@ -435,7 +433,7 @@ function addon:initCooldownManager()
             end
             
             -- integrity check: indexes below 0 no longer used
-            for k, v in pairs(db) do
+            for k in pairs(db) do
                 if k <= 0 then
                     db[k] = nil
                 end
@@ -485,19 +483,18 @@ function addon:initCooldownManager()
         
         local function initFrame(frame, db)
             lib:RegisterCustomButton(frame, "Add/remove custom icons", function()
-                local db = db[getCurrentLoadoutID(frame, db)]
                 settingFrame:SetShown(not settingFrame:IsShown())
                 settingFrame.viewer = frame
-                settingFrame.db = db
+                settingFrame.db = db[getCurrentLoadoutID(frame)]
                 settingFrame:RefreshSettingFrame()
             end)
             
             hooksecurefunc(frame, "RefreshData", function(self)
-                local db = db[getCurrentLoadoutID(frame, db)]
-                integrityCheck(self, db)
+                local loadoutdb = db[getCurrentLoadoutID(frame)]
+                integrityCheck(self, loadoutdb)
                 
             	for itemFrame in self.itemFramePool:EnumerateActive() do
-            		local cooldownID = db and db[itemFrame.layoutIndex];
+            		local cooldownID = loadoutdb and loadoutdb[itemFrame.layoutIndex];
             		if cooldownID then
             			itemFrame:SetCooldownID(cooldownID);
                         if (cooldownID < 0) or (cooldownID > ITEM_ID_PADDING) then
@@ -516,19 +513,19 @@ function addon:initCooldownManager()
             end)
             
             hooksecurefunc(frame, "RefreshLayout", function(self)
-                local db = db[getCurrentLoadoutID(frame, db)]
-            	integrityCheck(self, db)
+                local loadoutdb = db[getCurrentLoadoutID(frame)]
+            	integrityCheck(self, loadoutdb)
                 
                 self.itemFramePool:ReleaseAll();
                 
-                for i = 1, #db do
+                for i = 1, #loadoutdb do
                     local itemFrame = self.itemFramePool:Acquire()
                     itemFrame.layoutIndex = i
                     self:OnAcquireItemFrame(itemFrame)
                 end
                 
                 if frame == BuffBarCooldownViewer then
-                    self:GetItemContainerFrame().stride = #db
+                    self:GetItemContainerFrame().stride = #loadoutdb
                 end
                 
                 self:RefreshData()
@@ -545,32 +542,32 @@ function addon:initCooldownManager()
             lib:RegisterResizable(frame, nil, nil, 1)
             
             lib:RegisterCustomButton(frame, "Add trinkets", function()
-                local db = db[getCurrentLoadoutID(frame, db)]
+                local loadoutdb = db[getCurrentLoadoutID(frame)]
                 
                 -- integrity check: add trinkets if they're missing, at slots -2 and -1
                 local found1, found2
-                for i, cooldownID in pairs(db) do
+                for i, cooldownID in pairs(loadoutdb) do
                     if cooldownID == -2 then
                         found2 = true
                     elseif cooldownID == -1 then
                         found1 = true
                     elseif cooldownID == 2 then
-                        db[i] = -2
+                        loadoutdb[i] = -2
                         found2 = true
                     elseif cooldownID == 1 then
-                        db[i] = -1
+                        loadoutdb[i] = -1
                         found1 = true
                     end
                 end
                 if not found2 then
-                    table.insert(db, -2)
+                    table.insert(loadoutdb, -2)
                 end
                 if not found1 then
-                    table.insert(db, -1)
+                    table.insert(loadoutdb, -1)
                 end
                 
                 frame:RefreshLayout()
-                if settingFrame.db then
+                if settingFrame.loadoutdb then
                     settingFrame:RefreshSettingFrame()
                     settingFrame.viewer:RefreshLayout()
                 end
@@ -581,7 +578,7 @@ function addon:initCooldownManager()
             lockdown = true
         end)
         
-        hooksecurefunc(C_ClassTalents, "LoadConfig", function(configID, autoApply)
+        hooksecurefunc(C_ClassTalents, "LoadConfig", function(_, autoApply)
             if not autoApply then return end
             lockdown = true
         end)
@@ -604,7 +601,7 @@ function addon:initCooldownManager()
                     end)
                 end
             elseif event == "UI_INFO_MESSAGE" then
-                local errorNum, errorMsg = ...
+                local _, errorMsg = ...
                 if (errorMsg == ERR_PVP_WARMODE_TOGGLE_ON) or (errorMsg == ERR_PVP_WARMODE_TOGGLE_OFF) then
                     C_Timer.After(2, refreshAll)
                 end
@@ -622,7 +619,7 @@ function addon:initCooldownManager()
         local dropdown, getSettingDB = lib:RegisterDropdown(BuffBarCooldownViewer, libDD, "Resort")
         local dropdownOptions = {"None", "Top by duration", "Bottom by duration"}
         
-        libDD:UIDropDownMenu_Initialize(dropdown, function(self, level, menuList)
+        libDD:UIDropDownMenu_Initialize(dropdown, function(self)
             local db = getSettingDB()
             local info = libDD:UIDropDownMenu_CreateInfo()        
             
@@ -664,9 +661,9 @@ function addon:initCooldownManager()
             end
             
             table.sort(include, function(a, b)
-                local aExpirationTime, aDuration, aPaused = a:GetCooldownValues()
+                local aExpirationTime = a:GetCooldownValues()
                 local aCurrentTime = aExpirationTime - GetTime()
-                local bExpirationTime, bDuration, bPaused = b:GetCooldownValues()
+                local bExpirationTime = b:GetCooldownValues()
                 local bCurrentTime = bExpirationTime - GetTime()
                 
                 if aCurrentTime == bCurrentTime then

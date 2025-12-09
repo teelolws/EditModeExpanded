@@ -16,8 +16,8 @@ function addon.hookScriptOnce(frame, script, callback)
     else
         db[script] = {callback}
         local function handler()
-            for _, callback in ipairs(db[script]) do
-                callback()
+            for _, cb in ipairs(db[script]) do
+                cb()
             end
             wipe(db[script])
         end
@@ -42,8 +42,8 @@ function addon.hookFuncOnce(tbl, script, callback)
     else
         db[script] = {callback}
         local function handler()
-            for _, callback in ipairs(db[script]) do
-                callback()
+            for _, cb in ipairs(db[script]) do
+                cb()
             end
             wipe(db[script])
         end

@@ -9,7 +9,7 @@ function addon:initStatusTrackingBar()
         lib:RegisterHideable(MainStatusTrackingBarContainer)
         lib:RegisterToggleInCombat(MainStatusTrackingBarContainer)
         C_Timer.After(1, function() lib:UpdateFrameResize(MainStatusTrackingBarContainer) end)
-        hooksecurefunc(MainStatusTrackingBarContainer, "SetScale", function(frame, scale)
+        hooksecurefunc(MainStatusTrackingBarContainer, "SetScale", function(_, scale)
             for _, bar in ipairs(StatusTrackingBarManager.barContainers) do
                 local _, anchor = bar:GetPoint(1)
                 if anchor == MainStatusTrackingBarContainer then
@@ -17,7 +17,7 @@ function addon:initStatusTrackingBar()
                 end
             end
         end)
-        hooksecurefunc(MainStatusTrackingBarContainer, "SetScaleOverride", function(frame, scale)
+        hooksecurefunc(MainStatusTrackingBarContainer, "SetScaleOverride", function(_, scale)
             for _, bar in ipairs(StatusTrackingBarManager.barContainers) do
                 local _, anchor = bar:GetPoint(1)
                 if anchor == MainStatusTrackingBarContainer then
@@ -41,7 +41,7 @@ function addon:initStatusTrackingBar()
         lib:RegisterHideable(SecondaryStatusTrackingBarContainer)
         lib:RegisterToggleInCombat(SecondaryStatusTrackingBarContainer)
         C_Timer.After(1, function() lib:UpdateFrameResize(SecondaryStatusTrackingBarContainer) end)
-        hooksecurefunc(SecondaryStatusTrackingBarContainer, "SetScale", function(frame, scale)
+        hooksecurefunc(SecondaryStatusTrackingBarContainer, "SetScale", function(_, scale)
             for _, bar in ipairs(StatusTrackingBarManager.barContainers) do
                 local _, anchor = bar:GetPoint(1)
                 if anchor == SecondaryStatusTrackingBarContainer then
@@ -49,7 +49,7 @@ function addon:initStatusTrackingBar()
                 end
             end
         end)
-        hooksecurefunc(SecondaryStatusTrackingBarContainer, "SetScaleOverride", function(frame, scale)
+        hooksecurefunc(SecondaryStatusTrackingBarContainer, "SetScaleOverride", function(_, scale)
             for _, bar in ipairs(StatusTrackingBarManager.barContainers) do
                 local _, anchor = bar:GetPoint(1)
                 if anchor == SecondaryStatusTrackingBarContainer then

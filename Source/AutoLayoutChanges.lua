@@ -6,7 +6,7 @@ local function getLayouts()
     local result = {}
     -- keep an eye on this function, its convenient for not needing to rebuild the entire GetLayouts, but does it spread taint?
     local layouts = EditModeManagerFrame:CreateLayoutTbls()
-    for key, value in ipairs(layouts) do
+    for _, value in ipairs(layouts) do
         result[value.index] = value.layoutInfo.layoutName
     end
     return result
@@ -41,8 +41,8 @@ function addon.GetLayoutChangeOptions()
     options.enabled = {
         name = "Enabled",
         type = "toggle",
-        get = function(info) return addon.db.global.EMEOptions.raidSizeLayoutSwitching end,
-        set = function(info, value) addon.db.global.EMEOptions.raidSizeLayoutSwitching = value end,
+        get = function(_) return addon.db.global.EMEOptions.raidSizeLayoutSwitching end,
+        set = function(_, value) addon.db.global.EMEOptions.raidSizeLayoutSwitching = value end,
         order = 1,
         width = "full",
     }
@@ -69,10 +69,10 @@ function addon.GetLayoutChangeOptions()
                 return true
             end,
             order = order,
-            set = function(info, value)
+            set = function(_, value)
                 selectedCategory = value
             end,
-            get = function(info)
+            get = function(_)
                 return selectedCategory
             end,
         }
@@ -92,11 +92,11 @@ function addon.GetLayoutChangeOptions()
                 return true
             end,
             order = order,
-            set = function(info, value)
+            set = function(_, value)
                 local specid = C_SpecializationInfo.GetSpecializationInfo(specIndex)
                 addon.db.char.AutoLayoutSwitching[specid..categoryCodes[selectedCategory]] = value
             end,
-            get = function(info)
+            get = function(_)
                 local specid = C_SpecializationInfo.GetSpecializationInfo(specIndex)
                 return addon.db.char.AutoLayoutSwitching[specid..categoryCodes[selectedCategory]]
             end,

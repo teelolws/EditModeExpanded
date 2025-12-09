@@ -1,7 +1,5 @@
 local addonName, addon = ...
 
-local lib = LibStub:GetLibrary("EditModeExpanded-1.0")
-
 function addon:initTooltip()
     local db = addon.db.global
     if db.EMEOptions.gameTooltip then
@@ -17,7 +15,7 @@ function addon:initTooltip()
                 GameTooltip:SetClampedToScreen(true)
             end)
         
-        hooksecurefunc(GameTooltip, "SetPoint", function(self, point, relativeTo, relativePoint)
+        hooksecurefunc(GameTooltip, "SetPoint", function(self)
             local _, relativeTo = GameTooltip:GetPoint(1)
             if isHidden() and (relativeTo == GameTooltipDefaultContainer) then
                 self:SetClampedToScreen(false)
@@ -25,7 +23,7 @@ function addon:initTooltip()
             end
         end)
         
-        hooksecurefunc(GameTooltip, "SetOwner", function(self, anchorTo, anchorPoint)
+        hooksecurefunc(GameTooltip, "SetOwner", function(self, anchorTo)
             if isHidden() then
                 if anchorTo ~= GameTooltipDefaultContainer then
                     self:SetClampedToScreen(true)

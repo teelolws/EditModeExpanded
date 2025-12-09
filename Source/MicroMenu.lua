@@ -219,7 +219,7 @@ do
     MainMenuBarDownload:SetSize(28, 28)
     MainMenuBarDownload:Hide()
 
-    MainMenuMicroButton:HookScript("OnUpdate", function(self, elapsed)
+    MainMenuMicroButton:HookScript("OnUpdate", function(self)
         if not SLSkinEnabled then return end
         
         local status = GetFileStreamingStatus();

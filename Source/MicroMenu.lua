@@ -262,7 +262,6 @@ do
     GuildMicroButtonTabardBackground:SetPoint("CENTER", 0, 0)
 
     GuildMicroButtonTabard.emblem = GuildMicroButtonTabard:CreateTexture("GuildMicroButtonTabardEmblem", "OVERLAY")
-    GuildMicroButtonTabardEmblem:SetMask("Interface/GuildFrame/GuildEmblems_01")
     GuildMicroButtonTabardEmblem:SetSize(14, 14)
     GuildMicroButtonTabardEmblem:SetPoint("CENTER", 0, 0)
 

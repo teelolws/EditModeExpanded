@@ -4,7 +4,7 @@ local lib = LibStub:GetLibrary("EditModeExpanded-1.0")
 local libDD = LibStub:GetLibrary("LibUIDropDownMenu-4.0")
 
 function addon:initTalkingHead()
-    if addon.db.EMEOptions.talkingHead then
+    if addon.db.global.EMEOptions.talkingHead then
         local function hideDialogKeepSound()
             TalkingHeadFrame:ClearAllPoints()
             TalkingHeadFrame:SetClampedToScreen(false)

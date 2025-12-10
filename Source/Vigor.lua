@@ -795,14 +795,6 @@ local dropdownOptions = {
 local function initDropDown()
     local dropdown, getSettingDB = lib:RegisterDropdown(container, libDD, "SelectedVigorBarAppearance")
     
-    local function updateFrameAnchor()
-        if InCombatLockdown() then return end
-        local db = getSettingDB()
-        if db.checked then
-            lib:ReanchorFrame(frame, _G[db.checked], "BOTTOMLEFT")
-        end
-    end
-    
     libDD:UIDropDownMenu_Initialize(dropdown, function(self)
         local db = getSettingDB()
         local info = libDD:UIDropDownMenu_CreateInfo()        

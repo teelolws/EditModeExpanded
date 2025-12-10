@@ -127,3 +127,5 @@ EventUtil.ContinueOnAddOnLoaded("Blizzard_UIWidgets", function()
     if not finished then return end
     addon:initBelowMinimapContainer()
 end)
+
+EventUtil.ContinueOnAddOnLoaded("Blizzard_HousingControls", addon.initHousing)

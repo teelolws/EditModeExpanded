@@ -49,6 +49,7 @@ FrameHandlers\FocusFrame.lua
 FrameHandlers\FocusToT.lua
 FrameHandlers\GameMenu.lua
 FrameHandlers\GroupLoot.lua
+FrameHandlers\Housing.lua
 FrameHandlers\LFG.lua
 FrameHandlers\LossOfControl.lua
 FrameHandlers\Menu.lua

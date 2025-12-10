@@ -73,7 +73,7 @@ local defaults = {
             durationBars = true,
             allowSetCoordinates = false,
             raidSizeLayoutSwitching = false,
-            vigorBar = false,
+            vigorBar = true,
         },
         QueueStatusButton = {},
         TotemFrame = {},

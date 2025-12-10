@@ -1,6 +1,7 @@
 local addonName, addon = ...
 local L = LibStub("AceLocale-3.0"):GetLocale(addonName)
 local lib = LibStub:GetLibrary("EditModeExpanded-1.0")
+local libDD = LibStub:GetLibrary("LibUIDropDownMenu-4.0")
 
 --
 -- Adapted from Blizzard_UIWidgetTemplateBase.lua
@@ -274,9 +275,9 @@ end
 local widgetIDs = {
     5145, -- Algari dark
     4460, -- Dragonriding
-    --5144, -- Algari bronze
-    --5143, -- Algari silver
-    --5140, -- Algari gold
+    5144, -- Algari bronze
+    5143, -- Algari silver
+    5140, -- Algari gold
 }
 local widgetSetID = 283
 
@@ -731,19 +732,26 @@ end
 local SURGE_FORWARD_SPELL_ID = 372608
 local ALGARI_STORMRIDER_SPELL_ID = 417888
 
+local selectedVigorWidgetID = nil
+
 local function shouldShow(widgetID)
     local _, canGlide = C_PlayerInfo.GetGlidingInfo()
     
     local stormriderAura = C_UnitAuras.GetPlayerAuraBySpellID(ALGARI_STORMRIDER_SPELL_ID)
-    if (widgetID == 5145) and stormriderAura then
-        return canGlide
+    
+    if selectedVigorWidgetID == 1 then
+        if (widgetID == 5140) and stormriderAura then
+            return canGlide
+        end
+        
+        if (widgetID == 4460) and (not stormriderAura) then
+            return canGlide
+        end
+        
+        return false
     end
     
-    if (widgetID == 4460) and (not stormriderAura) then
-        return canGlide
-    end
-    
-    return false
+    return selectedVigorWidgetID == widgetID
 end
 
 local container
@@ -775,18 +783,66 @@ local function updateWidget(vigorFrame, widgetID)
     end
 end
 
+local dropdownOptions = {
+    [1] = "Mix: Dragonriding and Algari Stormrider",
+    [4460] = "Dragonriding",
+    [5140] = "Algari - Gold",
+    [5143] = "Algari - Silver",
+    [5144] = "Algari - Bronze",
+    [5145] = "Algari - Dark",
+}
+
+local function initDropDown()
+    local dropdown, getSettingDB = lib:RegisterDropdown(container, libDD, "SelectedVigorBarAppearance")
+    
+    local function updateFrameAnchor()
+        if InCombatLockdown() then return end
+        local db = getSettingDB()
+        if db.checked then
+            lib:ReanchorFrame(frame, _G[db.checked], "BOTTOMLEFT")
+        end
+    end
+    
+    libDD:UIDropDownMenu_Initialize(dropdown, function(self)
+        local db = getSettingDB()
+        local info = libDD:UIDropDownMenu_CreateInfo()        
+        for widgetID, dropdownName in pairs(dropdownOptions) do
+            info.text = dropdownName
+            info.checked = db.checked == widgetID
+            info.func = function()
+                if db.checked == widgetID then
+                    db.checked = nil
+                else
+                    db.checked = widgetID
+                end
+                selectedVigorWidgetID = widgetID
+            end
+            libDD:UIDropDownMenu_AddButton(info)
+        end
+    end)
+    
+    C_Timer.After(1, function()
+        local db = getSettingDB()
+        selectedVigorWidgetID = db.checked
+    end)
+    
+    libDD:UIDropDownMenu_SetWidth(dropdown, 200)
+    libDD:UIDropDownMenu_SetText(dropdown, "Vigor Bar Apperance")
+end
+
 function addon:initVigorBar()
     local db = addon.db.global
     if not db.EMEOptions.vigorBar then return end
     
     container = CreateFrame("Frame", "EMEVigorContainer", UIParent, "UIWidgetContainerTemplate")
-    container:SetPoint("CENTER", UIParent, "CENTER", -150, -200)
+    container:SetPoint("CENTER", UIParent, "CENTER", -75, -200)
     container:RegisterForWidgetSet(widgetSetID)
     container:SetScript("OnEvent", nop)
     addon:registerFrame(container, L["Vigor Bar"], db.VigorBar, UIParent, "CENTER")
     lib:RegisterResizable(container)
     lib:SetDefaultSize(container, 305, 66)
     container:Show()
+    initDropDown()
     
     for _, widgetID in ipairs(widgetIDs) do
         local vigorFrame = CreateFrame("Frame", "EMEVigorFrame"..widgetID, container, "EMEWidgetTemplateFillUpFrames")

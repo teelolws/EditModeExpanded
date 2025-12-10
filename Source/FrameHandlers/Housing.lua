@@ -1,7 +1,5 @@
 local addonName, addon = ...
 
-local L = LibStub("AceLocale-3.0"):GetLocale(addonName)
-
 function addon:initHousing()
     local db = addon.db.global
     if not db.EMEOptions.housingControlsFrame then return end

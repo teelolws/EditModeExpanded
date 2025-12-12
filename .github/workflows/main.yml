@@ -6,8 +6,6 @@ name: Package Addon
 # events but only for the master branch
 on:
   push:
-    tags:
-    - '*'
     tags-ignore:
     - '*beta*'
 

@@ -1,6 +1,6 @@
 local addonName, addon = ...
 
-local lib = LibStub:GetLibrary("EditModeExpanded-1.0")
+-- local lib = LibStub:GetLibrary("EditModeExpanded-1.0")
 
 function addon:initCooldownManager()
     if not addon.db.global.EMEOptions.cooldownManager then return end

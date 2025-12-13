@@ -24,13 +24,6 @@ local categoryCodes = {
     "raid",
 }
 
-local function getCategoryName(selectedCategory, selectedSize)
-    if selectedCategory == 3 then
-        return RAID.." ("..selectedSize..")"
-    end
-    return categoryNames[selectedCategory]
-end
-
 local function getSelectedDB(selectedCategory, selectedSize, specid)
     if selectedCategory == 3 then
         return addon.db.char.AutoLayoutSwitching[specid.."raid"..selectedSize]
@@ -197,9 +190,10 @@ local function getCurrentSetting(categoryIndex)
     
     if categoryIndex ==  3 then
         for i = raidSize, 1, -1 do
-            local db = addon.db.char.AutoLayoutSwitching[specid..categoryCode..raidSize]
+            local db = addon.db.char.AutoLayoutSwitching[specid..categoryCode..i]
             if db then return db end
         end
+        return nil
     end
     return addon.db.char.AutoLayoutSwitching[specid..categoryCode]
 end

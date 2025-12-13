@@ -15,20 +15,37 @@ end
 local categoryNames = {
     L["Solo"],
     L["Party"],
-    L["Raid (5)"],
-    L["Raid (10)"],
-    L["Raid (25)"],
-    L["Raid (40)"],
+    RAID,
 }
 
 local categoryCodes = {
     "solo",
     "party",
-    "raid5",
-    "raid10",
-    "raid25",
-    "raid40",
+    "raid",
 }
+
+local function getCategoryName(selectedCategory, selectedSize)
+    if selectedCategory == 3 then
+        return RAID.." ("..selectedSize..")"
+    end
+    return categoryNames[selectedCategory]
+end
+
+local function getSelectedDB(selectedCategory, selectedSize, specid)
+    if selectedCategory == 3 then
+        return addon.db.char.AutoLayoutSwitching[specid.."raid"..selectedSize]
+    else
+        return addon.db.char.AutoLayoutSwitching[specid..categoryCodes[selectedCategory]]
+    end
+end
+
+local function setSelectedDB(selectedCategory, selectedSize, specid, value)
+    if selectedCategory == 3 then
+        addon.db.char.AutoLayoutSwitching[specid.."raid"..selectedSize] = value
+    else
+        addon.db.char.AutoLayoutSwitching[specid..categoryCodes[selectedCategory]] = value
+    end
+end
 
 function addon.GetLayoutChangeOptions()
     local options = {}
@@ -49,9 +66,24 @@ function addon.GetLayoutChangeOptions()
     
     local order = 2
     for specIndex = 1, 4 do
+        options["row"..specIndex] = {
+            type = "group",
+            args = {},
+            width = "full",
+            inline = true,
+            name = "",
+            hidden = function()
+                local specid = C_SpecializationInfo.GetSpecializationInfo(specIndex)
+                if specid and (specid ~= 0) then
+                    return false
+                end
+                return true
+            end,
+        }
         local selectedCategory = 1
+        local selectedSize = 1
         
-        options["spec"..specIndex.."category"] = {
+        options["row"..specIndex].args["spec"..specIndex.."category"] = {
             name = function()
                 local _, specName = C_SpecializationInfo.GetSpecializationInfo(specIndex)
                 if specName then
@@ -72,16 +104,43 @@ function addon.GetLayoutChangeOptions()
             set = function(_, value)
                 selectedCategory = value
             end,
-            get = function(_)
+            get = function()
                 return selectedCategory
             end,
+            width = 0.8,
         }
         order = order + 1
         
-        options["spec"..specIndex.."layout"] = {
-            name = function()
-                return categoryNames[selectedCategory]
+        options["row"..specIndex].args["spec"..specIndex.."size"] = {
+            name = "Group Size",
+            desc = "You do not need to set a profile for every size, the next-smallest size will be used if nothing is set!",
+            type = "range",
+            min = 1,
+            max = 40,
+            step = 1,
+            set = function(_, value)
+                selectedSize = value
             end,
+            get = function()
+                return selectedSize
+            end,
+            width = 0.9,
+            disabled = function()
+                return selectedCategory ~= 3
+            end,
+            hidden = function()
+                local specid = C_SpecializationInfo.GetSpecializationInfo(specIndex)
+                if specid and (specid ~= 0) then
+                    return false
+                end
+                return true
+            end,
+            order = order,
+        }
+        order = order + 1
+        
+        options["row"..specIndex].args["spec"..specIndex.."layout"] = {
+            name = "Selected Layout",
             type = "select",
             values = getLayouts,
             hidden = function()
@@ -94,21 +153,22 @@ function addon.GetLayoutChangeOptions()
             order = order,
             set = function(_, value)
                 local specid = C_SpecializationInfo.GetSpecializationInfo(specIndex)
-                addon.db.char.AutoLayoutSwitching[specid..categoryCodes[selectedCategory]] = value
+                setSelectedDB(selectedCategory, selectedSize, specid, value)
             end,
-            get = function(_)
+            get = function()
                 local specid = C_SpecializationInfo.GetSpecializationInfo(specIndex)
-                return addon.db.char.AutoLayoutSwitching[specid..categoryCodes[selectedCategory]]
+                return getSelectedDB(selectedCategory, selectedSize, specid)
             end,
+            width = 0.6,
         }
         order = order + 1
         
-        options["spec"..specIndex.."redx"] = {
+        options["row"..specIndex].args["spec"..specIndex.."redx"] = {
             name = "",
             type = "execute",
             func = function()
                 local specid = C_SpecializationInfo.GetSpecializationInfo(specIndex)
-                addon.db.char.AutoLayoutSwitching[specid..categoryCodes[selectedCategory]] = nil
+                setSelectedDB(selectedCategory, selectedSize, specid)
             end,
             image = "interface/auctionframe/auctionhouse.blp",
             order = order,
@@ -133,7 +193,14 @@ local function getCurrentSetting(categoryIndex)
     local specIndex = C_SpecializationInfo.GetSpecialization()
     local specid = C_SpecializationInfo.GetSpecializationInfo(specIndex)
     local categoryCode = categoryCodes[categoryIndex]
+    local raidSize = GetNumGroupMembers()
     
+    if categoryIndex ==  3 then
+        for i = raidSize, 1, -1 do
+            local db = addon.db.char.AutoLayoutSwitching[specid..categoryCode..raidSize]
+            if db then return db end
+        end
+    end
     return addon.db.char.AutoLayoutSwitching[specid..categoryCode]
 end
 
@@ -159,23 +226,7 @@ local function updateLayoutChoice()
         return
     end
     
-    local raidSize = GetNumGroupMembers()
-    if raidSize < 6 then
-        updateSetting(3)
-        return
-    end
-    
-    if raidSize < 11 then
-        updateSetting(4)
-        return
-    end
-    
-    if raidSize < 26 then
-        updateSetting(5)
-        return
-    end
-    
-    updateSetting(6)
+    updateSetting(3)
 end
 
 local function updateLayoutChoiceDelayed()

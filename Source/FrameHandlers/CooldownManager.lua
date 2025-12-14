@@ -2,20 +2,12 @@ local addonName, addon = ...
 
 local lib = LibStub:GetLibrary("EditModeExpanded-1.0")
 
-local z = 1
-local x = CreateFrame
-local function CreateFrame(...)
-    print(z)
-    z = z+1
-    return x(...)
-end
-
+local disableSupport, hideNames, hideIcons
 local function initCustomBuffBar(itemFrame)
     if itemFrame.EMEBuffBar then return end
     local buffBar = CreateFrame("Frame", nil, EssentialCooldownViewer)
     itemFrame.EMEBuffBar = buffBar
-    buffBar:SetPoint(itemFrame:GetPoint())
-    buffBar:Show()
+    buffBar:SetPoint("BOTTOMLEFT", itemFrame, "BOTTOMLEFT")
     buffBar:SetScale(itemFrame.iconScale or 1)
     buffBar:SetSize(220, 30)
     buffBar.Icon = CreateFrame("Frame", nil, buffBar)
@@ -46,6 +38,7 @@ local function initCustomBuffBar(itemFrame)
     --texture:SetAllPoints(buffBar.Bar)
     buffBar.Bar:SetStatusBarColor(1, 0.5, 0.25)
     buffBar.CoverBar = CreateFrame("StatusBar", nil, buffBar.Bar)
+    buffBar.CoverBar:SetFrameLevel(509)
     buffBar.CoverBar:SetAllPoints(buffBar.Bar)
     buffBar.CoverBar:SetStatusBarTexture("UI-HUD-CoolDownManager-Bar")
     buffBar.CoverBar:SetStatusBarColor(1, 0.5, 0.25)
@@ -59,46 +52,65 @@ local function initCustomBuffBar(itemFrame)
     buffBar.Bar.Pip = buffBar.Bar:CreateTexture(nil, "OVERLAY")
     buffBar.Bar.Pip:SetAtlas("UI-HUD-CoolDownManager-Bar-Pip", true)
 	buffBar.Bar.Pip:SetPoint("CENTER", buffBar.Bar:GetStatusBarTexture(), "RIGHT", 0, 0)
-    buffBar.Name = buffBar:CreateFontString(nil, "OVERLAY", "NumberFontNormal")
-    buffBar.Name:SetJustifyH("LEFT")
-    buffBar.Name:SetJustifyV("MIDDLE")
-    buffBar.Name:SetPoint("TOPLEFT", 5, 0)
-    buffBar.Name:SetPoint("BOTTOMRIGHT", -25, 0)
-    buffBar.Duration = buffBar:CreateFontString(nil, "OVERLAY", "NumberFontNormal")
-    buffBar.Duration:SetJustifyH("LEFT")
-    buffBar.Duration:SetPoint("RIGHT", -8, 0)
+    buffBar.Bar.Name = buffBar.Bar:CreateFontString(nil, "OVERLAY", "NumberFontNormal")
+    buffBar.Bar.Name:SetJustifyH("LEFT")
+    buffBar.Bar.Name:SetJustifyV("MIDDLE")
+    buffBar.Bar.Name:SetPoint("TOPLEFT", 5, 0)
+    buffBar.Bar.Name:SetPoint("BOTTOMRIGHT", -25, 0)
+    buffBar.Bar.Duration = buffBar.Bar:CreateFontString(nil, "OVERLAY", "NumberFontNormal")
+    buffBar.Bar.Duration:SetJustifyH("LEFT")
+    buffBar.Bar.Duration:SetPoint("RIGHT", -8, 0)
     
     hooksecurefunc(itemFrame, "RefreshData", function()
-        if not buffBar:IsShown() then return end
+        if disableSupport then return end
         itemFrame:Hide()
         if not itemFrame:GetSpellID() then return end
         
         
         local durationObject = C_Spell.GetSpellCooldownDuration(itemFrame:GetSpellID())
         
+        -- RefreshSpellTexture
         local spellTexture = itemFrame:GetSpellTexture()
-	    buffBar.Icon.Icon:SetTexture(spellTexture)
+        if hideIcons then
+            buffBar.Icon:Hide()
+        else
+            buffBar.Icon:Show()
+	        buffBar.Icon.Icon:SetTexture(spellTexture)
+        end
         
+        -- RefreshCooldownInfo
         local barFrame = buffBar.Bar
-    	local durationFontString = buffBar.Duration
-    	local pipTexture = buffBar.Bar.Pip
-        
-        local isZero = durationObject:IsZero()
-        buffBar.CoverBar:SetAlphaFromBoolean(isZero)
-        
+    	local durationFontString = barFrame.Duration
+    	local pipTexture = barFrame.Pip
+        buffBar.CoverBar:SetAlphaFromBoolean(durationObject:IsZero())
         barFrame:SetTimerDuration(durationObject)
-        if durationFontString:IsShown() then
+        if EssentialCooldownViewer.timerShown then
+            durationFontString:Show()
             if itemFrame.EMEDurationTicker then itemFrame.EMEDurationTicker:Cancel() end
-            itemFrame.EMEDurationTicker = C_Timer.NewTicker(1, function()
+            itemFrame.EMEDurationTicker = C_Timer.NewTicker(0.2, function()
                 durationObject = C_Spell.GetSpellCooldownDuration(itemFrame:GetSpellID())
                 durationFontString:SetText(string.format(COOLDOWN_DURATION_SEC, durationObject:GetRemainingDuration()))
+                durationFontString:SetAlphaFromBoolean(durationObject:IsZero(), 0, 255)
             end)
+        else
+            durationFontString:Hide()
         end
-                
-        pipTexture:SetShown(C_Spell.IsSpellUsable(itemFrame:GetSpellID()))
-        --)
-
-        --itemFrame:Hide()
+        pipTexture:SetAlphaFromBoolean(durationObject:IsZero(), 0, 255)
+        
+        -- RefreshName
+        local nameFontString = barFrame.Name
+    	if hideNames then
+            nameFontString:Hide()
+        else
+            nameFontString:Show()
+    		nameFontString:SetText(C_Spell.GetSpellName(itemFrame:GetSpellID()))
+    	end
+    	
+        
+        -- RefreshApplications
+    	--local applicationsText = itemFrame:GetApplicationsText();
+    	--local applicationsFontString = buffBar.Icon.Applications
+    	--applicationsFontString:SetText(applicationsText);
     end)
 end
 
@@ -110,33 +122,48 @@ function addon:initCooldownManager()
         function()
             wasConverted = true
             
+            disableSupport = false
             for _, itemFrame in pairs(EssentialCooldownViewer:GetItemFrames()) do
                 initCustomBuffBar(itemFrame)
-                if true then return end
+                itemFrame.EMEBuffBar:Show()
             end
         end,
         function()
             if not wasConverted then return end
             
-            
+            disableSupport = true
+            for _, itemFrame in pairs(EssentialCooldownViewer:GetItemFrames()) do
+                itemFrame:Show()
+                itemFrame.EMEBuffBar:Hide()
+            end
         end,
         "ConvertToBar")
     
+    lib:RegisterSlider(EssentialCooldownViewer, "Icon Size (Bar version)", "BarIconSize",
+        function(value)
+            for _, itemFrame in pairs(EssentialCooldownViewer:GetItemFrames()) do
+                if itemFrame.EMEBuffBar then
+                    itemFrame.EMEBuffBar.Icon:SetScale(value/100)
+                end
+            end
+        end,
+        20, 200, 10)
+        
+    lib:RegisterCustomCheckbox(EssentialCooldownViewer, "Hide Name (Bar version)",
+        function()
+            hideNames = true
+        end,
+        function()
+            hideNames = false
+        end,
+        "HideNames")
     
-    
-    
-    
-    --[[
-    for i = 1, 5 do
-        local frame = EssentialCooldownViewer:GetItemFrames()[i]
-        local statusBar = CreateFrame("StatusBar", "zzzz", frame)
-        statusBar:SetPoint("LEFT", frame, "RIGHT")
-        statusBar:SetSize(100, 20)
-        statusBar:SetStatusBarTexture("Interface/TargetingFrame/UI-StatusBar")
-        statusBar:SetStatusBarColor(0, 1, 0)
-        statusBar:SetFillStyle(1)
-        frame:HookScript("OnUpdate", function()
-            statusBar:SetTimerDuration(C_Spell.GetSpellCooldownDuration(frame:GetSpellID()))
-        end)
-    end]]
+    lib:RegisterCustomCheckbox(EssentialCooldownViewer, "Hide Icon (Bar version)",
+        function()
+            hideIcons = true
+        end,
+        function()
+            hideIcons = false
+        end,
+        "HideIcons")
 end

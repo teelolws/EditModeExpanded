@@ -2,7 +2,7 @@ local addonName, addon = ...
 
 local lib = LibStub:GetLibrary("EditModeExpanded-1.0")
 
-local disableSupport, hideNames, hideIcons
+local disableSupport, hideNames, hideIcons, barsFillToEmpty
 local function initCustomBuffBar(itemFrame)
     if itemFrame.EMEBuffBar then return end
     local buffBar = CreateFrame("Frame", nil, EssentialCooldownViewer)
@@ -41,7 +41,7 @@ local function initCustomBuffBar(itemFrame)
     buffBar.CoverBar:SetFrameLevel(509)
     buffBar.CoverBar:SetAllPoints(buffBar.Bar)
     buffBar.CoverBar:SetStatusBarTexture("UI-HUD-CoolDownManager-Bar")
-    buffBar.CoverBar:SetStatusBarColor(1, 0.5, 0.25)
+    buffBar.CoverBar:SetStatusBarColor(0, 1, 0.25)
     buffBar.CoverBar:SetMinMaxValues(0, 1)
     buffBar.CoverBar:SetValue(1)
     texture = buffBar.Bar:CreateTexture(nil, "BACKGROUND")
@@ -83,7 +83,7 @@ local function initCustomBuffBar(itemFrame)
     	local durationFontString = barFrame.Duration
     	local pipTexture = barFrame.Pip
         buffBar.CoverBar:SetAlphaFromBoolean(durationObject:IsZero())
-        barFrame:SetTimerDuration(durationObject)
+        barFrame:SetTimerDuration(durationObject, nil, barsFillToEmpty and 1 or 0)
         if EssentialCooldownViewer.timerShown then
             durationFontString:Show()
             if itemFrame.EMEDurationTicker then itemFrame.EMEDurationTicker:Cancel() end
@@ -166,4 +166,13 @@ function addon:initCooldownManager()
             hideIcons = false
         end,
         "HideIcons")
+        
+    lib:RegisterCustomCheckbox(EssentialCooldownViewer, "Bars Fill To Empty",
+        function()
+            barsFillToEmpty = true
+        end,
+        function()
+            barsFillToEmpty = false
+        end,
+        "BarsFillToEmpty")
 end

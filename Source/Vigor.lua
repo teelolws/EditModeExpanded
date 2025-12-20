@@ -751,7 +751,7 @@ local function shouldShow(widgetID)
         return false
     end
     
-    return selectedVigorWidgetID == widgetID
+    return (selectedVigorWidgetID == widgetID) and canGlide
 end
 
 local container
@@ -851,4 +851,5 @@ function addon:initVigorBar()
         end)
     end
     container.Layout = nop
+    container:SetSize(305, 66)
 end

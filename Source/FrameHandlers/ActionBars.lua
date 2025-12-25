@@ -8,7 +8,7 @@ function addon:initActionBars()
     if not db.EMEOptions.actionBars then return end
     C_Timer.After(5, function()
         if InCombatLockdown() then return end 
-        local bars = {MainMenuBar, MultiBarBottomLeft, MultiBarBottomRight, MultiBarRight, MultiBarLeft, MultiBar5, MultiBar6, MultiBar7}
+        local bars = {MainActionBar, MultiBarBottomLeft, MultiBarBottomRight, MultiBarRight, MultiBarLeft, MultiBar5, MultiBar6, MultiBar7}
 
         for _, bar in ipairs(bars) do
             

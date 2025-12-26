@@ -2,7 +2,7 @@
 -- Internal variables
 --
 
-local MAJOR, MINOR = "EditModeExpanded-1.0", 99
+local MAJOR, MINOR = "EditModeExpanded-1.0", 100
 local lib = LibStub:NewLibrary(MAJOR, MINOR)
 if not lib then return end
 
@@ -2074,4 +2074,14 @@ function lib:RegisterHiddenUntilMouseover(frame, name)
     end
 
     EventRegistry:RegisterFrameEventAndCallback("EDIT_MODE_LAYOUTS_UPDATED", callLater)
+end
+
+-- Check if frame has the "Hidden Until Mouseover" option selected
+function lib:IsFrameHiddenUntilMouseover(frame)
+    local systemID = getSystemID(frame)
+    local db = framesDB[systemID]
+    if not db.settings then db.settings = {} end
+    if not db.settings[ENUM_EDITMODEACTIONBARSETTING_HIDDENUNTILMOUSEOVER] then db.settings[ENUM_EDITMODEACTIONBARSETTING_HIDDENUNTILMOUSEOVER] = {} end
+    
+    return db.settings[ENUM_EDITMODEACTIONBARSETTING_HIDDENUNTILMOUSEOVER] == 1
 end

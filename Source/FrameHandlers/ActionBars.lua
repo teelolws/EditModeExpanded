@@ -6,8 +6,8 @@ local lib = LibStub:GetLibrary("EditModeExpanded-1.0")
 function addon:initActionBars()
     local db = addon.db.global
     if not db.EMEOptions.actionBars then return end
-    C_Timer.After(5, function()
-        if InCombatLockdown() then return end 
+        
+    addon:continueAfterCombatEnds(function() 
         local bars = {MainActionBar, MultiBarBottomLeft, MultiBarBottomRight, MultiBarRight, MultiBarLeft, MultiBar5, MultiBar6, MultiBar7}
 
         for _, bar in ipairs(bars) do
@@ -57,7 +57,7 @@ function addon:initActionBars()
             )
             
             local namesSize = 1
-    
+
             local function updateNamesSizes()
                 for _, button in pairs(bar.actionButtons) do
                     button.HotKey:SetScale(namesSize)
@@ -74,6 +74,20 @@ function addon:initActionBars()
                 0.5, 2, 0.05)
             
             lib:RegisterHiddenUntilMouseover(bar, L["HIDE_WHEN_NOT_MOUSEOVER_DESCRIPTION"])
+            local function cb()
+                -- something is re-showing the action bar on PLAYER_ENTERING_WORLD, delay until after
+                RunNextFrame(function()
+                    if InCombatLockdown() then return end
+                    if lib:IsFrameHiddenUntilMouseover(bar) then
+                        bar:Hide()
+                    end
+                end)
+            end
+            -- cannot nest an EventUtil call inside another one so have to separate with this, see https://www.reddit.com/r/wowaddons/comments/14ad46u/cannot_call_eventutilcontinueonaddonloaded_from/
+            RunNextFrame(function()
+                cb()
+                EventRegistry:RegisterFrameEventAndCallback("PLAYER_ENTERING_WORLD", cb)
+            end)
             
             hooksecurefunc("CompactUnitFrame_UpdateName", updateNamesSizes)
         end

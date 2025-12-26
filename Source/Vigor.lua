@@ -813,7 +813,7 @@ local function initDropDown()
         end
     end)
     
-    C_Timer.After(1, function()
+    RunNextFrame(function()
         local db = getSettingDB()
         selectedVigorWidgetID = db.checked
     end)

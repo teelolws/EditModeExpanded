@@ -2,7 +2,7 @@
 -- Internal variables
 --
 
-local MAJOR, MINOR = "EditModeExpanded-1.0", 100
+local MAJOR, MINOR = "EditModeExpanded-1.0", 101
 local lib = LibStub:NewLibrary(MAJOR, MINOR)
 if not lib then return end
 
@@ -675,7 +675,7 @@ function lib:RegisterCustomCheckbox(frame, name, onChecked, onUnchecked, interna
         table.insert(customCheckboxCallDuringProfileInit, callLater)
     end
 
-    EventRegistry:RegisterFrameEventAndCallback("EDIT_MODE_LAYOUTS_UPDATED", callLater)
+    RunNextFrame(function() EventRegistry:RegisterFrameEventAndCallback("EDIT_MODE_LAYOUTS_UPDATED", callLater) end)
     
     return function()
         local db = framesDB[systemID]
@@ -2073,7 +2073,7 @@ function lib:RegisterHiddenUntilMouseover(frame, name)
         table.insert(customCheckboxCallDuringProfileInit, callLater)
     end
 
-    EventRegistry:RegisterFrameEventAndCallback("EDIT_MODE_LAYOUTS_UPDATED", callLater)
+    RunNextFrame(function() EventRegistry:RegisterFrameEventAndCallback("EDIT_MODE_LAYOUTS_UPDATED", callLater) end)
 end
 
 -- Check if frame has the "Hidden Until Mouseover" option selected

@@ -75,42 +75,6 @@ function addon:initActionBars()
             hooksecurefunc("CompactUnitFrame_UpdateName", updateNamesSizes)
             
             lib:RegisterHiddenUntilMouseover(bar, L["HIDE_WHEN_NOT_MOUSEOVER_DESCRIPTION"])
-            
-            RunNextFrame(function()
-                local noInfinite
-
-                local function handler()
-                    if noInfinite then return end
-                    if InCombatLockdown() then return end
-                    if not lib:IsFrameHiddenUntilMouseover(bar) then return end
-                    noInfinite = true
-                    bar:Hide()
-                    noInfinite = false
-                end
-                hooksecurefunc("ActionBarController_UpdateAll", handler)
-                hooksecurefunc(EditModeManagerFrame, "ShowSystemSelections", handler)
-                
-                local updateVisibilityNoInfinite
-                hooksecurefunc(bar, "UpdateVisibility", function()
-                    if updateVisibilityNoInfinite then return end
-                    if InCombatLockdown() then return end
-                    if not lib:IsFrameHiddenUntilMouseover(bar) then return end
-                    
-                    updateVisibilityNoInfinite = true
-                    -- Issue: other action bars will check if MainActionBar is visible, and set their own visibility status accordingly
-                    -- Because of this, cannot hide the MainActionBar immediately after UpdateVisibility is called, need to wait for the end of the stack
-                    if bar == MainActionBar then
-                        RunNextFrame(function()
-                            if InCombatLockdown() then return end
-                            bar:Hide()
-                            updateVisibilityNoInfinite = false
-                        end)
-                    else
-                        bar:Hide()
-                        updateVisibilityNoInfinite = false
-                    end
-                end)
-            end)
         end
     end)
 end

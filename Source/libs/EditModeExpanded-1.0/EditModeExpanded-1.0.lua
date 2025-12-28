@@ -2,7 +2,7 @@
 -- Internal variables
 --
 
-local MAJOR, MINOR = "EditModeExpanded-1.0", 101
+local MAJOR, MINOR = "EditModeExpanded-1.0", 102
 local lib = LibStub:NewLibrary(MAJOR, MINOR)
 if not lib then return end
 
@@ -83,6 +83,18 @@ local function getSystemID(frame)
     end
     return frame.system
 end
+
+setmetatable(framesDB, {
+    __newindex = function(t, k, v)
+        rawset(t, k, v)
+        if type(v) ~= "table" then return end
+        rawset(v, "settings", {})
+    end,
+    __index = function(t, k)
+        rawset(t, k, {})
+        return t[k]
+    end,
+})
 
 --
 -- Public API
@@ -205,7 +217,6 @@ function lib:RegisterFrame(frame, name, db, anchorTo, anchorPoint, clamped)
     
     -- needs investigation: why does this frame behave 'weirdly' if default scale 1 is not set?
     if frame == FocusFrameSpellBar then
-        if not db.settings then db.settings = {} end
         if not db.settings[ENUM_EDITMODEACTIONBARSETTING_FRAMESIZE] then
             db.settings[ENUM_EDITMODEACTIONBARSETTING_FRAMESIZE] = 100
         end
@@ -320,7 +331,6 @@ function lib:RegisterFrame(frame, name, db, anchorTo, anchorPoint, clamped)
         
         profiledb.x = profiledb.defaultX
         profiledb.y = profiledb.defaultY
-        if not db.settings then profiledb.settings = {} end
         profiledb.settings[ENUM_EDITMODEACTIONBARSETTING_FRAMESIZE] = 100
         EditModeExpandedSystemSettingsDialog:Hide()
         frame:HighlightSystem()
@@ -560,7 +570,6 @@ function lib:UpdateFrameResize(frame)
     local systemID = getSystemID(frame)
     local db = framesDB[systemID]
     
-    if not db.settings then db.settings = {} end
     if db.settings[ENUM_EDITMODEACTIONBARSETTING_FRAMESIZE] ~= nil then
         frame:SetScale(db.settings[ENUM_EDITMODEACTIONBARSETTING_FRAMESIZE]/100)
     end
@@ -652,7 +661,6 @@ function lib:RegisterCustomCheckbox(frame, name, onChecked, onUnchecked, interna
     
     local function callLater()
         local db = framesDB[systemID]
-        if not db.settings then db.settings = {} end
         if not db.settings[ENUM_EDITMODEACTIONBARSETTING_CUSTOM] then db.settings[ENUM_EDITMODEACTIONBARSETTING_CUSTOM] = {} end
         
         -- backward compatibility
@@ -679,7 +687,6 @@ function lib:RegisterCustomCheckbox(frame, name, onChecked, onUnchecked, interna
     
     return function()
         local db = framesDB[systemID]
-        if not db.settings then db.settings = {} end
         if not db.settings[ENUM_EDITMODEACTIONBARSETTING_CUSTOM] then db.settings[ENUM_EDITMODEACTIONBARSETTING_CUSTOM] = {} end
         db.settings[ENUM_EDITMODEACTIONBARSETTING_CUSTOM][internalName] = 0
     end
@@ -826,7 +833,6 @@ function lib:RegisterDropdown(frame, libUIDropDownMenu, internalName)
     
     local function getCurrentDB()
         local db = framesDB[getSystemID(frame)]
-        if not db.settings then db.settings = {} end
         if not db.settings[ENUM_EDITMODEACTIONBARSETTING_DROPDOWN] then db.settings[ENUM_EDITMODEACTIONBARSETTING_DROPDOWN] = {} end
         if not db.settings[ENUM_EDITMODEACTIONBARSETTING_DROPDOWN][internalName] then db.settings[ENUM_EDITMODEACTIONBARSETTING_DROPDOWN][internalName] = {} end
         
@@ -860,7 +866,6 @@ function lib:RegisterSlider(frame, name, internalName, onChanged, min, max, step
         
     local function callLater()
         local db = framesDB[systemID]
-        if not db.settings then db.settings = {} end
         if not db.settings[ENUM_EDITMODEACTIONBARSETTING_SLIDER] then db.settings[ENUM_EDITMODEACTIONBARSETTING_SLIDER] = {} end
         
         if db.settings[ENUM_EDITMODEACTIONBARSETTING_SLIDER][internalName] ~= nil then
@@ -1197,18 +1202,51 @@ local function hideFrameUntilMouseover(frame)
     if not handler then
         frame.EMESecureHandlerEnterLeave = CreateFrame("Frame", nil, nil, "SecureHandlerEnterLeaveTemplate")
         handler = frame.EMESecureHandlerEnterLeave
-        handler:SetPoint("TOPLEFT", frame, "TOPLEFT")
-        handler:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT")
+        --handler:SetPoint("TOPLEFT", frame, "TOPLEFT")
+        --handler:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT")
+        
+        local function updateHandlerPosition()
+            local point, relativeTo, relativePoint = frame:GetPoint()
+            if (point == "TOPRIGHT") and (relativeTo == UIParent) and (relativePoint == "BOTTOMLEFT") then return end
+            
+            local x = frame:GetLeft()
+            local y = frame:GetBottom()
+            local scale = UIParent:GetScale()
+            x = x * scale
+            y = y * scale
+            handler:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", x, y)
+            x = frame:GetWidth()
+            y = frame:GetHeight()
+            x = x * scale
+            y = y * scale
+            handler:SetSize(x, y)
+        end
+        hooksecurefunc(frame, "SetPoint", updateHandlerPosition)
+        updateHandlerPosition()
+        
         handler:SetFrameRef("parent", frame)
+        handler:SetFrameRef("uiparent", UIParent)
         handler:SetFrameStrata("TOOLTIP")
         handler:EnableMouse(false)
         handler:EnableMouseMotion(true)
         handler:SetPropagateMouseMotion(true)
     end
     
-    handler:SetAttribute("_onenter", "self:GetFrameRef('parent'):Show()")
-    handler:SetAttribute("_onleave", "self:GetFrameRef('parent'):Hide()")
-    frame:Hide()
+    handler:SetAttribute("_onenter", [[
+            local parent = self:GetFrameRef('parent')
+            parent:ClearAllPoints()
+            parent:SetPoint("BOTTOMLEFT", self, "BOTTOMLEFT")
+        ]])
+    handler:SetAttribute("_onleave", [[
+            local uiparent = self:GetFrameRef("uiparent")
+            local parent = self:GetFrameRef('parent')
+            parent:ClearAllPoints()
+            parent:SetPoint("TOPRIGHT", uiparent, "BOTTOMLEFT")
+            
+        ]])
+    frame:ClearAllPoints()
+    frame:SetClampedToScreen(false)
+    frame:SetPoint("TOPRIGHT", UIParent, "BOTTOMLEFT")
 end
 
 local function pauseHideFrameUntilMouseover(frame)
@@ -1217,7 +1255,8 @@ local function pauseHideFrameUntilMouseover(frame)
     
     handler:SetAttribute("_onenter", "")
     handler:SetAttribute("_onleave", "")
-    frame:Show()
+    frame:ClearAllPoints()
+    frame:SetPoint("BOTTOMLEFT", handler, "BOTTOMLEFT")
 end
 
 hooksecurefunc(f, "OnLoad", function()
@@ -1394,7 +1433,6 @@ hooksecurefunc(f, "OnLoad", function()
                                 else
                                     framesDB[systemID].settings[displayInfo.setting] = 0
                                     pauseHideFrameUntilMouseover(systemFrame)
-                                    systemFrame:Show()
                                 end
                             end)
                         end
@@ -1466,7 +1504,6 @@ hooksecurefunc(f, "OnLoad", function()
         local attachedToSystem = self.attachedToSystem
         if attachedToSystem then
             local db = framesDB[getSystemID(attachedToSystem)]
-            if not db.settings then db.settings = {} end
             if setting == ENUM_EDITMODEACTIONBARSETTING_FRAMESIZE then
                 db.settings[setting] = value
                 attachedToSystem:SetScaleOverride(value/100)
@@ -1672,7 +1709,6 @@ function lib:RegisterMinimapPinnable(frame)
     local name = frame:GetName().."LDB"
     local db = framesDB[frame.system]
     if not db.minimap then db.minimap = {} end
-    if not db.settings then db.settings = {} end
     
     -- requirements to show the minimap icon:
     -- 1. player has selected option to pin the frame to the minimap
@@ -1697,7 +1733,6 @@ function lib:RegisterMinimapPinnable(frame)
     frame:HookScript("OnShow", function()
         db = framesDB[frame.system]
         if not db.minimap then db.minimap = {} end
-        if not db.settings then db.settings = {} end
         if db.settings[ENUM_EDITMODEACTIONBARSETTING_MINIMAPPINNED] == 1 then
             db.minimap.hide = nil
             icon:Show(name)
@@ -1709,7 +1744,6 @@ function lib:RegisterMinimapPinnable(frame)
     frame:HookScript("OnHide", function()
         db = framesDB[frame.system]
         if not db.minimap then db.minimap = {} end
-        if not db.settings then db.settings = {} end
         db.minimap.hide = true
         icon:Hide(name)
     end)
@@ -1717,7 +1751,6 @@ function lib:RegisterMinimapPinnable(frame)
     local function showHide()
         db = framesDB[frame.system]
         if not db.minimap then db.minimap = {} end
-        if not db.settings then db.settings = {} end
         if (db.settings[ENUM_EDITMODEACTIONBARSETTING_MINIMAPPINNED] == 1) and frame:IsShown() then
             db.minimap.hide = nil
             icon:Show(name)
@@ -2057,11 +2090,12 @@ function lib:RegisterHiddenUntilMouseover(frame, name)
     
     local function callLater()
         local db = framesDB[systemID]
-        if not db.settings then db.settings = {} end
-        if not db.settings[ENUM_EDITMODEACTIONBARSETTING_HIDDENUNTILMOUSEOVER] then db.settings[ENUM_EDITMODEACTIONBARSETTING_HIDDENUNTILMOUSEOVER] = {} end
         
         if db.settings[ENUM_EDITMODEACTIONBARSETTING_HIDDENUNTILMOUSEOVER] == 1 then
             hideFrameUntilMouseover(frame)
+            if EditModeManagerFrame.editModeActive then
+                pauseHideFrameUntilMouseover(frame)
+            end
         else
             pauseHideFrameUntilMouseover(frame)
         end
@@ -2074,14 +2108,30 @@ function lib:RegisterHiddenUntilMouseover(frame, name)
     end
 
     RunNextFrame(function() EventRegistry:RegisterFrameEventAndCallback("EDIT_MODE_LAYOUTS_UPDATED", callLater) end)
+    
+    hooksecurefunc(EditModeManagerFrame, "EnterEditMode", function()
+        if InCombatLockdown() then return end
+        local db = framesDB[systemID]
+        
+        if db.settings[ENUM_EDITMODEACTIONBARSETTING_HIDDENUNTILMOUSEOVER] == 1 then
+            pauseHideFrameUntilMouseover(frame)
+        end
+    end)
+    
+    hooksecurefunc(EditModeManagerFrame, "ExitEditMode", function()
+        if InCombatLockdown() then return end
+        local db = framesDB[systemID]
+        
+        if db.settings[ENUM_EDITMODEACTIONBARSETTING_HIDDENUNTILMOUSEOVER] == 1 then
+            hideFrameUntilMouseover(frame)
+        end
+    end)
 end
 
 -- Check if frame has the "Hidden Until Mouseover" option selected
 function lib:IsFrameHiddenUntilMouseover(frame)
     local systemID = getSystemID(frame)
     local db = framesDB[systemID]
-    if not db.settings then db.settings = {} end
-    if not db.settings[ENUM_EDITMODEACTIONBARSETTING_HIDDENUNTILMOUSEOVER] then db.settings[ENUM_EDITMODEACTIONBARSETTING_HIDDENUNTILMOUSEOVER] = {} end
     
     return db.settings[ENUM_EDITMODEACTIONBARSETTING_HIDDENUNTILMOUSEOVER] == 1
 end

@@ -72,24 +72,45 @@ function addon:initActionBars()
                     updateNamesSizes()
                 end,
                 0.5, 2, 0.05)
+            hooksecurefunc("CompactUnitFrame_UpdateName", updateNamesSizes)
             
             lib:RegisterHiddenUntilMouseover(bar, L["HIDE_WHEN_NOT_MOUSEOVER_DESCRIPTION"])
-            local function cb()
-                -- something is re-showing the action bar on PLAYER_ENTERING_WORLD, delay until after
-                RunNextFrame(function()
+            
+            RunNextFrame(function()
+                local noInfinite
+
+                local function handler()
+                    if noInfinite then return end
                     if InCombatLockdown() then return end
-                    if lib:IsFrameHiddenUntilMouseover(bar) then
+                    if not lib:IsFrameHiddenUntilMouseover(bar) then return end
+                    noInfinite = true
+                    bar:Hide()
+                    noInfinite = false
+                end
+                hooksecurefunc("ActionBarController_UpdateAll", handler)
+                hooksecurefunc(EditModeManagerFrame, "ShowSystemSelections", handler)
+                
+                local updateVisibilityNoInfinite
+                hooksecurefunc(bar, "UpdateVisibility", function()
+                    if updateVisibilityNoInfinite then return end
+                    if InCombatLockdown() then return end
+                    if not lib:IsFrameHiddenUntilMouseover(bar) then return end
+                    
+                    updateVisibilityNoInfinite = true
+                    -- Issue: other action bars will check if MainActionBar is visible, and set their own visibility status accordingly
+                    -- Because of this, cannot hide the MainActionBar immediately after UpdateVisibility is called, need to wait for the end of the stack
+                    if bar == MainActionBar then
+                        RunNextFrame(function()
+                            if InCombatLockdown() then return end
+                            bar:Hide()
+                            updateVisibilityNoInfinite = false
+                        end)
+                    else
                         bar:Hide()
+                        updateVisibilityNoInfinite = false
                     end
                 end)
-            end
-            -- cannot nest an EventUtil call inside another one so have to separate with this, see https://www.reddit.com/r/wowaddons/comments/14ad46u/cannot_call_eventutilcontinueonaddonloaded_from/
-            RunNextFrame(function()
-                cb()
-                EventRegistry:RegisterFrameEventAndCallback("PLAYER_ENTERING_WORLD", cb)
             end)
-            
-            hooksecurefunc("CompactUnitFrame_UpdateName", updateNamesSizes)
         end
     end)
 end

@@ -90,6 +90,23 @@ setmetatable(framesDB, {
         if type(v) ~= "table" then return end
         rawset(v, "settings", {})
     end,
+    -- Eliminate need for calls like
+    --     if not framesDB[systemID] then framesDB[systemID] = {} end
+    __index = function(t, k)
+        rawset(t, k, {})
+        return t[k]
+    end,
+})
+
+setmetatable(framesDialogs, {
+    __index = function(t, k)
+        rawset(t, k, {})
+        return t[k]
+    end,
+})
+
+setmetatable(framesDialogsKeys, {
+    -- if not framesDialogsKeys[systemID] then framesDialogsKeys[systemID] = {} end
     __index = function(t, k)
         rawset(t, k, {})
         return t[k]
@@ -243,8 +260,6 @@ function lib:RegisterFrame(frame, name, db, anchorTo, anchorPoint, clamped)
     elseif profilesInitialised then
         frame:SetClampedToScreen(false)
     end
-    if not framesDialogs[frame.system] then framesDialogs[frame.system] = {} end
-    if not framesDialogsKeys[frame.system] then framesDialogsKeys[frame.system] = {} end
     framesDialogsKeys[frame.system][ENUM_EDITMODEACTIONBARSETTING_CLAMPED] = clamped
     table.insert(framesDialogs[frame.system],
         {
@@ -463,7 +478,7 @@ function lib:RepositionFrame(frame)
     
     local dialogs = framesDialogsKeys[systemID]
     
-    if (not EditModeManagerFrame.editModeActive) and db.settings and dialogs and dialogs[ENUM_EDITMODEACTIONBARSETTING_HIDEABLE] then
+    if (not EditModeManagerFrame.editModeActive) and dialogs[ENUM_EDITMODEACTIONBARSETTING_HIDEABLE] then
         if dialogs[ENUM_EDITMODEACTIONBARSETTING_TOGGLEHIDEINCOMBAT] then
             if (db.settings[ENUM_EDITMODEACTIONBARSETTING_HIDEABLE] == 1) and (db.settings[ENUM_EDITMODEACTIONBARSETTING_TOGGLEHIDEINCOMBAT] == 1) and (enteringCombat or InCombatLockdown()) then
                 frame:Show()
@@ -529,9 +544,7 @@ function lib:RegisterResizable(frame, minSize, maxSize, step)
     step = step or 5
     local systemID = getSystemID(frame)
     
-    if not framesDialogs[systemID] then framesDialogs[systemID] = {} end
-    if framesDialogsKeys[systemID] and framesDialogsKeys[systemID][ENUM_EDITMODEACTIONBARSETTING_FRAMESIZE] then return end
-    if not framesDialogsKeys[systemID] then framesDialogsKeys[systemID] = {} end
+    if framesDialogsKeys[systemID][ENUM_EDITMODEACTIONBARSETTING_FRAMESIZE] then return end
     framesDialogsKeys[systemID][ENUM_EDITMODEACTIONBARSETTING_FRAMESIZE] = true
     table.insert(framesDialogs[systemID],
         {
@@ -581,9 +594,7 @@ end
 function lib:RegisterHideable(frame, onEventHandler)
     local systemID = getSystemID(frame)
     
-    if not framesDialogs[systemID] then framesDialogs[systemID] = {} end
-    if framesDialogsKeys[systemID] and framesDialogsKeys[systemID][ENUM_EDITMODEACTIONBARSETTING_HIDEABLE] then return end
-    if not framesDialogsKeys[systemID] then framesDialogsKeys[systemID] = {} end
+    if framesDialogsKeys[systemID][ENUM_EDITMODEACTIONBARSETTING_HIDEABLE] then return end
     framesDialogsKeys[systemID][ENUM_EDITMODEACTIONBARSETTING_HIDEABLE] = true
     table.insert(framesDialogs[systemID],
         {
@@ -599,19 +610,16 @@ end
 function lib:IsFrameMarkedHidden(frame)
     local systemID = getSystemID(frame)
     
-    if not framesDB[systemID].settings then framesDB[systemID].settings = {} end
+    local settings = framesDB[systemID].settings 
     
-    local settings = framesDB[systemID].settings
-    local dialogs = framesDialogsKeys[systemID]
-    
-    if dialogs and settings and dialogs[ENUM_EDITMODEACTIONBARSETTING_HIDDENINCOMBAT] and (settings[ENUM_EDITMODEACTIONBARSETTING_HIDDENINCOMBAT] == 1) then
+    if framesDialogsKeys[systemID][ENUM_EDITMODEACTIONBARSETTING_HIDDENINCOMBAT] and (settings[ENUM_EDITMODEACTIONBARSETTING_HIDDENINCOMBAT] == 1) then
         if settings[ENUM_EDITMODEACTIONBARSETTING_HIDEABLE] == 1 then
             return not InCombatLockdown()
         else
             return InCombatLockdown()
         end
     end
-    return framesDB[systemID].settings[ENUM_EDITMODEACTIONBARSETTING_HIDEABLE] == 1
+    return settings[ENUM_EDITMODEACTIONBARSETTING_HIDEABLE] == 1
 end
 
 -- implemented further down the file
@@ -644,8 +652,6 @@ function lib:RegisterCustomCheckbox(frame, name, onChecked, onUnchecked, interna
     
     local systemID = getSystemID(frame)
     
-    if not framesDialogs[systemID] then framesDialogs[systemID] = {} end
-    if not framesDialogsKeys[systemID] then framesDialogsKeys[systemID] = {} end
     if not framesDialogsKeys[systemID][ENUM_EDITMODEACTIONBARSETTING_CUSTOM] then framesDialogsKeys[systemID][ENUM_EDITMODEACTIONBARSETTING_CUSTOM] = {} end 
     framesDialogsKeys[systemID][ENUM_EDITMODEACTIONBARSETTING_CUSTOM][internalName] = true
     
@@ -697,7 +703,6 @@ local extraDialogItems = {}
 -- the button will not save any settings
 function lib:RegisterCustomButton(frame, name, onClick)
     local systemID = getSystemID(frame)
-    if not framesDialogs[systemID] then framesDialogs[systemID] = {} end
     
     local button = CreateFrame("Button", nil, EditModeExpandedSystemSettingsDialog.Settings, "UIPanelButtonTemplate,ResizeLayoutFrame")
     button.SetupSetting = nop
@@ -719,7 +724,6 @@ end
 -- call this to register a frame to have its position specified by the user using screen coordinates
 function lib:RegisterCoordinates(frame)
     local systemID = getSystemID(frame)
-    if not framesDialogs[systemID] then framesDialogs[systemID] = {} end
     
     for _, settings in pairs(framesDialogs[systemID]) do
         if settings.type == ENUM_EDITMODEACTIONBARSETTING_COORDINATES then
@@ -816,8 +820,6 @@ function lib:RegisterDropdown(frame, libUIDropDownMenu, internalName)
     layoutFrame.dropdown = dropdown
     dropdown:SetPoint("TOPLEFT", layoutFrame, "TOPLEFT")
     
-    if not framesDialogs[systemID] then framesDialogs[systemID] = {} end
-    if not framesDialogsKeys[systemID] then framesDialogsKeys[systemID] = {} end
     if not framesDialogsKeys[systemID][ENUM_EDITMODEACTIONBARSETTING_DROPDOWN] then framesDialogsKeys[systemID][ENUM_EDITMODEACTIONBARSETTING_DROPDOWN] = {} end 
     framesDialogsKeys[systemID][ENUM_EDITMODEACTIONBARSETTING_DROPDOWN][internalName] = true
     
@@ -846,8 +848,6 @@ end
 function lib:RegisterSlider(frame, name, internalName, onChanged, min, max, step)
     local systemID = getSystemID(frame)
     
-    if not framesDialogs[systemID] then framesDialogs[systemID] = {} end
-    if not framesDialogsKeys[systemID] then framesDialogsKeys[systemID] = {} end
     if not framesDialogsKeys[systemID][ENUM_EDITMODEACTIONBARSETTING_SLIDER] then framesDialogsKeys[systemID][ENUM_EDITMODEACTIONBARSETTING_SLIDER] = {} end
     framesDialogsKeys[systemID][ENUM_EDITMODEACTIONBARSETTING_SLIDER][internalName] = true
     
@@ -1604,7 +1604,7 @@ function refreshCurrentProfile()
             runOutOfCombat(function()
             
                 -- frame hide option
-                if framesDialogsKeys[systemID] and framesDialogsKeys[systemID][ENUM_EDITMODEACTIONBARSETTING_HIDEABLE] and db.settings and (db.settings[ENUM_EDITMODEACTIONBARSETTING_HIDEABLE] ~= nil) then
+                if framesDialogsKeys[systemID][ENUM_EDITMODEACTIONBARSETTING_HIDEABLE] and (db.settings[ENUM_EDITMODEACTIONBARSETTING_HIDEABLE] ~= nil) then
                     if frame ~= TalkingHeadFrame then
                         frame:SetShown(framesDB[systemID].settings[ENUM_EDITMODEACTIONBARSETTING_HIDEABLE] ~= 1)
                         if frame.EMEOnEventHandler then
@@ -1618,7 +1618,7 @@ function refreshCurrentProfile()
                 end
                     
                 -- update scale
-                if framesDialogsKeys[systemID] and framesDialogsKeys[systemID][ENUM_EDITMODEACTIONBARSETTING_FRAMESIZE] and db.settings and db.settings[ENUM_EDITMODEACTIONBARSETTING_FRAMESIZE] then
+                if framesDialogsKeys[systemID][ENUM_EDITMODEACTIONBARSETTING_FRAMESIZE] and db.settings[ENUM_EDITMODEACTIONBARSETTING_FRAMESIZE] then
                     frame:SetScaleOverride(db.settings[ENUM_EDITMODEACTIONBARSETTING_FRAMESIZE]/100)
                 end
                 
@@ -1640,7 +1640,7 @@ function refreshCurrentProfile()
                     end
                 
                     -- minimap pinning
-                    if framesDialogsKeys[systemID] and framesDialogsKeys[systemID][ENUM_EDITMODEACTIONBARSETTING_MINIMAPPINNED] then
+                    if framesDialogsKeys[systemID][ENUM_EDITMODEACTIONBARSETTING_MINIMAPPINNED] then
                         if db.settings and (db.settings[ENUM_EDITMODEACTIONBARSETTING_MINIMAPPINNED] ~= nil) then
                             if db.settings[ENUM_EDITMODEACTIONBARSETTING_MINIMAPPINNED] == 1 then
                                 pinToMinimap(frame)
@@ -1767,9 +1767,7 @@ function lib:RegisterMinimapPinnable(frame)
     end)
     showHide()
     
-    if not framesDialogs[frame.system] then framesDialogs[frame.system] = {} end
-    if framesDialogsKeys[frame.system] and framesDialogsKeys[frame.system][ENUM_EDITMODEACTIONBARSETTING_MINIMAPPINNED] then return end
-    if not framesDialogsKeys[frame.system] then framesDialogsKeys[frame.system] = {} end
+    if framesDialogsKeys[frame.system][ENUM_EDITMODEACTIONBARSETTING_MINIMAPPINNED] then return end
     framesDialogsKeys[frame.system][ENUM_EDITMODEACTIONBARSETTING_MINIMAPPINNED] = true
     table.insert(framesDialogs[frame.system],
         {
@@ -1936,9 +1934,7 @@ end
 function lib:RegisterToggleInCombat(frame)
     local systemID = getSystemID(frame)
     
-    if not framesDialogs[systemID] then framesDialogs[systemID] = {} end
-    if framesDialogsKeys[systemID] and framesDialogsKeys[systemID][ENUM_EDITMODEACTIONBARSETTING_TOGGLEHIDEINCOMBAT] then return end
-    if not framesDialogsKeys[systemID] then framesDialogsKeys[systemID] = {} end
+    if framesDialogsKeys[systemID][ENUM_EDITMODEACTIONBARSETTING_TOGGLEHIDEINCOMBAT] then return end
     framesDialogsKeys[systemID][ENUM_EDITMODEACTIONBARSETTING_TOGGLEHIDEINCOMBAT] = true
     table.insert(framesDialogs[systemID],
         {
@@ -2076,9 +2072,7 @@ end
 function lib:RegisterHiddenUntilMouseover(frame, name)
     local systemID = getSystemID(frame)
     
-    if not framesDialogs[systemID] then framesDialogs[systemID] = {} end
-    if framesDialogsKeys[systemID] and framesDialogsKeys[systemID][ENUM_EDITMODEACTIONBARSETTING_HIDDENUNTILMOUSEOVER] then return end
-    if not framesDialogsKeys[systemID] then framesDialogsKeys[systemID] = {} end
+    if framesDialogsKeys[systemID][ENUM_EDITMODEACTIONBARSETTING_HIDDENUNTILMOUSEOVER] then return end
     framesDialogsKeys[systemID][ENUM_EDITMODEACTIONBARSETTING_HIDDENUNTILMOUSEOVER] = true
     table.insert(framesDialogs[systemID],
         {

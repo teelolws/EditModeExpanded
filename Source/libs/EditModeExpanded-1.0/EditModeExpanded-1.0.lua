@@ -1604,6 +1604,7 @@ function refreshCurrentProfile()
             framesDB[systemID] = db
             
             runOutOfCombat(function()
+                if not db.settings then db.settings = {} end
             
                 -- frame hide option
                 if framesDialogsKeys[systemID][ENUM_EDITMODEACTIONBARSETTING_HIDEABLE] and (db.settings[ENUM_EDITMODEACTIONBARSETTING_HIDEABLE] ~= nil) then

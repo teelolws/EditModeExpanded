@@ -2,7 +2,7 @@
 -- Internal variables
 --
 
-local MAJOR, MINOR = "EditModeExpanded-1.0", 104
+local MAJOR, MINOR = "EditModeExpanded-1.0", 105
 local lib = LibStub:NewLibrary(MAJOR, MINOR)
 if not lib then return end
 
@@ -88,12 +88,14 @@ setmetatable(framesDB, {
     __newindex = function(t, k, v)
         rawset(t, k, v)
         if type(v) ~= "table" then return end
-        rawset(v, "settings", {})
+        if not v.settings then
+            rawset(v, "settings", {})
+        end
     end,
     -- Eliminate need for calls like
     --     if not framesDB[systemID] then framesDB[systemID] = {} end
     __index = function(t, k)
-        rawset(t, k, {})
+        rawset(t, k, {settings={}})
         return t[k]
     end,
 })
@@ -213,7 +215,6 @@ function lib:RegisterFrame(frame, name, db, anchorTo, anchorPoint, clamped)
             db.enabled = nil
             db.settings = nil
         end
-        if not db.profiles[profileName].settings then db.profiles[profileName].settings = {} end
         
         db = db.profiles[profileName]
     end
@@ -1589,7 +1590,6 @@ function refreshCurrentProfile()
                 db.settings = nil
                 db.clamped = nil
             end
-            if not db.settings then db.settings = {} end
             
             if db.minimap then
                 db.profiles[profileName].minimap = db.minimap

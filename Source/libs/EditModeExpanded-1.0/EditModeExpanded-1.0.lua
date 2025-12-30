@@ -2,7 +2,7 @@
 -- Internal variables
 --
 
-local MAJOR, MINOR = "EditModeExpanded-1.0", 103
+local MAJOR, MINOR = "EditModeExpanded-1.0", 104
 local lib = LibStub:NewLibrary(MAJOR, MINOR)
 if not lib then return end
 
@@ -1194,10 +1194,6 @@ hooksecurefunc(f, "OnLoad", function()
     checkButtonFrame:SetPoint("TOPLEFT", EditModeManagerExpandedFrame.AccountSettings, "TOPLEFT", 20, 0)
 end)
 
-local function GetSystemSettingDisplayInfo(dialogs)
-    return dialogs
-end
-
 local function hideFrameUntilMouseover(frame)
     local handler = frame.EMESecureHandlerEnterLeave
     if not handler then
@@ -1274,8 +1270,8 @@ hooksecurefunc(f, "OnLoad", function()
             local settingsToSetup = {};
             local systemID = getSystemID(self.attachedToSystem)
             
-            local systemSettingDisplayInfo = GetSystemSettingDisplayInfo(framesDialogs[systemID]);
-            if systemSettingDisplayInfo then
+            local systemSettingDisplayInfo = framesDialogs[systemID];
+            if systemSettingDisplayInfo and (#systemSettingDisplayInfo > 0) then
                 for index, displayInfo in ipairs(systemSettingDisplayInfo) do
                     local settingPool = self:GetSettingPool(displayInfo.type);
                     local settingFrame

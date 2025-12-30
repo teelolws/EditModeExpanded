@@ -2,7 +2,7 @@
 -- Internal variables
 --
 
-local MAJOR, MINOR = "EditModeExpanded-1.0", 102
+local MAJOR, MINOR = "EditModeExpanded-1.0", 103
 local lib = LibStub:NewLibrary(MAJOR, MINOR)
 if not lib then return end
 
@@ -213,6 +213,7 @@ function lib:RegisterFrame(frame, name, db, anchorTo, anchorPoint, clamped)
             db.enabled = nil
             db.settings = nil
         end
+        if not db.profiles[profileName].settings then db.profiles[profileName].settings = {} end
         
         db = db.profiles[profileName]
     end
@@ -1592,6 +1593,7 @@ function refreshCurrentProfile()
                 db.settings = nil
                 db.clamped = nil
             end
+            if not db.settings then db.settings = {} end
             
             if db.minimap then
                 db.profiles[profileName].minimap = db.minimap

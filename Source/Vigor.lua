@@ -844,9 +844,17 @@ function addon:initVigorBar()
         vigorFrame:RegisterEvent("PLAYER_CAN_GLIDE_CHANGED")
         vigorFrame:RegisterEvent("ACTIONBAR_UPDATE_COOLDOWN")
         vigorFrame:SetScript("OnEvent", function(self)
+            if InCombatLockdown() then
+                vigorFrame:Hide()
+                return
+            end
             updateWidget(self, widgetID)
         end)
         vigorFrame:HookScript("OnUpdate", function(self)
+            if InCombatLockdown() then
+                vigorFrame:Hide()
+                return
+            end
             updateWidget(self, widgetID)
         end)
     end

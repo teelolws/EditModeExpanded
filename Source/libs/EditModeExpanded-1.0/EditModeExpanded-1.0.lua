@@ -2,7 +2,7 @@
 -- Internal variables
 --
 
-local MAJOR, MINOR = "EditModeExpanded-1.0", 105
+local MAJOR, MINOR = "EditModeExpanded-1.0", 106
 local lib = LibStub:NewLibrary(MAJOR, MINOR)
 if not lib then return end
 
@@ -180,8 +180,7 @@ function lib:RegisterFrame(frame, name, db, anchorTo, anchorPoint, clamped)
                 EditModeExpandedSystemSettingsDialog:AttachToSystemFrame(frame)
             end
         end)
-        registerFrameMovableWithArrowKeys(frame)
-        
+
         frame.Selection:HookScript("OnDragStop", function(self)
             EditModeExpandedSystemSettingsDialog:UpdateSettings(frame)
             if frame:IsUserPlaced() then
@@ -1116,7 +1115,7 @@ hooksecurefunc(f, "OnLoad", function()
     emeDialog.CloseButton.ignoreInLayout = true
     emeDialog.CloseButton:SetPoint("TOPRIGHT")
     emeDialog.Settings = emeDialog.Settings or CreateFrame("Frame", nil, emeDialog, "VerticalLayoutFrame")
-    emeDialog.Settings:SetSize(100, 100)
+    emeDialog.Settings:SetSize(1, 1)
     emeDialog.Settings.spacing = 2
     emeDialog.Settings:SetPoint("TOP", emeDialog.Title, "BOTTOM", 0, -12)
     emeDialog.Buttons = emeDialog.Buttons or CreateFrame("Frame", nil, emeDialog, "VerticalLayoutFrame")
@@ -1450,10 +1449,11 @@ hooksecurefunc(f, "OnLoad", function()
                     self.Buttons:SetPoint("TOP", self.Title, "BOTTOM", 0, -12);
                 else
                     self.Settings:Show();
+                    self.Settings:SetSize(1,1)
+                    self.Settings:Layout();
                     for settingFrame, settingData in pairs(settingsToSetup) do
                         settingFrame:SetupSetting(settingData);
                     end
-                    self.Settings:Layout();
                     self.Buttons:SetPoint("TOPLEFT", self.Settings, "BOTTOMLEFT", 0, -12);
                 end
             else

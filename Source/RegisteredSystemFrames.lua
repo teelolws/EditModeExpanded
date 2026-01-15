@@ -14,7 +14,9 @@ function addon:initSystemFrames()
     
     -- The earlier RegisterFrame will :SetShown(true) the TalkingHeadFrame if it was set to Hide then unset.
     -- Since its actually not normally shown on login, we will immediately re-hide it again.
-    TalkingHeadFrame:Hide()
+    if TalkingHeadFrame then
+        TalkingHeadFrame:Hide()
+    end
 end
 
 local function getToggleInCombatText(hidden)

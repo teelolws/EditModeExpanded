@@ -1,0 +1,72 @@
+## Interface: 20505
+## Title: Edit Mode Expanded
+## Version: @project-version@
+## Notes: Expands Edit Mode to apply to other frames
+## Author: Teelo
+## SavedVariables: EditModeExpandedADB
+## X-Curse-Project-ID: 695703
+## IconTexture: 4555600
+
+## Category-enUS: User Interface
+## Category-deDE: Benutzerinterface
+## Category-esES: Interfaz de usuario
+## Category-esMX: Interfaz de usuario
+## Category-frFR: Interface utilisateur
+## Category-itIT: Interfaccia utente
+## Category-koKR: 사용자 인터페이스
+## Category-ptBR: Interface do usuário
+## Category-ruRU: Интерфейс пользователя
+## Category-zhCN: 用户界面
+## Category-zhTW: 使用者介面
+
+libs\LibStub.lua
+libs\CallbackHandler-1.0\CallbackHandler-1.0.lua
+libs\AceDB-3.0\AceDB-3.0.xml
+libs\AceGUI-3.0\AceGUI-3.0.xml
+libs\AceConfig-3.0\AceConfig-3.0.xml
+libs\AceLocale-3.0\AceLocale-3.0.xml
+libs\EditModeExpanded-1.0\EditModeExpanded-1.0.xml
+libs\LibUIDropDownMenu\LibUIDropDownMenu.lua
+
+Locales\enus.lua
+Locales\esES.lua
+Locales\ruRU.lua
+Locales\zhCN.lua
+Locales\zhTW.lua
+Locales\koKR.lua
+
+FrameHandlers\ActionBars.lua
+FrameHandlers\BelowMinimapContainer.lua
+FrameHandlers\BonusRoll.lua
+FrameHandlers\Buffs.lua
+FrameHandlers\ChatButtons-tbc.lua
+FrameHandlers\ExtraActionButton.lua
+FrameHandlers\FocusCast.lua
+FrameHandlers\FocusFrame.lua
+FrameHandlers\FocusToT.lua
+FrameHandlers\GameMenu.lua
+FrameHandlers\GroupLoot.lua
+FrameHandlers\Menu.lua
+FrameHandlers\Minimap.lua
+FrameHandlers\ObjectiveTracker.lua
+FrameHandlers\Pet.lua
+FrameHandlers\PlayerFrame.lua
+FrameHandlers\Raid.lua
+FrameHandlers\StanceBar.lua
+FrameHandlers\StatusTrackingBar.lua
+FrameHandlers\TargetCast.lua
+FrameHandlers\TargetFrame.lua
+FrameHandlers\TargetOfTarget.lua
+FrameHandlers\Tooltip-tbc.lua
+FrameHandlers\TopCenterContainer.lua
+
+AutoLayoutChanges.lua
+Options-tbc.lua
+RegisterFrame.lua
+ResetFrame.lua
+HookOnce.lua
+AnchorToDropdown.lua
+RegisteredSystemFrames.lua
+CombatManager.lua
+EditModeExpanded-tbc.lua
+WarningFrame.xml

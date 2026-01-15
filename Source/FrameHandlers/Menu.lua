@@ -74,8 +74,12 @@ function addon:initMenuBar()
         
         C_Timer.After(1, updatePadding)
         
-        lib:RegisterCustomCheckbox(MicroMenuContainer, L["MENU_CHECKBOX_DF_BUTTONS_DESCRIPTION"], addon.EnableSkinMicroMenuBW, addon.DisableSkinMicroMenuBW, "10.0Style")
-        lib:RegisterCustomCheckbox(MicroMenuContainer, L["MENU_CHECKBOX_SL_BUTTONS_DESCRIPTION"], addon.EnableSkinMicroMenuSL, addon.DisableSkinMicroMenuSL, "SLStyle")
+        if addon.EnableSkinMicroMenuBW then
+            lib:RegisterCustomCheckbox(MicroMenuContainer, L["MENU_CHECKBOX_DF_BUTTONS_DESCRIPTION"], addon.EnableSkinMicroMenuBW, addon.DisableSkinMicroMenuBW, "10.0Style")
+        end
+        if addon.EnableSkinMicroMenuSL then
+            lib:RegisterCustomCheckbox(MicroMenuContainer, L["MENU_CHECKBOX_SL_BUTTONS_DESCRIPTION"], addon.EnableSkinMicroMenuSL, addon.DisableSkinMicroMenuSL, "SLStyle")
+        end
         
         RunNextFrame(function()
             if InCombatLockdown() then return end
@@ -111,7 +115,9 @@ function addon:initMenuBar()
                 -- workaround for bug introduced in 10.2.5
                 -- not sure why its happening, something to do with layout-local.txt
                 -- but trying SetUserPlaced causes an error
-                ContainerFrame1.Bg:SetFrameLevel(0)
+                if ContainerFrame1.Bg then
+                    ContainerFrame1.Bg:SetFrameLevel(0)
+                end
                 
                 addon:registerFrame(ContainerFrame1, BACKPACK_TOOLTIP, globaldb.ContainerFrame1)
                 hooksecurefunc("UpdateContainerFrameAnchors", function()
@@ -121,14 +127,16 @@ function addon:initMenuBar()
             end)
         end)
         
-        addon.hookScriptOnce(ContainerFrameCombinedBags, "OnShow", function()
-            addon:continueAfterCombatEnds(function()
-                addon:registerFrame(ContainerFrameCombinedBags, COMBINED_BAG_TITLE, globaldb.ContainerFrameCombinedBags)
-                hooksecurefunc("UpdateContainerFrameAnchors", function()
-                    if InCombatLockdown() then return end
-                    addon.ResetFrame(ContainerFrameCombinedBags)
+        if ContainerFrameCombinedBags then
+            addon.hookScriptOnce(ContainerFrameCombinedBags, "OnShow", function()
+                addon:continueAfterCombatEnds(function()
+                    addon:registerFrame(ContainerFrameCombinedBags, COMBINED_BAG_TITLE, globaldb.ContainerFrameCombinedBags)
+                    hooksecurefunc("UpdateContainerFrameAnchors", function()
+                        if InCombatLockdown() then return end
+                        addon.ResetFrame(ContainerFrameCombinedBags)
+                    end)
                 end)
             end)
-        end)
+        end
     end
 end

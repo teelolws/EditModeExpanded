@@ -2,7 +2,7 @@
 -- Internal variables
 --
 
-local MAJOR, MINOR = "EditModeExpanded-1.0", 106
+local MAJOR, MINOR = "EditModeExpanded-1.0", 107
 local lib = LibStub:NewLibrary(MAJOR, MINOR)
 if not lib then return end
 
@@ -196,7 +196,11 @@ function lib:RegisterFrame(frame, name, db, anchorTo, anchorPoint, clamped)
         local profileName = layoutInfo.layoutType.."-"..layoutInfo.layoutName
         if layoutInfo.layoutType == Enum.EditModeLayoutType.Character then
             local unitName, unitRealm = UnitFullName("player")
-            profileName = layoutInfo.layoutType.."-"..unitName.."-"..unitRealm.."-"..layoutInfo.layoutName
+            -- See https://github.com/teelolws/EditModeExpanded/issues/201
+            -- Despite the docs, it seems unitRealm can still sometimes be nil
+            if unitName and unitRealm then
+                profileName = layoutInfo.layoutType.."-"..unitName.."-"..unitRealm.."-"..layoutInfo.layoutName
+            end
         end
         
         if not db.profiles then db.profiles = {} end

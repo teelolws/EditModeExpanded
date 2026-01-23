@@ -55,6 +55,7 @@ FrameHandlers\LossOfControl.lua
 FrameHandlers\Menu.lua
 FrameHandlers\Minimap.lua
 FrameHandlers\ObjectiveTracker.lua
+FrameHandlers\PersonalResourceDisplay.lua
 FrameHandlers\Pet.lua
 FrameHandlers\PlayerFrame.lua
 FrameHandlers\Raid.lua

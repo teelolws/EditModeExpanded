@@ -75,6 +75,7 @@ local defaults = {
             raidSizeLayoutSwitching = false,
             vigorBar = true,
             housingControlsFrame = true,
+            personalResourceDisplay = false,
         },
         QueueStatusButton = {},
         TotemFrame = {},
@@ -131,6 +132,9 @@ local defaults = {
         MirrorTimerContainer = {},
         VigorBar = {},
         HousingControlsFrame = {},
+        PersonalResourceDisplayHealth = {},
+        PersonalResourceDisplayPower = {},
+        PersonalResourceDisplayClass = {},
     }
 }
 
@@ -399,20 +403,6 @@ local options = {
             desc = string.format(L["TOGGLE_ADDITIONAL_OPTIONS_SUPPORT_STRING"], COOLDOWN_VIEWER_LABEL),
             type = "toggle",
         },
-        cooldownManagerReset = {
-            type = "execute",
-            name = L["Reset Cooldown Manager DB"],
-            func = function()
-                wipe(addon.db.char.EssentialCooldownViewerSpellIDs)
-                wipe(addon.db.char.UtilityCooldownViewerSpellIDs)
-                wipe(addon.db.char.BuffIconCooldownViewerSpellIDs)
-                wipe(addon.db.char.BuffBarCooldownViewerSpellIDs)
-                EssentialCooldownViewer:RefreshLayout()
-                UtilityCooldownViewer:RefreshLayout()
-                BuffIconCooldownViewer:RefreshLayout()
-                BuffBarCooldownViewer:RefreshLayout()
-            end,
-        },
         durationBars = {
             name = HUD_EDIT_MODE_TIMER_BARS_LABEL,
             desc = string.format(L["TOGGLE_ADDITIONAL_OPTIONS_SUPPORT_STRING"], HUD_EDIT_MODE_TIMER_BARS_LABEL),
@@ -432,6 +422,11 @@ local options = {
             name = BINDING_HEADER_HOUSING_SYSTEM,
             type = "toggle",
             desc = string.format(L["TOGGLE_ADDITIONAL_OPTIONS_SUPPORT_STRING"], BINDING_HEADER_HOUSING_SYSTEM),
+        },
+        personalResourceDisplay = {
+            name = DISPLAY_PERSONAL_RESOURCE,
+            type = "toggle",
+            desc = "Splits the Personal Resource Display into 3 separate frames: HP, Power (mana/energy/etc), and Class (holy power, etc). That way you can move them separately, or shove one of them off screen if you want.",
         },
     },
 }

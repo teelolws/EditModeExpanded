@@ -64,6 +64,7 @@ local defaults = {
             debuffFrame = true,
             objectiveTrackerFrame = true,
             targetFrameBuffs = false,
+            focusFrameBuffs = false,
             gameMenu = true,
             gameTooltip = true,
             lossOfControl = true,
@@ -121,6 +122,7 @@ local defaults = {
         MinimapSeparated = {},
         TargetDebuffs = {},
         TargetBuffs = {},
+        FocusBuffs = {},
         GameMenuFrame = {},
         LOC = {},
         PetFrame = {},
@@ -227,6 +229,11 @@ local options = {
                 focusFrame = {
                     name = FOCUS,
                     desc = string.format(L["TOGGLE_ADDITIONAL_OPTIONS_SUPPORT_STRING"], FOCUS),
+                    type = "toggle",
+                },
+                focusFrameBuffs = {
+                    name = FOCUS.." "..BUFFOPTIONS_LABEL,
+                    desc = string.format(L["TOGGLE_SUPPORT_STRING"], FOCUS.." "..BUFFOPTIONS_LABEL),
                     type = "toggle",
                 },
             },

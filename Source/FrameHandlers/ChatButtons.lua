@@ -19,4 +19,10 @@ function addon:initChatButtons()
     lib:RegisterHideable(ChatFrameMenuButton)
     
     lib:GroupOptions({QuickJoinToastButton, ChatFrameChannelButton, ChatFrameMenuButton}, L["Chat Buttons"])
+    
+    hooksecurefunc(ChatAlertFrame, "UpdateAnchors", function()
+        lib:RepositionFrame(QuickJoinToastButton)
+        lib:RepositionFrame(ChatFrameChannelButton)
+        lib:RepositionFrame(ChatFrameMenuButton)
+    end)
 end

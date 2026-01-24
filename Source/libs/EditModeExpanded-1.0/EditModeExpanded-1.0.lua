@@ -946,7 +946,7 @@ hooksecurefunc(f, "OnLoad", function()
     EditModeManagerExpandedFrame.Expander.align = "center"
     
     EditModeManagerExpandedFrame.Expander.Divider = EditModeManagerExpandedFrame.Expander.Divider or EditModeManagerExpandedFrame.Expander:CreateTexture(nil, "ARTWORK")
-    EditModeManagerExpandedFrame.Expander.Divider:SetTexture("Interface\FriendsFrame\UI-FriendsFrame-OnlineDivider")
+    EditModeManagerExpandedFrame.Expander.Divider:SetTexture("Interface\\FriendsFrame\\UI-FriendsFrame-OnlineDivider")
     EditModeManagerExpandedFrame.Expander.Divider:SetSize(330, 16)
     EditModeManagerExpandedFrame.Expander.Divider:SetPoint("TOP")
     

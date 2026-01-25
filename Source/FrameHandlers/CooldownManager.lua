@@ -2,7 +2,7 @@ local addonName, addon = ...
 
 local lib = LibStub:GetLibrary("EditModeExpanded-1.0")
 
-local disableSupport, hideNames, hideIcons, barsFillToEmpty
+local isEnabled, hideNames, hideIcons, barsFillToEmpty
 local function initCustomBuffBar(itemFrame)
     if itemFrame.EMEBuffBar then return end
     local buffBar = CreateFrame("Frame", nil, EssentialCooldownViewer)
@@ -62,10 +62,9 @@ local function initCustomBuffBar(itemFrame)
     buffBar.Bar.Duration:SetPoint("RIGHT", -8, 0)
     
     hooksecurefunc(itemFrame, "RefreshData", function()
-        if disableSupport then return end
+        if not isEnabled then return end
         itemFrame:Hide()
         if not itemFrame:GetSpellID() then return end
-        
         
         local durationObject = C_Spell.GetSpellCooldownDuration(itemFrame:GetSpellID())
         
@@ -88,6 +87,10 @@ local function initCustomBuffBar(itemFrame)
             durationFontString:Show()
             if itemFrame.EMEDurationTicker then itemFrame.EMEDurationTicker:Cancel() end
             itemFrame.EMEDurationTicker = C_Timer.NewTicker(0.2, function()
+                if (not isEnabled) or (not itemFrame:GetSpellID()) then
+                    itemFrame.EMEDurationTicker:Cancel()
+                    return
+                end
                 durationObject = C_Spell.GetSpellCooldownDuration(itemFrame:GetSpellID())
                 durationFontString:SetText(string.format(COOLDOWN_DURATION_SEC, durationObject:GetRemainingDuration()))
                 durationFontString:SetAlphaFromBoolean(durationObject:IsZero(), 0, 255)
@@ -118,20 +121,27 @@ function addon:initCooldownManager()
     if not addon.db.global.EMEOptions.cooldownManager then return end
     
     local wasConverted
+    local function updateAll()
+        if not isEnabled then return end
+        for _, itemFrame in pairs(EssentialCooldownViewer:GetItemFrames()) do
+            initCustomBuffBar(itemFrame)
+            itemFrame.EMEBuffBar:Show()
+            itemFrame:Hide()
+        end
+    end
+    
+    --hooksecurefunc(EssentialCooldownViewer, "OnAcquireItemFrame", updateAll)
+    hooksecurefunc(EssentialCooldownViewer, "Layout", updateAll)
+    
     lib:RegisterCustomCheckbox(EssentialCooldownViewer, "Convert To Bar",
         function()
-            wasConverted = true
-            
-            disableSupport = false
-            for _, itemFrame in pairs(EssentialCooldownViewer:GetItemFrames()) do
-                initCustomBuffBar(itemFrame)
-                itemFrame.EMEBuffBar:Show()
-            end
+            isEnabled = true
+            updateAll()
         end,
         function()
-            if not wasConverted then return end
+            if not isEnabled then return end
             
-            disableSupport = true
+            isEnabled = false
             for _, itemFrame in pairs(EssentialCooldownViewer:GetItemFrames()) do
                 itemFrame:Show()
                 itemFrame.EMEBuffBar:Hide()

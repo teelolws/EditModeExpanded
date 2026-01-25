@@ -120,7 +120,6 @@ end
 function addon:initCooldownManager()
     if not addon.db.global.EMEOptions.cooldownManager then return end
     
-    local wasConverted
     local function updateAll()
         if not isEnabled then return end
         for _, itemFrame in pairs(EssentialCooldownViewer:GetItemFrames()) do

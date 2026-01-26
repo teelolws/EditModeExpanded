@@ -5,7 +5,6 @@ local L = LibStub("AceLocale-3.0"):GetLocale(addonName)
 function addon:initLFG()
     local db = addon.db.global
     if db.EMEOptions.lfg then
-        QueueStatusButton:SetParent(UIParent)
         addon:registerFrame(QueueStatusButton, L["LFG"], db.QueueStatusButton)
         hooksecurefunc(MicroMenu, "UpdateQueueStatusAnchors", function()
             if InCombatLockdown() then return end

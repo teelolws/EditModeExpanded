@@ -211,10 +211,11 @@ local function initCustomBuffBar(itemFrame)
     
     -- setup defaults
     buffBar.Icon.Icon:SetTexture(itemFrame:GetSpellTexture())
-    buffBar.Bar:SetTimerDuration(C_Spell.GetSpellCooldownDuration(itemFrame:GetSpellID()), nil, barsFillToEmpty and 1 or 0)
-    buffBar.CoverBar:SetAlphaFromBoolean(true)
-    if not hideNames then
-        buffBar.Bar.Name:SetText(C_Spell.GetSpellName(itemFrame:GetSpellID()))
+    if itemFrame:GetSpellID() then
+        buffBar.Bar:SetTimerDuration(C_Spell.GetSpellCooldownDuration(itemFrame:GetSpellID()), nil, barsFillToEmpty and 1 or 0)
+        if not hideNames then
+            buffBar.Bar.Name:SetText(C_Spell.GetSpellName(itemFrame:GetSpellID()))
+        end
     end
 end
 

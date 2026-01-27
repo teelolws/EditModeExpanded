@@ -2,7 +2,100 @@ local addonName, addon = ...
 
 local lib = LibStub:GetLibrary("EditModeExpanded-1.0")
 
-local isEnabled, hideNames, hideIcons, barsFillToEmpty
+local enableConvertToBar, hideNames, hideIcons, barsFillToEmpty, updateAll
+
+local settingFrame = CreateFrame("Frame", "EMECooldownManagerSettingFrame", UIParent, "VerticalLayoutFrame")
+settingFrame.Border = CreateFrame("Frame", nil, settingFrame, "DialogBorderTranslucentTemplate")
+settingFrame.expand = true
+settingFrame.topPadding = 10
+settingFrame.bottomPadding = 10
+settingFrame.leftPadding = 10
+settingFrame.rightPadding = 10
+settingFrame.spacing = 10
+settingFrame:Hide()
+settingFrame:SetFrameStrata("TOOLTIP")
+
+settingFrame.closeButton = CreateFrame("Button", nil, settingFrame, "UIPanelCloseButton")
+settingFrame.closeButton.ignoreInLayout = true
+settingFrame.closeButton:SetPoint("TOPRIGHT", settingFrame, "TOPRIGHT", 3, 4)
+
+hooksecurefunc(EditModeManagerFrame, "ExitEditMode", function() settingFrame:Hide() end)
+
+settingFrame.enableConvertToBarCheckButton = CreateFrame("Frame", nil, settingFrame, "ResizeCheckButtonTemplate")
+settingFrame.enableConvertToBarCheckButton.layoutIndex = 1
+settingFrame.enableConvertToBarCheckButton.fixedWidth = 225
+settingFrame.enableConvertToBarCheckButton.fixedHeight = 32
+
+settingFrame.enableConvertToBarCheckButton.Button:SetScript("OnClick", function(self)
+    local isChecked = self:GetChecked()
+    settingFrame.db.convertToBar = isChecked
+    enableConvertToBar = isChecked
+    settingFrame.iconSizeSlider.Slider:SetEnabled(isChecked)
+    settingFrame.HideNameCheckButton.Button:SetEnabled(isChecked)
+    settingFrame.HideIconCheckButton.Button:SetEnabled(isChecked)
+    settingFrame.BarsFillToEmptyCheckButton.Button:SetEnabled(isChecked)
+    updateAll()
+end)
+
+settingFrame.enableConvertToBarCheckButton.Label:SetText("Convert to Bars")
+settingFrame.enableConvertToBarCheckButton.Label:SetFontObject(GameFontHighlightMedium)
+
+settingFrame.iconSizeSlider = CreateFrame("Frame", nil, settingFrame, "EditModeSettingSliderTemplate")
+settingFrame.iconSizeSlider.layoutIndex = 2
+settingFrame.iconSizeSlider.fixedWidth = 250
+settingFrame.iconSizeSlider.fixedHeight = 40
+CallbackRegistryMixin.OnLoad(settingFrame.iconSizeSlider)
+settingFrame.iconSizeSlider.cbrHandles = EventUtil.CreateCallbackHandleContainer()
+settingFrame.iconSizeSlider.cbrHandles:RegisterCallback(settingFrame.iconSizeSlider.Slider, MinimalSliderWithSteppersMixin.Event.OnValueChanged, function(self, value)
+        if self.InitInProgress then return end
+        for _, itemFrame in pairs(settingFrame.viewer:GetItemFrames()) do
+            if itemFrame.EMEBuffBar then
+                itemFrame.EMEBuffBar.Icon:SetScale(value/100)
+            end
+        end
+        settingFrame.db.iconSize = value
+    end, settingFrame.iconSizeSlider)
+settingFrame.iconSizeSlider:Show()
+        
+settingFrame.HideNameCheckButton = CreateFrame("Frame", nil, settingFrame, "ResizeCheckButtonTemplate")
+settingFrame.HideNameCheckButton.layoutIndex = 3
+settingFrame.HideNameCheckButton.fixedWidth = 225
+settingFrame.HideNameCheckButton.fixedHeight = 32
+
+settingFrame.HideNameCheckButton.Button:SetScript("OnClick", function(self)
+    hideNames = self:GetChecked()
+    settingFrame.db.hideNames = hideNames
+end)
+
+settingFrame.HideNameCheckButton.Label:SetText("Hide Names")
+settingFrame.HideNameCheckButton.Label:SetFontObject(GameFontHighlightMedium)
+
+settingFrame.HideIconCheckButton = CreateFrame("Frame", nil, settingFrame, "ResizeCheckButtonTemplate")
+settingFrame.HideIconCheckButton.layoutIndex = 4
+settingFrame.HideIconCheckButton.fixedWidth = 225
+settingFrame.HideIconCheckButton.fixedHeight = 32
+
+settingFrame.HideIconCheckButton.Button:SetScript("OnClick", function(self)
+    hideIcons = self:GetChecked()
+    settingFrame.db.hideIcons = hideIcons
+end)
+
+settingFrame.HideIconCheckButton.Label:SetText("Hide Icons")
+settingFrame.HideIconCheckButton.Label:SetFontObject(GameFontHighlightMedium)
+
+settingFrame.BarsFillToEmptyCheckButton = CreateFrame("Frame", nil, settingFrame, "ResizeCheckButtonTemplate")
+settingFrame.BarsFillToEmptyCheckButton.layoutIndex = 5
+settingFrame.BarsFillToEmptyCheckButton.fixedWidth = 225
+settingFrame.BarsFillToEmptyCheckButton.fixedHeight = 32
+
+settingFrame.BarsFillToEmptyCheckButton.Button:SetScript("OnClick", function(self)
+    barsFillToEmpty = self:GetChecked()
+    settingFrame.db.barsFillToEmpty = barsFillToEmpty
+end)
+
+settingFrame.BarsFillToEmptyCheckButton.Label:SetText("Bars fill to empty")
+settingFrame.BarsFillToEmptyCheckButton.Label:SetFontObject(GameFontHighlightMedium)
+
 local function initCustomBuffBar(itemFrame)
     if itemFrame.EMEBuffBar then return end
     local buffBar = CreateFrame("Frame", nil, EssentialCooldownViewer)
@@ -62,7 +155,7 @@ local function initCustomBuffBar(itemFrame)
     buffBar.Bar.Duration:SetPoint("RIGHT", -8, 0)
     
     hooksecurefunc(itemFrame, "RefreshData", function()
-        if not isEnabled then return end
+        if not enableConvertToBar then return end
         itemFrame:Hide()
         if not itemFrame:GetSpellID() then return end
         
@@ -87,7 +180,7 @@ local function initCustomBuffBar(itemFrame)
             durationFontString:Show()
             if itemFrame.EMEDurationTicker then itemFrame.EMEDurationTicker:Cancel() end
             itemFrame.EMEDurationTicker = C_Timer.NewTicker(0.2, function()
-                if (not isEnabled) or (not itemFrame:GetSpellID()) then
+                if (not enableConvertToBar) or (not itemFrame:GetSpellID()) then
                     itemFrame.EMEDurationTicker:Cancel()
                     return
                 end
@@ -115,13 +208,21 @@ local function initCustomBuffBar(itemFrame)
     	--local applicationsFontString = buffBar.Icon.Applications
     	--applicationsFontString:SetText(applicationsText);
     end)
+    
+    -- setup defaults
+    buffBar.Icon.Icon:SetTexture(itemFrame:GetSpellTexture())
+    buffBar.Bar:SetTimerDuration(C_Spell.GetSpellCooldownDuration(itemFrame:GetSpellID()), nil, barsFillToEmpty and 1 or 0)
+    buffBar.CoverBar:SetAlphaFromBoolean(true)
+    if not hideNames then
+        buffBar.Bar.Name:SetText(C_Spell.GetSpellName(itemFrame:GetSpellID()))
+    end
 end
 
 function addon:initCooldownManager()
     if not addon.db.global.EMEOptions.cooldownManager then return end
     
-    local function updateAll()
-        if not isEnabled then return end
+    function updateAll()
+        if not enableConvertToBar then return end
         for _, itemFrame in pairs(EssentialCooldownViewer:GetItemFrames()) do
             initCustomBuffBar(itemFrame)
             itemFrame.EMEBuffBar:Show()
@@ -131,57 +232,39 @@ function addon:initCooldownManager()
     
     --hooksecurefunc(EssentialCooldownViewer, "OnAcquireItemFrame", updateAll)
     hooksecurefunc(EssentialCooldownViewer, "Layout", updateAll)
-    
-    lib:RegisterCustomCheckbox(EssentialCooldownViewer, "Convert To Bar",
-        function()
-            isEnabled = true
-            updateAll()
-        end,
-        function()
-            if not isEnabled then return end
-            
-            isEnabled = false
-            for _, itemFrame in pairs(EssentialCooldownViewer:GetItemFrames()) do
-                itemFrame:Show()
-                itemFrame.EMEBuffBar:Hide()
-            end
-        end,
-        "ConvertToBar")
-    
-    lib:RegisterSlider(EssentialCooldownViewer, "Icon Size (Bar version)", "BarIconSize",
-        function(value)
-            for _, itemFrame in pairs(EssentialCooldownViewer:GetItemFrames()) do
-                if itemFrame.EMEBuffBar then
-                    itemFrame.EMEBuffBar.Icon:SetScale(value/100)
-                end
-            end
-        end,
-        20, 200, 10)
         
-    lib:RegisterCustomCheckbox(EssentialCooldownViewer, "Hide Name (Bar version)",
-        function()
-            hideNames = true
-        end,
-        function()
-            hideNames = false
-        end,
-        "HideNames")
+    local getSettingDB
+    getSettingDB = lib:RegisterCustomButton(EssentialCooldownViewer, "Show More Settings", function()
+        settingFrame:SetShown(not settingFrame:IsShown())
+        settingFrame.viewer = EssentialCooldownViewer
+        settingFrame.db = getSettingDB()
+        settingFrame.enableConvertToBarCheckButton.Button:SetChecked(settingFrame.db.convertToBar)
+        settingFrame:SetPoint("TOPRIGHT", EditModeExpandedSystemSettingsDialog, "TOPLEFT")
+        settingFrame.iconSizeSlider:SetupSetting({
+            settingName = "Icon Size",
+            displayInfo = {
+                minValue = 1,
+                maxValue = 200,
+                stepSize = 1,
+            },
+            currentValue = settingFrame.db.iconSize or 100,
+        })
+        settingFrame:Layout()
+    end, "CooldownManagerExtraSettings")
     
-    lib:RegisterCustomCheckbox(EssentialCooldownViewer, "Hide Icon (Bar version)",
-        function()
-            hideIcons = true
-        end,
-        function()
-            hideIcons = false
-        end,
-        "HideIcons")
-        
-    lib:RegisterCustomCheckbox(EssentialCooldownViewer, "Bars Fill To Empty",
-        function()
-            barsFillToEmpty = true
-        end,
-        function()
-            barsFillToEmpty = false
-        end,
-        "BarsFillToEmpty")
+    local function updateProfile()
+        local db = getSettingDB()
+        enableConvertToBar = db.convertToBar
+        barsFillToEmpty = db.barsFillToEmpty
+        hideNames = db.hideNames
+        hideIcons = db.hideIcons
+        settingFrame.iconSizeSlider.Slider:SetEnabled(enableConvertToBar)
+        settingFrame.HideNameCheckButton.Button:SetEnabled(enableConvertToBar)
+        settingFrame.HideIconCheckButton.Button:SetEnabled(enableConvertToBar)
+        settingFrame.BarsFillToEmptyCheckButton.Button:SetEnabled(enableConvertToBar)
+        updateAll()
+    end
+    
+    C_Timer.After(2, updateProfile)
+    EventRegistry:RegisterFrameEventAndCallback("EDIT_MODE_LAYOUTS_UPDATED", updateProfile)
 end

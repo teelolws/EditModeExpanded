@@ -2,7 +2,7 @@
 -- Internal variables
 --
 
-local MAJOR, MINOR = "EditModeExpanded-1.0", 108
+local MAJOR, MINOR = "EditModeExpanded-1.0", 109
 local lib = LibStub:NewLibrary(MAJOR, MINOR)
 if not lib then return end
 
@@ -699,7 +699,7 @@ end
 local extraDialogItems = {}
 -- call this to register a custom button
 -- the button will not save any settings
-function lib:RegisterCustomButton(frame, name, onClick)
+function lib:RegisterCustomButton(frame, name, onClick, internalName)
     local systemID = getSystemID(frame)
     
     local button = CreateFrame("Button", nil, EditModeExpandedSystemSettingsDialog.Settings, "UIPanelButtonTemplate,ResizeLayoutFrame")
@@ -717,6 +717,16 @@ function lib:RegisterCustomButton(frame, name, onClick)
     )
     
     table.insert(extraDialogItems, button)
+    
+    local function getCurrentDB()
+        local db = framesDB[getSystemID(frame)]
+        if not db.settings[ENUM_EDITMODEACTIONBARSETTING_BUTTON] then db.settings[ENUM_EDITMODEACTIONBARSETTING_BUTTON] = {} end
+        if not db.settings[ENUM_EDITMODEACTIONBARSETTING_BUTTON][internalName] then db.settings[ENUM_EDITMODEACTIONBARSETTING_BUTTON][internalName] = {} end
+        
+        return db.settings[ENUM_EDITMODEACTIONBARSETTING_BUTTON][internalName]
+    end
+    
+    return getCurrentDB
 end
 
 -- call this to register a frame to have its position specified by the user using screen coordinates

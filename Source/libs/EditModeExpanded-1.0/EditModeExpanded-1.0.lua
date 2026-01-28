@@ -2,7 +2,7 @@
 -- Internal variables
 --
 
-local MAJOR, MINOR = "EditModeExpanded-1.0", 109
+local MAJOR, MINOR = "EditModeExpanded-1.0", 110
 local lib = LibStub:NewLibrary(MAJOR, MINOR)
 if not lib then return end
 
@@ -347,7 +347,8 @@ function lib:RegisterFrame(frame, name, db, anchorTo, anchorPoint, clamped)
     resetButton:SetScript("OnClick", function()
         local profiledb = framesDB[frame.system]
         frame:ClearAllPoints()
-        frame:SetScaleOverride(1)
+        frame:SetClampedToScreen(true)
+
         if not profiledb.defaultX then profiledb.defaultX = 0 end
         if not profiledb.defaultY then profiledb.defaultY = 0 end
         local x, y = getOffsetXY(frame, profiledb.defaultX, profiledb.defaultY)
@@ -356,9 +357,11 @@ function lib:RegisterFrame(frame, name, db, anchorTo, anchorPoint, clamped)
             frame:SetPoint("BOTTOMLEFT", nil, "BOTTOMLEFT", x, y)
         end
         
+        profiledb.clamped = true
         profiledb.x = profiledb.defaultX
         profiledb.y = profiledb.defaultY
-        profiledb.settings[ENUM_EDITMODEACTIONBARSETTING_FRAMESIZE] = 100
+        frame:SetScaleOverride(profiledb.defaultScale)
+        profiledb.settings[ENUM_EDITMODEACTIONBARSETTING_FRAMESIZE] = profiledb.defaultScale
         EditModeExpandedSystemSettingsDialog:Hide()
         frame:HighlightSystem()
         

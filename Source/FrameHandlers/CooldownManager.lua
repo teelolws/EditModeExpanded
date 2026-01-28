@@ -255,7 +255,7 @@ function addon:initCooldownManager()
     
     local function updateProfile()
         local db = getSettingDB()
-        enableConvertToBar = db.convertToBar
+        enableConvertToBar = db.convertToBar or false -- can't pass `nil` in to a SetEnabled, has to explicitly be `false`
         barsFillToEmpty = db.barsFillToEmpty
         hideNames = db.hideNames
         hideIcons = db.hideIcons

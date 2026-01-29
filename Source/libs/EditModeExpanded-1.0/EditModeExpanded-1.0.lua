@@ -2,7 +2,7 @@
 -- Internal variables
 --
 
-local MAJOR, MINOR = "EditModeExpanded-1.0", 110
+local MAJOR, MINOR = "EditModeExpanded-1.0", 111
 local lib = LibStub:NewLibrary(MAJOR, MINOR)
 if not lib then return end
 
@@ -361,7 +361,7 @@ function lib:RegisterFrame(frame, name, db, anchorTo, anchorPoint, clamped)
         profiledb.x = profiledb.defaultX
         profiledb.y = profiledb.defaultY
         frame:SetScaleOverride(profiledb.defaultScale)
-        profiledb.settings[ENUM_EDITMODEACTIONBARSETTING_FRAMESIZE] = profiledb.defaultScale
+        profiledb.settings[ENUM_EDITMODEACTIONBARSETTING_FRAMESIZE] = profiledb.defaultScale * 100
         EditModeExpandedSystemSettingsDialog:Hide()
         frame:HighlightSystem()
         

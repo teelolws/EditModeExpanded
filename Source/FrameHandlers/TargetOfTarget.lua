@@ -9,10 +9,8 @@ function addon:initTargetOfTarget()
         addon:registerFrame(TargetFrameToT, SHOW_TARGET_OF_TARGET_TEXT, db.ToT)
         lib:RegisterResizable(TargetFrameToT)
         TargetFrameToT:HookScript("OnHide", function()
-            if (not InCombatLockdown()) and EditModeManagerFrame.editModeActive and lib:IsFrameEnabled(TargetFrameToT) then
-                if C_CVar.GetCVar("showTargetOfTarget") == "1" then
-                    TargetFrameToT:Show()
-                end
+            if (not InCombatLockdown()) and EditModeManagerFrame.editModeActive and lib:IsFrameEnabled(TargetFrameToT) and (C_CVar.GetCVar("showTargetOfTarget") == "1") then
+                TargetFrameToT:Show()
             end
         end)
         addon:registerSecureFrameHideable(TargetFrameToT)

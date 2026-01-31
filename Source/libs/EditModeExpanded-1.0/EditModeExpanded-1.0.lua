@@ -2,7 +2,7 @@
 -- Internal variables
 --
 
-local MAJOR, MINOR = "EditModeExpanded-1.0", 111
+local MAJOR, MINOR = "EditModeExpanded-1.0", 112
 local lib = LibStub:NewLibrary(MAJOR, MINOR)
 if not lib then return end
 
@@ -949,6 +949,9 @@ hooksecurefunc(f, "OnLoad", function()
         Mixin(EditModeManagerExpandedFrame, LayoutMixin, VerticalLayoutMixin)
     end
     EditModeManagerExpandedFrame:Hide();
+    
+    -- Cannot parent it to EditModeManagerFrame, as I'd have to set a "ignoreInLayout" value, which would then spread taint
+    EditModeManagerExpandedFrame:SetFrameStrata("DIALOG")
     
     EditModeManagerExpandedFrame:ClearAllPoints()
     EditModeManagerExpandedFrame:SetPoint("TOPLEFT", EditModeManagerFrame, "BOTTOMLEFT", 0, -2)

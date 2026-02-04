@@ -3,6 +3,9 @@ local L = LibStub("AceLocale-3.0"):GetLocale(addonName)
 local lib = LibStub:GetLibrary("EditModeExpanded-1.0")
 local libDD = LibStub:GetLibrary("LibUIDropDownMenu-4.0")
 
+local SURGE_FORWARD_SPELL_ID = 372608
+local ALGARI_STORMRIDER_SPELL_ID = 417888
+
 --
 -- Adapted from Blizzard_UIWidgetTemplateBase.lua
 --
@@ -640,13 +643,14 @@ function EMEWidgetFillUpFrameTemplateMixin:Setup(widgetContainer, textureKit, is
 
 	self.Bar:SetMinMaxValues(min, max);
 
-	if isFull then
-		self.Bar:SetValue(max);
-	elseif isFilling then
-        self.Bar:SetValue(value);
-	else
-		self.Bar:SetValue(min);
-	end
+    if isFull then
+        self.Bar:SetValue(max);
+    elseif isFilling then
+        local durationObject = C_Spell.GetSpellChargeDuration(SURGE_FORWARD_SPELL_ID)
+        self.Bar:SetTimerDuration(durationObject, nil, 0)
+    else
+        self.Bar:SetValue(min);
+    end
 
 	if flashFrame then
 		self.Bar.Flipbook:Hide();
@@ -728,9 +732,6 @@ EMEBurstFlipbookAnimMixin = {}
 function EMEBurstFlipbookAnimMixin:OnAnimFinished()
 	self:GetParent().BurstFlipbook:Hide();
 end
-
-local SURGE_FORWARD_SPELL_ID = 372608
-local ALGARI_STORMRIDER_SPELL_ID = 417888
 
 local selectedVigorWidgetID = nil
 
@@ -844,13 +845,6 @@ function addon:initVigorBar()
         vigorFrame:RegisterEvent("PLAYER_CAN_GLIDE_CHANGED")
         vigorFrame:RegisterEvent("ACTIONBAR_UPDATE_COOLDOWN")
         vigorFrame:SetScript("OnEvent", function(self)
-            if InCombatLockdown() then
-                vigorFrame:Hide()
-                return
-            end
-            updateWidget(self, widgetID)
-        end)
-        vigorFrame:HookScript("OnUpdate", function(self)
             if InCombatLockdown() then
                 vigorFrame:Hide()
                 return

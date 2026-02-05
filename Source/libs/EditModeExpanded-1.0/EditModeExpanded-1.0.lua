@@ -2,7 +2,7 @@
 -- Internal variables
 --
 
-local MAJOR, MINOR = "EditModeExpanded-1.0", 113
+local MAJOR, MINOR = "EditModeExpanded-1.0", 114
 local lib = LibStub:NewLibrary(MAJOR, MINOR)
 if not lib then return end
 
@@ -1004,7 +1004,7 @@ hooksecurefunc(f, "OnLoad", function()
     end
     EditModeManagerExpandedFrame.AccountSettings.layoutIndex = 2
     EditModeManagerExpandedFrame.AccountSettings.fixedWidth = 470
-    EditModeManagerExpandedFrame.AccountSettings.maximumHeight = 195
+    EditModeManagerExpandedFrame.AccountSettings.maximumHeight = 165
     EditModeManagerExpandedFrame.AccountSettings.leftPadding = 20
 	EditModeManagerExpandedFrame.AccountSettings.ScrollBar:SetHideIfUnscrollable(true)
 	EditModeManagerExpandedFrame.AccountSettings.ScrollBar:SetPoint("TOPLEFT", EditModeManagerExpandedFrame.AccountSettings, "TOPRIGHT", -15, -5)
@@ -1026,7 +1026,9 @@ hooksecurefunc(f, "OnLoad", function()
 
     
     hookScriptWrapper(EditModeManagerFrame, "OnShow", function()
-        EditModeManagerExpandedFrame:Show()
+        if not EditModeManagerFrameTab1 then
+            EditModeManagerExpandedFrame:Show()
+        end
         EditModeManagerExpandedFrame:Layout()
     end)
     
@@ -1280,6 +1282,78 @@ hooksecurefunc(f, "OnLoad", function()
     checkButtonFrame.Label:SetText(DISABLE.." "..string.gsub(HIGHLIGHTING, ":", ""))
     checkButtonFrame.Label:SetFontObject(GameFontHighlightMedium)
     checkButtonFrame:SetSize(32, 32)
+    
+    -- Hide the Expanded frame behind a tab button, if an instance of Lib-SecureTabs exists
+    
+    -- Check for the existence of Lib Secure Tabs
+    -- This library will not directly bundle in Lib Secure Tabs. If it doesn't exist anywhere then we just leave the Expanded frame shown the old way
+    local libSecureTabs = LibStub('SecureTabs-2.0', true)
+    if not libSecureTabs then return end
+    
+    -- Add a default tab back to the base UI, if one has not already been added by another addon
+    if not EditModeManagerFrameTab1 then
+        local defaultTab = CreateFrame("Button", "$parentTab1", EditModeManagerFrame, "PanelTabButtonTemplate")
+        defaultTab:SetScript("OnClick", function()
+            PanelTemplates_SelectTab(defaultTab)
+          	for _, tab in ipairs(libSecureTabs.tabs[EditModeManagerFrame]) do
+          		local selected = false
+          		if not tab:IsEnabled() and tab.OnDeselect then
+          			xpcall(tab.OnDeselect, CallErrorHandler, tab)
+          		end
+
+          		local frame = tab.frame
+          		if frame then
+          			frame:SetShown(selected)
+          		end
+
+          		PanelTemplates_DeselectTab(tab)
+          	end
+        end)
+        defaultTab:SetPoint("TOPLEFT", EditModeManagerFrame, "BOTTOMLEFT", 8, 8)
+        defaultTab:SetFrameLevel(EditModeManagerFrame:GetFrameLevel() + 610)
+        defaultTab:SetText(HUD_EDIT_MODE_MENU)
+        PanelTemplates_SetNumTabs(EditModeManagerFrame,  1)
+        PanelTemplates_SetTab(EditModeManagerFrame, 1)
+        
+        EditModeManagerFrame:HookScript("OnShow", function()
+            defaultTab:Show()
+            PanelTemplates_SelectTab(defaultTab)
+            PanelTemplates_SetTab(EditModeManagerFrame, 1)
+        end)
+        EditModeManagerFrame:HookScript("OnHide", function() defaultTab:Hide() end)
+        
+        defaultTab:SetParent(UIParent)
+        defaultTab:Hide()
+    end
+    
+    local tabButton = libSecureTabs:Add(EditModeManagerFrame, EditModeManagerExpandedFrame, "Expanded")
+    
+    -- Cannot leave the tab button or cover button parented to EditModeManagerFrame, as this will cause its :Layout() to skew
+    -- However, we can't use ignoreInLayout either, because that spreads taint during :Layout()
+    -- Only other option is to reparent the tabs to UIParent and show/hide them with EditModeManagerFrame
+    tabButton:SetParent(UIParent)
+    tabButton:Hide()
+    -- Workaround for SecureTabs expecting the parent to not change
+    function tabButton:GetParent()
+        return EditModeManagerFrame
+    end
+    EditModeManagerFrameCoverTab:SetParent(UIParent)
+    EditModeManagerFrameCoverTab:Hide()
+    EditModeManagerFrame:HookScript("OnShow", function()
+        tabButton:Show()
+        if EditModeManagerFrame.AccountSettings.expanded then
+            EditModeManagerExpandedFrame.AccountSettings.maximumHeight = 500
+        else
+            EditModeManagerExpandedFrame.AccountSettings.maximumHeight = 165
+        end
+    end)
+    EditModeManagerFrame:HookScript("OnHide", function()
+        tabButton:Hide()
+    end)
+    
+    -- Since we've moved the expanded frame to a tab's panel, we can expand it by default
+    EditModeManagerExpandedFrame.AccountSettings:Show()
+    EditModeManagerExpandedFrame.Expander.Label:SetText(HUD_EDIT_MODE_COLLAPSE_OPTIONS)
 end)
 
 local function hideFrameUntilMouseover(frame)

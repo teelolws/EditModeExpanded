@@ -34,7 +34,11 @@ function addon:initMinimap()
                 ExpansionLandingPageMinimapButton:Hide()
             end)
             Minimap:HookScript("OnShow", function()
-                ExpansionLandingPageMinimapButton:Show()
+                -- Instead of calling :Show(), we need to test if the expansion button is actually supposed to be shown
+                -- There are times where the minimap can be visible, but the expansion button is not
+                -- Such as being in a low level character or in an expansion zone that doesn't use the button
+                -- Without this check, the button becomes visible after leaving a pet battle (and other situations that hides the UI)
+                ExpansionLandingPageMinimapButton:RefreshButton(true)
             end)
             addon:registerSecureFrameHideable(ExpansionLandingPageMinimapButton)
         end

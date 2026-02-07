@@ -12,12 +12,21 @@ function addon:initChiBar()
     lib:RegisterResizable(MonkHarmonyBarFrame)
     addon.registerAnchorToDropdown(MonkHarmonyBarFrame)
     hooksecurefunc(PlayerFrameBottomManagedFramesContainer, "Layout", function()
+        -- shouldShow test adapted from Blizzard_UnitFrame/ClassPowerBar.lua
+        local spec = C_SpecializationInfo.GetSpecialization()
+        if not (not MonkHarmonyBarFrame.spec or spec == MonkHarmonyBarFrame.spec) then return end
+        
         if not EditModeManagerFrame.editModeActive then
             addon.ResetFrame(MonkHarmonyBarFrame)
         end
     end)
     MonkHarmonyBarFrame:HookScript("OnShow", function()
-        addon.ResetFrame(MonkHarmonyBarFrame)
+        local spec = C_SpecializationInfo.GetSpecialization()
+        if not (not MonkHarmonyBarFrame.spec or spec == MonkHarmonyBarFrame.spec) then return end
+        
+        if not EditModeManagerFrame.editModeActive then
+            addon.ResetFrame(MonkHarmonyBarFrame)
+        end
     end)
     addon.unlinkClassResourceFrame(MonkHarmonyBarFrame)
 end

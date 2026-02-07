@@ -30,10 +30,12 @@ local function initClassResource(classResourceFrame, localText, db)
         if not shouldShow(classResourceFrame) then return end
         addon.ResetFrame(classResourceFrame)
     end)
-    hooksecurefunc(classResourceFrame, "HandleBarSetup", function()
-        if not shouldShow(classResourceFrame) then return end
-        addon.ResetFrame(classResourceFrame)
-    end)
+    if classResourceFrame.HandleBarSetup then
+        hooksecurefunc(classResourceFrame, "HandleBarSetup", function()
+            if not shouldShow(classResourceFrame) then return end
+            addon.ResetFrame(classResourceFrame)
+        end)
+    end
     classResourceFrame:HookScript("OnShow", function()
         if not shouldShow(classResourceFrame) then return end
         addon.ResetFrame(classResourceFrame)

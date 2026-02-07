@@ -20,8 +20,6 @@ local function shouldShow(classResourceFrame)
 end
 
 local function initClassResource(classResourceFrame, localText, db)
-    local db = addon.db.global
-    if not db.EMEOptions.arcaneCharges then return end
     addon:registerFrame(classResourceFrame, localText, db)
     lib:RegisterHideable(classResourceFrame)
     lib:RegisterToggleInCombat(classResourceFrame)

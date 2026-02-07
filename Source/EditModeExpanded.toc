@@ -41,6 +41,7 @@ FrameHandlers\BelowMinimapContainer.lua
 FrameHandlers\BonusRoll.lua
 FrameHandlers\Buffs.lua
 FrameHandlers\ChatButtons.lua
+FrameHandlers\ClassResources.lua
 FrameHandlers\CooldownManager.lua
 FrameHandlers\DurationBars.lua
 FrameHandlers\ExtraActionButton.lua
@@ -68,14 +69,6 @@ FrameHandlers\TargetOfTarget.lua
 FrameHandlers\Tooltip.lua
 FrameHandlers\TopCenterContainer.lua
 FrameHandlers\TotemFrame.lua
-
-FrameHandlers\ClassResources\ArcaneCharges.lua
-FrameHandlers\ClassResources\ChiBar.lua
-FrameHandlers\ClassResources\ComboPoints.lua
-FrameHandlers\ClassResources\Essences.lua
-FrameHandlers\ClassResources\HolyPower.lua
-FrameHandlers\ClassResources\Runes.lua
-FrameHandlers\ClassResources\SoulShards.lua
 
 AutoLayoutChanges.lua
 Options.lua

@@ -10,6 +10,7 @@ function addon:initTargetOfTarget()
         lib:RegisterResizable(TargetFrameToT)
         TargetFrameToT:HookScript("OnHide", function()
             if (not InCombatLockdown()) and EditModeManagerFrame.editModeActive and lib:IsFrameEnabled(TargetFrameToT) and (C_CVar.GetCVar("showTargetOfTarget") == "1") then
+                TargetFrameToT:SetScript("OnUpdate", nil)
                 TargetFrameToT:Show()
             end
         end)

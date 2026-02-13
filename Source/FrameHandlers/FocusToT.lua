@@ -11,6 +11,7 @@ function addon:initFocusToT()
         lib:RegisterResizable(FocusFrameToT)
         FocusFrameToT:HookScript("OnHide", function()
             if (not InCombatLockdown()) and EditModeManagerFrame.editModeActive and lib:IsFrameEnabled(FocusFrameToT) then
+                FocusFrameToT:SetScript("OnUpdate", nil)
                 FocusFrameToT:Show()
             end
         end)

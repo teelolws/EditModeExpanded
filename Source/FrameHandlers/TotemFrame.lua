@@ -8,12 +8,23 @@ function addon:initTotemFrame()
     
     TotemFrame:SetParent(UIParent)
     addon:registerFrame(TotemFrame, TUTORIAL_TITLE47, db.TotemFrame)
-    lib:SetDefaultSize(TotemFrame, 100, 40)
     lib:RegisterHideable(TotemFrame)
     lib:RegisterToggleInCombat(TotemFrame)
     lib:RegisterResizable(TotemFrame)
     
     EventRegistry:RegisterFrameEventAndCallbackWithHandle("PLAYER_TOTEM_UPDATE", function()
         addon.ResetFrame(TotemFrame)
+    end)
+    
+    -- TotemFrame now uses ResizeLayoutFrame, and becomes a 15x0 when no totems are active
+    hooksecurefunc(TotemFrame, "Update", function()
+        if InCombatLockdown() then return end
+        if not EditModeManagerFrame.editModeActive then return end
+        
+        TotemFrame:Show()
+        local x, y = TotemFrame:GetSize()
+        if (x < 5) or (y < 5) then
+            TotemFrame:SetSize(52, 35)
+        end
     end)
 end

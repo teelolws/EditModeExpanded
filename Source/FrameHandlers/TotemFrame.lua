@@ -20,6 +20,7 @@ function addon:initTotemFrame()
     hooksecurefunc(TotemFrame, "Update", function()
         if InCombatLockdown() then return end
         if not EditModeManagerFrame.editModeActive then return end
+        if not lib:IsFrameEnabled(TotemFrame) then return end
         
         TotemFrame:Show()
         local x, y = TotemFrame:GetSize()

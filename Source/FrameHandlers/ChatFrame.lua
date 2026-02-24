@@ -1,6 +1,5 @@
 local addonName, addon = ...
 
-local L = LibStub("AceLocale-3.0"):GetLocale(addonName)
 local lib = LibStub:GetLibrary("EditModeExpanded-1.0")
 
 -- Code adapted from Hide Chat In Combat, which was accessed 24/2/2026 from https://www.curseforge.com/wow/addons/hcic/comments
@@ -22,8 +21,8 @@ function addon:initChatButtons()
     local event = CreateFrame("Frame")
     event:SetScript(
     	"OnEvent",
-    	function(self, event, ...)
-    		self[event](self, ...)
+    	function(self, e, ...)
+    		self[e](self, ...)
     	end
     )
     --Register events

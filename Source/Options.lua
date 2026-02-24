@@ -78,6 +78,7 @@ local defaults = {
             housingControlsFrame = true,
             personalResourceDisplay = false,
             targetFrameResize = false,
+            chatFrame = false,
         },
         QueueStatusButton = {},
         TotemFrame = {},
@@ -138,6 +139,9 @@ local defaults = {
         PersonalResourceDisplayHealth = {},
         PersonalResourceDisplayPower = {},
         PersonalResourceDisplayClass = {},
+        ChatFrame1 = {},
+        ChatFrame1EditBox = {},
+        GeneralDockManager = {},
     }
 }
 
@@ -440,6 +444,11 @@ local options = {
             name = DISPLAY_PERSONAL_RESOURCE,
             type = "toggle",
             desc = "Splits the Personal Resource Display into 3 separate frames: HP, Power (mana/energy/etc), and Class (holy power, etc). That way you can move them separately, or shove one of them off screen if you want.",
+        },
+        chatFrame = {
+            name = HUD_EDIT_MODE_CHAT_FRAME_LABEL,
+            type = "toggle",
+            desc = string.format(L["TOGGLE_ADDITIONAL_OPTIONS_SUPPORT_STRING"], HUD_EDIT_MODE_CHAT_FRAME_LABEL),
         },
     },
 }

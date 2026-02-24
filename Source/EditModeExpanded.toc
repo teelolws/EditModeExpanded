@@ -41,6 +41,7 @@ FrameHandlers\BelowMinimapContainer.lua
 FrameHandlers\BonusRoll.lua
 FrameHandlers\Buffs.lua
 FrameHandlers\ChatButtons.lua
+FrameHandlers\ChatFrame.lua
 FrameHandlers\ClassResources.lua
 FrameHandlers\CooldownManager.lua
 FrameHandlers\DurationBars.lua

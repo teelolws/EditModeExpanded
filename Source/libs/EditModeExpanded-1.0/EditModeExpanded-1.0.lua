@@ -2018,7 +2018,7 @@ end
 
 -- Adds an option to hide the frame during combat
 -- Frame must be already have had :RegisterHideable called on it for this to work
-function lib:RegisterToggleInCombat(frame)
+function lib:RegisterToggleInCombat(frame, toggleCallback)
     local systemID = getSystemID(frame)
     
     if framesDialogsKeys[systemID][ENUM_EDITMODEACTIONBARSETTING_TOGGLEHIDEINCOMBAT] then return end
@@ -2028,6 +2028,7 @@ function lib:RegisterToggleInCombat(frame)
             setting = ENUM_EDITMODEACTIONBARSETTING_TOGGLEHIDEINCOMBAT,
             name = "Toggle Visibility in Combat",
             type = Enum.EditModeSettingDisplayType.Checkbox,
+            toggleCallback = toggleCallback,
     })
 end
 

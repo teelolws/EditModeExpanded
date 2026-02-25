@@ -2,7 +2,7 @@
 -- Internal variables
 --
 
-local MAJOR, MINOR = "EditModeExpanded-1.0", 113
+local MAJOR, MINOR = "EditModeExpanded-1.0", 114
 local lib = LibStub:NewLibrary(MAJOR, MINOR)
 if not lib then return end
 
@@ -297,6 +297,7 @@ function lib:RegisterFrame(frame, name, db, anchorTo, anchorPoint, clamped)
                 frame2:HighlightSystem()
             end
         end
+        lib.selectedFrame = frame
     end
     
     frame.Selection:SetScript("OnDragStop", function(self)
@@ -1037,6 +1038,7 @@ hooksecurefunc(f, "OnLoad", function()
     function EditModeManagerExpandedFrame:ClearSelectedSystem()
         secureexecuterange(frames, clearSelectedSystem)
         EditModeExpandedSystemSettingsDialog:Hide()
+        lib.selectedFrame = nil
     end
 
     hooksecurefuncWrapper(EditModeManagerFrame, "EnterEditMode", function(self)
@@ -1127,6 +1129,7 @@ hooksecurefunc(f, "OnLoad", function()
     end)
 
     hooksecurefuncWrapper(EditModeManagerFrame, "SelectSystem", function(self, systemFrame)
+        lib.selectedFrame = systemFrame
         if EditModeExpandedSystemSettingsDialog and EditModeExpandedSystemSettingsDialog.attachedToSystem ~= systemFrame then
             EditModeExpandedSystemSettingsDialog:Hide()
         end
@@ -1138,6 +1141,10 @@ hooksecurefunc(f, "OnLoad", function()
                 frame:HighlightSystem()
             end
         end
+    end)
+    
+    hooksecurefuncWrapper(EditModeManagerFrame, "ClearSelectedSystem", function()
+        lib.selectedFrame = nil
     end)
     
     hooksecurefuncWrapper(EditModeManagerFrame, "MakeNewLayout", function(self, _, layoutType, layoutName)
@@ -2216,4 +2223,22 @@ function lib:IsFrameHiddenUntilMouseover(frame)
     local db = framesDB[systemID]
     
     return db.settings[ENUM_EDITMODEACTIONBARSETTING_HIDDENUNTILMOUSEOVER] == 1
+end
+
+-- Return currently selected frame
+-- returns: selectedFrame, selectedFrameOrigin
+-- @return1 - frame currently selected, or nil if nothing is selected
+-- #return2 - nil if nothing is selected, 1 if frame is managed by EditModeManagerFrame, 2 if frame is managed by EditModeExpanded
+function lib:GetSelectedFrame()
+    if not lib.selectedFrame then
+        return
+    end
+    
+    for _, frame in pairs(frames) do
+        if lib.selectedFrame == frame then
+            return frame, 2
+        end
+    end
+    
+    return lib.selectedFrame, 1
 end

@@ -5,7 +5,7 @@ local lib = LibStub:GetLibrary("EditModeExpanded-1.0")
 -- Code adapted from Hide Chat In Combat, which was accessed 24/2/2026 from https://www.curseforge.com/wow/addons/hcic/comments
 -- and was listed as Public Domain
 
-function addon:initChatButtons()
+function addon:initChatFrame()
     local db = addon.db.global
     if not db.EMEOptions.chatFrame then return end
 

@@ -731,10 +731,10 @@ end
 --
 
 EMEUIWidgetContainerResizeMixin = CreateFromMixins(UIWidgetContainerResizeMixin)
-function EMEUIWidgetContainerResizeMixin:RegisterForWidgetSet(widgetSetID, widgetLayoutFunction, widgetInitFunction, attachedUnitInfo)
+function EMEUIWidgetContainerResizeMixin:RegisterForWidgetSet(_widgetSetID, widgetLayoutFunction, widgetInitFunction, attachedUnitInfo)
 	if self.widgetSetID then
 		-- We are already registered to a WidgetSet
-		if self.widgetSetID == widgetSetID then
+		if self.widgetSetID == _widgetSetID then
 			-- And it's the same WidgetSet we are trying to register again...nothing to do
 			return;
 		else
@@ -743,16 +743,16 @@ function EMEUIWidgetContainerResizeMixin:RegisterForWidgetSet(widgetSetID, widge
 		end
 	end
 
-	if not widgetSetID then
+	if not _widgetSetID then
 		return;
 	end
 
-	local widgetSetInfo = C_UIWidgetManager.GetWidgetSetInfo(widgetSetID);
+	local widgetSetInfo = C_UIWidgetManager.GetWidgetSetInfo(_widgetSetID);
 	if not widgetSetInfo then
 		return;
 	end
 
-	self.widgetSetID = widgetSetID;
+	self.widgetSetID = _widgetSetID;
 	self.layoutFunc = widgetLayoutFunction or DefaultWidgetLayout;
 	self.initFunc = widgetInitFunction;
 	self.widgetFrames = {};

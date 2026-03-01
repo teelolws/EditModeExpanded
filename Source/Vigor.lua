@@ -80,6 +80,7 @@ function EMEWidgetTemplateTooltipFrameMixin:SetTooltipOwner()
 end
 
 function EMEWidgetTemplateTooltipFrameMixin:OnEnter()
+    if EmbeddedItemTooltip:IsForbidden() then return end
 	if self.tooltip and self.tooltip ~= "" then
 		self:SetTooltipOwner();
 
@@ -121,6 +122,7 @@ function EMEWidgetTemplateTooltipFrameMixin:OnEnter()
 end
 
 function EMEWidgetTemplateTooltipFrameMixin:OnLeave()
+    if EmbeddedItemTooltip:IsForbidden() then return end
 	EmbeddedItemTooltip:Hide();
 	self.mouseOver = false;
 	self.UpdateTooltip = nil;

@@ -176,4 +176,6 @@
 			</AnimationGroup>
 		</Animations>
 	</Frame>
+    
+    <Frame name="EMEUIWidgetContainerTemplate" virtual="true" inherits="UIWidgetContainerTemplate" mixin="EMEUIWidgetContainerResizeMixin"/>
 </Ui>

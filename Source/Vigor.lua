@@ -403,15 +403,6 @@ local widgetInfos = {
     }
 }
 
---local function GetFillUpFramesVisInfoData(widgetID)
---	local widgetInfo = widgetInfos[widgetID]
---	if widgetInfo and widgetInfo.shownState ~= Enum.WidgetShownState.Hidden then
---		return widgetInfo;
---	end
---end
-
--- UIWidgetManager:RegisterWidgetVisTypeTemplate(Enum.UIWidgetVisualizationType.FillUpFrames, {frameType = "FRAME", frameTemplate = "UIWidgetTemplateFillUpFrames"}, GetFillUpFramesVisInfoData);
-
 EMEWidgetTemplateFillUpFramesMixin = CreateFromMixins(EMEWidgetBaseTemplateMixin);
 
 local decorFormatStringDefault = "%s_decor";
@@ -735,6 +726,55 @@ function EMEBurstFlipbookAnimMixin:OnAnimFinished()
 	self:GetParent().BurstFlipbook:Hide();
 end
 
+--
+-- Adapted from Blizzard_UIWidgetManager.lua
+--
+
+EMEUIWidgetContainerResizeMixin = CreateFromMixins(UIWidgetContainerResizeMixin)
+function EMEUIWidgetContainerResizeMixin:RegisterForWidgetSet(widgetSetID, widgetLayoutFunction, widgetInitFunction, attachedUnitInfo)
+	if self.widgetSetID then
+		-- We are already registered to a WidgetSet
+		if self.widgetSetID == widgetSetID then
+			-- And it's the same WidgetSet we are trying to register again...nothing to do
+			return;
+		else
+			-- We are already registered for a different WidgetSet...unregister it
+			self:UnregisterForWidgetSet();
+		end
+	end
+
+	if not widgetSetID then
+		return;
+	end
+
+	local widgetSetInfo = C_UIWidgetManager.GetWidgetSetInfo(widgetSetID);
+	if not widgetSetInfo then
+		return;
+	end
+
+	self.widgetSetID = widgetSetID;
+	self.layoutFunc = widgetLayoutFunction or DefaultWidgetLayout;
+	self.initFunc = widgetInitFunction;
+	self.widgetFrames = {};
+	self.timerWidgets = {};
+	self.numTimers = 0;
+	self.numWidgetsShowing = 0;
+	self:SetAttachedUnitAndType(attachedUnitInfo)
+
+	self.widgetSetLayoutDirection = self.forceWidgetSetLayoutDirection or widgetSetInfo.layoutDirection;
+	self.verticalAnchorYOffset = widgetSetInfo.verticalPadding;
+
+	self:ProcessAllWidgets();
+
+	if self.showAndHideOnWidgetSetRegistration then
+		self:Show();
+	end
+end
+
+--
+-- Begin original code
+--
+
 local selectedVigorWidgetID = nil
 
 local function shouldShow(widgetID)
@@ -829,7 +869,7 @@ function addon:initVigorBar()
     local db = addon.db.global
     if not db.EMEOptions.vigorBar then return end
     
-    container = CreateFrame("Frame", "EMEVigorContainer", UIParent, "UIWidgetContainerTemplate")
+    container = CreateFrame("Frame", "EMEVigorContainer", UIParent, "EMEUIWidgetContainerTemplate")
     container:SetPoint("CENTER", UIParent, "CENTER", -75, -200)
     container:RegisterForWidgetSet(widgetSetID)
     container:SetScript("OnEvent", nop)

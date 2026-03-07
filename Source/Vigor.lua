@@ -771,6 +771,8 @@ function EMEUIWidgetContainerResizeMixin:RegisterForWidgetSet(widgetSetID_, widg
 	end
 end
 
+EMEUIWidgetContainerResizeMixin.OnEvent = nop
+
 --
 -- Begin original code
 --

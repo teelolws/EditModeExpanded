@@ -764,14 +764,25 @@ function EMEUIWidgetContainerResizeMixin:RegisterForWidgetSet(widgetSetID_, widg
 	self.widgetSetLayoutDirection = self.forceWidgetSetLayoutDirection or widgetSetInfo.layoutDirection;
 	self.verticalAnchorYOffset = widgetSetInfo.verticalPadding;
 
-	self:ProcessAllWidgets();
-
 	if self.showAndHideOnWidgetSetRegistration then
 		self:Show();
 	end
 end
 
 EMEUIWidgetContainerResizeMixin.OnEvent = nop
+
+function EMEUIWidgetContainerResizeMixin:ProcessAllWidgets()
+    self:MarkAllWidgetsForRemoval();
+
+	--local setWidgets = C_UIWidgetManager.GetAllWidgetsBySetID(self.widgetSetID);
+	--for _, widgetInfo in ipairs(setWidgets) do
+	--	self:ProcessWidget(widgetInfo.widgetID, widgetInfo.widgetType);
+	--end
+
+	self:AnimateOutAllMarkedWidgets();
+
+	self:UpdateWidgetLayout();
+end
 
 --
 -- Begin original code

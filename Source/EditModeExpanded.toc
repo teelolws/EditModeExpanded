@@ -37,6 +37,7 @@ Locales\koKR.lua
 
 FrameHandlers\ActionBars.lua
 FrameHandlers\AlertFrame.lua
+FrameHandlers\BattlefieldMapFrame.lua
 FrameHandlers\BelowMinimapContainer.lua
 FrameHandlers\BonusRoll.lua
 FrameHandlers\Buffs.lua

@@ -79,6 +79,7 @@ local defaults = {
             personalResourceDisplay = false,
             targetFrameResize = false,
             chatFrame = false,
+            battlefieldMap = true,
         },
         QueueStatusButton = {},
         TotemFrame = {},
@@ -142,6 +143,7 @@ local defaults = {
         ChatFrame1 = {},
         ChatFrame1EditBox = {},
         GeneralDockManager = {},
+        BattlefieldMapFrame = {},
     }
 }
 
@@ -449,6 +451,11 @@ local options = {
             name = HUD_EDIT_MODE_CHAT_FRAME_LABEL,
             type = "toggle",
             desc = string.format(L["TOGGLE_ADDITIONAL_OPTIONS_SUPPORT_STRING"], HUD_EDIT_MODE_CHAT_FRAME_LABEL),
+        },
+        battlefieldMap = {
+            name = BATTLEFIELD_MINIMAP,
+            desc = string.format(L["TOGGLE_SUPPORT_STRING"], BATTLEFIELD_MINIMAP),
+            type = "toggle",
         },
     },
 }

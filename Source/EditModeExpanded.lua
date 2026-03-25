@@ -46,7 +46,6 @@ EventUtil.RegisterOnceFrameEventAndCallback("PLAYER_ENTERING_WORLD", function()
     addon:initDurationBars()
     addon:initVigorBar()
     addon:initPersonalResourceDisplay()
-    addon:initBattlefieldMap()
         
     local class = UnitClassBase("player")
         
@@ -127,3 +126,5 @@ EventUtil.ContinueOnAddOnLoaded("Blizzard_UIWidgets", function()
 end)
 
 EventUtil.ContinueOnAddOnLoaded("Blizzard_HousingControls", addon.initHousing)
+
+EventUtil.ContinueOnAddOnLoaded("Blizzard_BattlefieldMap", addon.initBattlefieldMap)

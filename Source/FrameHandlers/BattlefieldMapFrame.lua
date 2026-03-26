@@ -22,7 +22,7 @@ function addon:initBattlefieldMap()
     BattlefieldMapTab:HookScript("OnClick", function(self, button)
         if button ~= "RightButton" then return end
         -- Watch Blizzard_BattlefieldMap.lua for changes
-        MenuUtil.CreateContextMenu(self, function(owner, rootDescription)
+        MenuUtil.CreateContextMenu(self, function(_, rootDescription)
 			rootDescription:SetTag("MENU_BATTLEFIELD_MAP");
             
 			do

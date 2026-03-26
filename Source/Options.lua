@@ -79,7 +79,7 @@ local defaults = {
             personalResourceDisplay = false,
             targetFrameResize = false,
             chatFrame = false,
-            battlefieldMap = true,
+            battlefieldMap = false,
         },
         QueueStatusButton = {},
         TotemFrame = {},

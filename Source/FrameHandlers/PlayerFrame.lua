@@ -33,7 +33,10 @@ function addon:initPlayerFrame()
         
         
         do 
-            local frame = PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.ManaBarArea
+            local frame = PlayerFrame.manabar
+            if PlayerFrame.PlayerFrameContent then
+                frame = PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.ManaBarArea
+            end
             local x, y
             
             lib:RegisterCustomCheckbox(PlayerFrame, L["Hide Resource Bar"], 

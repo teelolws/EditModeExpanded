@@ -14,7 +14,7 @@ local function shouldShow(classResourceFrame)
         return false
     elseif classResourceFrame.ShouldShowBar then
         -- Druid combo points have a different test
-        return classResourceFrame.ShouldShowBar
+        return classResourceFrame:ShouldShowBar()
     end
     return true
 end

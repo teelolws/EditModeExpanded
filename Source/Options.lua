@@ -234,13 +234,13 @@ local options = {
                     type = "toggle",
                 },
                 focusFrame = {
-                    name = FOCUS,
-                    desc = string.format(L["TOGGLE_ADDITIONAL_OPTIONS_SUPPORT_STRING"], FOCUS),
+                    name = BINDING_NAME_FOCUSTARGET,
+                    desc = string.format(L["TOGGLE_ADDITIONAL_OPTIONS_SUPPORT_STRING"], BINDING_NAME_FOCUSTARGET),
                     type = "toggle",
                 },
                 focusFrameBuffs = {
-                    name = FOCUS.." "..BUFFOPTIONS_LABEL,
-                    desc = string.format(L["TOGGLE_SUPPORT_STRING"], FOCUS.." "..BUFFOPTIONS_LABEL),
+                    name = BINDING_NAME_FOCUSTARGET.." "..BUFFOPTIONS_LABEL,
+                    desc = string.format(L["TOGGLE_SUPPORT_STRING"], BINDING_NAME_FOCUSTARGET.." "..BUFFOPTIONS_LABEL),
                     type = "toggle",
                 },
                 targetFrameResize = {
@@ -413,8 +413,8 @@ local options = {
             type = "toggle",
         },
         extraActionButton = {
-            name = BINDING_NAME_EXTRAACTIONBUTTON1,
-            desc = string.format(L["TOGGLE_ADDITIONAL_OPTIONS_SUPPORT_STRING"], BINDING_NAME_EXTRAACTIONBUTTON1),
+            name = HUD_EDIT_MODE_EXTRA_ABILITIES_LABEL,
+            desc = string.format(L["TOGGLE_ADDITIONAL_OPTIONS_SUPPORT_STRING"], HUD_EDIT_MODE_EXTRA_ABILITIES_LABEL),
             type = "toggle",
         },
         cooldownManager = {

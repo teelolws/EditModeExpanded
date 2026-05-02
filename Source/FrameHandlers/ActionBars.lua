@@ -66,7 +66,7 @@ function addon:initActionBars()
                 end
             end
 
-            lib:RegisterSlider(bar, "Name Scale", "Name Scale",
+            lib:RegisterSlider(bar, ACCESSIBILITY_FONT_SIZE_LABEL, "Name Scale",
                 function(newValue)
                     namesSize = newValue
                     updateNamesSizes()

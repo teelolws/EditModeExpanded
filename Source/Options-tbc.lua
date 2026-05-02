@@ -258,8 +258,8 @@ local options = {
             type = "toggle",
         },
         allowSetCoordinates = {
-            name = "Allow custom coordinates",
-            desc = "Allows frames to be positioned using screen coordinates entered into text fields",
+            name = L["OPTION_ALLOW_SET_COORDS_NAME"],
+            desc = L["OPTION_ALLOW_SET_COORDS_DESC"],
             type = "toggle",
         },
         playerFrame = {
@@ -359,7 +359,7 @@ local options = {
             type = "toggle",
         },
         raidSizeLayoutSwitching = {
-            name = "Layout Switching",
+            name = L["LAYOUT_SWITCHING"],
             type = "group",
             args = addon.GetLayoutChangeOptions(),
         },

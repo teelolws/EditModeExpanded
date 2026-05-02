@@ -1,5 +1,6 @@
 local addonName, addon = ...
 
+local L = LibStub("AceLocale-3.0"):GetLocale(addonName)
 local lib = LibStub:GetLibrary("EditModeExpanded-1.0")
 
 -- Code adapted from Hide Chat In Combat, which was accessed 24/2/2026 from https://www.curseforge.com/wow/addons/hcic/comments
@@ -26,7 +27,7 @@ function addon:initChatFrame()
     	end
     )
     --Register events
-    lib:RegisterCustomCheckbox(ChatFrame1, "Fade out while in combat", 
+    lib:RegisterCustomCheckbox(ChatFrame1, L["CHAT_FADE_COMBAT_CHECKBOX"], 
         -- on checked
         function()
             event:RegisterEvent("PLAYER_REGEN_ENABLED")
@@ -207,7 +208,7 @@ function addon:initChatFrame()
     	end
     )
     
-    lib:RegisterSlider(ChatFrame1, "Fade Delay", "Fade Delay",
+    lib:RegisterSlider(ChatFrame1, L["FADE_DELAY"], "Fade Delay",
         function(newValue)
             t = newValue
         end,

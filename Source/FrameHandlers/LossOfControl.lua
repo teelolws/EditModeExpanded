@@ -1,5 +1,6 @@
 local addonName, addon = ...
 
+local L = LibStub("AceLocale-3.0"):GetLocale(addonName)
 local lib = LibStub:GetLibrary("EditModeExpanded-1.0")
 
 function addon:initLossOfControl()
@@ -19,7 +20,7 @@ function addon:initLossOfControl()
         LossOfControlFrame:SetScript("OnUpdate", LossOfControlMixin.OnUpdate)
     end)
     
-    lib:RegisterCustomCheckbox(LossOfControlFrame, "Hide Glow Effect",
+    lib:RegisterCustomCheckbox(LossOfControlFrame, L["HIDE_GLOW_EFFECT"],
         function()
             LossOfControlFrame.RedLineBottom:Hide()
             LossOfControlFrame.RedLineTop:Hide()

@@ -1,4 +1,5 @@
 local addonName, addon = ...
+
 local L = LibStub("AceLocale-3.0"):GetLocale(addonName)
 local lib = LibStub:GetLibrary("EditModeExpanded-1.0")
 local libDD = LibStub:GetLibrary("LibUIDropDownMenu-4.0")
@@ -875,7 +876,7 @@ local function initDropDown()
     end)
     
     libDD:UIDropDownMenu_SetWidth(dropdown, 200)
-    libDD:UIDropDownMenu_SetText(dropdown, "Vigor Bar Apperance")
+    libDD:UIDropDownMenu_SetText(dropdown, L["VIGOR_BAR_APPEARANCE"])
 end
 
 function addon:initVigorBar()

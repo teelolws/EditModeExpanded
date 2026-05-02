@@ -65,3 +65,28 @@ L["HIDE_WHEN_NOT_MOUSEOVER_DESCRIPTION"] = "Hide until mouseover"
 L["Vigor Bar"] = true
 L["Resize Target Frame"] = true
 L["RESIZE_TARGET_FRAME_DESCRIPTION"] = "Allows the Player Frame to be resized to a smaller size than the default UI allows. NOTE: You may get unexpected results if you use both sliders."
+L["OPTION_ALLOW_SET_COORDS_NAME"] = "Allow custom coordinates"
+L["OPTION_ALLOW_SET_COORDS_DESC"] = "Allows frames to be positioned using screen coordinates entered into text fields"
+L["LAYOUT_SWITCHING"] = "Layout Switching"
+L["VIGOR_BAR"] = "Vigor Bar"
+L["VIGOR_BAR_DESC"] = "Add the pre-11.2.7 Dragonriding Vigor Bar"
+L["PERSONAL_RESOURCE_DISPLAY_DESC"] = "Splits the Personal Resource Display into 3 separate frames: HP, Power (mana/energy/etc), and Class (holy power, etc). That way you can move them separately, or shove one of them off screen if you want."
+L["CHAT_FADE_COMBAT_CHECKBOX"] = "Fade out while in combat"
+L["FADE_DELAY"] = "Fade Delay"
+L["VIGOR_BAR_APPEARANCE"] = "Vigor Bar Appearance"
+L["HIDE_GLOW_EFFECT"] = "Hide Glow Effect"
+L["Subzone Information"] = true
+L["LFG_DETATCH_FROM_MENU_BAR_DESC"] = "Disconnect from Menu Bar"
+L["TALKING_HEAD_DD_OPT_2"] = "Dialog only, keep sound"
+L["TALKING_HEAD_DD_OPT_3"] = "Always, and mute sound"
+L["TALKING_HEAD_DD_OPT_4"] = "In Combat, but keep sound"
+L["TALKING_HEAD_DD_OPT_5"] = "In combat, and mute sound"
+
+-- Personal Resource Display
+L["Health Bar"] = true
+L["Power Bar"] = true
+L["Class Powers"] = true
+
+-- Auto Layout changes
+L["AUTO_LAYOUT_CHANGES_SPECNAME_GROUP_TYPE"] = "%s - "..GROUP..TYPE
+L["AUTO_LAYOUT_CHANGES_RAID_SIZE_OPTION_DESC"] = "You do not need to set a profile for every size, the next-smallest size will be used if nothing is set!"

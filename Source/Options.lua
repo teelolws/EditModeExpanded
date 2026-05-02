@@ -312,8 +312,8 @@ local options = {
             type = "toggle",
         },
         allowSetCoordinates = {
-            name = "Allow custom coordinates",
-            desc = "Allows frames to be positioned using screen coordinates entered into text fields",
+            name = L["OPTION_ALLOW_SET_COORDS_NAME"],
+            desc = L["OPTION_ALLOW_SET_COORDS_DESC"],
             type = "toggle",
         },
         playerFrame = {
@@ -428,14 +428,14 @@ local options = {
             type = "toggle",
         },
         raidSizeLayoutSwitching = {
-            name = "Layout Switching",
+            name = L["LAYOUT_SWITCHING"],
             type = "group",
             args = addon.GetLayoutChangeOptions(),
         },
         vigorBar = {
-            name = "Vigor Bar",
+            name = L["VIGOR_BAR"],
             type = "toggle",
-            desc = "Add the pre-11.2.7 Dragonriding Vigor bar"
+            desc = L["VIGOR_BAR_DESC"],
         },
         housingControlsFrame = {
             name = BINDING_HEADER_HOUSING_SYSTEM,
@@ -445,7 +445,7 @@ local options = {
         personalResourceDisplay = {
             name = DISPLAY_PERSONAL_RESOURCE,
             type = "toggle",
-            desc = "Splits the Personal Resource Display into 3 separate frames: HP, Power (mana/energy/etc), and Class (holy power, etc). That way you can move them separately, or shove one of them off screen if you want.",
+            desc = L["PERSONAL_RESOURCE_DISPLAY_DESC"],
         },
         chatFrame = {
             name = HUD_EDIT_MODE_CHAT_FRAME_LABEL,

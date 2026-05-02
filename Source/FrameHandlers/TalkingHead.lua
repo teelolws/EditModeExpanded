@@ -2,6 +2,7 @@ local addonName, addon = ...
 
 local lib = LibStub:GetLibrary("EditModeExpanded-1.0")
 local libDD = LibStub:GetLibrary("LibUIDropDownMenu-4.0")
+local L = LibStub("AceLocale-3.0"):GetLocale(addonName)
 
 function addon:initTalkingHead()
     if addon.db.global.EMEOptions.talkingHead then
@@ -44,7 +45,7 @@ function addon:initTalkingHead()
             local db = getSettingDB()
             local info = libDD:UIDropDownMenu_CreateInfo()        
             
-            info.text = "Never"
+            info.text = NEVER
             info.checked = (db.checked == nil)
             info.func = function()
                 db.checked = nil
@@ -54,7 +55,7 @@ function addon:initTalkingHead()
             end
             libDD:UIDropDownMenu_AddButton(info)
             
-            info.text = "Dialog only, keep sound"
+            info.text = L["TALKING_HEAD_DD_OPT_2"]
             info.checked = db.checked == 2
             info.func = function()
                 db.checked = 2
@@ -64,7 +65,7 @@ function addon:initTalkingHead()
             end
             libDD:UIDropDownMenu_AddButton(info)
             
-            info.text = "Always, and mute sound"
+            info.text = L["TALKING_HEAD_DD_OPT_3"]
             info.checked = db.checked == 3
             info.func = function()
                 db.checked = 3
@@ -74,7 +75,7 @@ function addon:initTalkingHead()
             end
             libDD:UIDropDownMenu_AddButton(info)
             
-            info.text = "In Combat, but keep sound"
+            info.text = L["TALKING_HEAD_DD_OPT_4"]
             info.checked = db.checked == 4
             info.func = function()
                 db.checked = 4
@@ -84,7 +85,7 @@ function addon:initTalkingHead()
             end
             libDD:UIDropDownMenu_AddButton(info)
             
-            info.text = "In combat, and mute sound"
+            info.text = L["TALKING_HEAD_DD_OPT_5"]
             info.checked = db.checked == 5
             info.func = function()
                 db.checked = 5

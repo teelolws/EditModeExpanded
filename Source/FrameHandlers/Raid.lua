@@ -146,7 +146,7 @@ function addon:initRaidFrames()
         end
     end
     
-    lib:RegisterSlider(CompactRaidFrameContainer, "Name Scale", "Name Scale",
+    lib:RegisterSlider(CompactRaidFrameContainer, ACCESSIBILITY_FONT_SIZE_LABEL, "Name Scale",
         function(newValue)
             raidFrameNamesSize = newValue
             updateRaidFrameNamesSizes()

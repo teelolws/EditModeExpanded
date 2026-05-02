@@ -49,7 +49,7 @@ function addon.GetLayoutChangeOptions()
         order = 0,
     }
     options.enabled = {
-        name = "Enabled",
+        name = VIDEO_OPTIONS_ENABLED,
         type = "toggle",
         get = function(_) return addon.db.global.EMEOptions.raidSizeLayoutSwitching end,
         set = function(_, value) addon.db.global.EMEOptions.raidSizeLayoutSwitching = value end,
@@ -80,9 +80,9 @@ function addon.GetLayoutChangeOptions()
             name = function()
                 local _, specName = C_SpecializationInfo.GetSpecializationInfo(specIndex)
                 if specName then
-                    return specName .. " - Group Type"
+                    return L["AUTO_LAYOUT_CHANGES_SPECNAME_GROUP_TYPE"]:format(specName)
                 end
-                return "N/A"
+                return NOT_APPLICABLE
             end,
             type = "select",
             values = categoryNames,
@@ -105,8 +105,8 @@ function addon.GetLayoutChangeOptions()
         order = order + 1
         
         options["row"..specIndex].args["spec"..specIndex.."size"] = {
-            name = "Group Size",
-            desc = "You do not need to set a profile for every size, the next-smallest size will be used if nothing is set!",
+            name = HUD_EDIT_MODE_SETTING_UNIT_FRAME_RAID_SIZE,
+            desc = L["AUTO_LAYOUT_CHANGES_RAID_SIZE_OPTION_DESC"],
             type = "range",
             min = 1,
             max = 40,
@@ -133,7 +133,7 @@ function addon.GetLayoutChangeOptions()
         order = order + 1
         
         options["row"..specIndex].args["spec"..specIndex.."layout"] = {
-            name = "Selected Layout",
+            name = HUD_EDIT_MODE_LAYOUT,
             type = "select",
             values = getLayouts,
             hidden = function()

@@ -32,7 +32,7 @@ function addon:initLFG()
         end)
         
         local isDisconnected
-        lib:RegisterCustomCheckbox(QueueStatusButton, "Disconnect from Menu Bar",
+        lib:RegisterCustomCheckbox(QueueStatusButton, L["LFG_DETATCH_FROM_MENU_BAR_DESC"],
             function()
                 QueueStatusButton:SetParent(UIParent)
                 isDisconnected = true

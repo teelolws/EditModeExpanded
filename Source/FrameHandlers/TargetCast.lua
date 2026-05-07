@@ -19,7 +19,6 @@ function addon:initTargetCastBar()
         lib:SetDontResize(TargetFrameSpellBar)
         lib:RegisterResizable(TargetFrameSpellBar, 10, 500)
         lib:RegisterHideable(TargetFrameSpellBar)
-        addon.registerAnchorToDropdown(TargetFrameSpellBar)
         
         lib:RegisterSlider(TargetFrameSpellBar, HUD_EDIT_MODE_SETTING_CHAT_FRAME_WIDTH, "Width",
             function(newValue)

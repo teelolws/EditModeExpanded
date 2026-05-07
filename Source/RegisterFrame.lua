@@ -9,4 +9,5 @@ function addon:registerFrame(frame, ...)
     if addon.db.global.EMEOptions.allowSetCoordinates then
         lib:RegisterCoordinates(frame)
     end
+    addon.registerAnchorToDropdown(frame)
 end

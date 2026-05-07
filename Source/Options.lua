@@ -80,6 +80,7 @@ local defaults = {
             targetFrameResize = false,
             chatFrame = false,
             battlefieldMap = false,
+            anchorToEnabled = false,
         },
         QueueStatusButton = {},
         TotemFrame = {},
@@ -314,6 +315,11 @@ local options = {
         allowSetCoordinates = {
             name = L["OPTION_ALLOW_SET_COORDS_NAME"],
             desc = L["OPTION_ALLOW_SET_COORDS_DESC"],
+            type = "toggle",
+        },
+        anchorToEnabled = {
+            name = L["OPTION_ANCHOR_TO_NAME"],
+            desc = L["OPTION_ANCHOR_TO_DESC"],
             type = "toggle",
         },
         playerFrame = {

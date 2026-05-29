@@ -81,6 +81,8 @@ L["TALKING_HEAD_DD_OPT_2"] = "Dialog only, keep sound"
 L["TALKING_HEAD_DD_OPT_3"] = "Always, and mute sound"
 L["TALKING_HEAD_DD_OPT_4"] = "In Combat, but keep sound"
 L["TALKING_HEAD_DD_OPT_5"] = "In combat, and mute sound"
+L["OPTION_ANCHOR_TO_NAME"] = "Anchor To"
+L["OPTION_ANCHOR_TO_DESC"] = "Enables ability to change anchoring for all custom frames"
 
 -- Personal Resource Display
 L["Health Bar"] = true

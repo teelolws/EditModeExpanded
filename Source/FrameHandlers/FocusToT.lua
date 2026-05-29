@@ -21,7 +21,6 @@ function addon:initFocusToT()
             end
         end)
         addon:registerSecureFrameHideable(FocusFrameToT)
-        addon.registerAnchorToDropdown(FocusFrameToT)
     end
 end
 

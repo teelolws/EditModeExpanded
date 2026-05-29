@@ -15,6 +15,5 @@ function addon:initTargetOfTarget()
             end
         end)
         addon:registerSecureFrameHideable(TargetFrameToT)
-        addon.registerAnchorToDropdown(TargetFrameToT)
     end
 end

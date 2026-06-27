@@ -13,8 +13,15 @@ function addon:initTargetFrame()
             addon:registerFrame(targetBuffsFrame, "Target Buffs", db.TargetBuffs)
             lib:SetDontResize(targetBuffsFrame)
             
+            local targetDebuffsHidden, targetBuffsHidden
+            
             hooksecurefunc("TargetFrame_UpdateDebuffAnchor", function(self, buff)
                 if self ~= TargetFrame then return end
+                
+                if targetDebuffsHidden then
+                    buff:Hide()
+                    return
+                end
                 
                 local point, relativeTo, relativePoint, offsetX, offsetY = buff:GetPoint()
                 
@@ -26,12 +33,37 @@ function addon:initTargetFrame()
             hooksecurefunc("TargetFrame_UpdateBuffAnchor", function(self, buff)
                 if self ~= TargetFrame then return end
                 
+                if targetBuffsHidden then
+                    buff:Hide()
+                    return
+                end
+                
                 local point, relativeTo, relativePoint, offsetX, offsetY = buff:GetPoint()
                 
                 if point and (self.TargetFrameContainer.FrameTexture == relativeTo) then
                     buff:SetPoint(point, targetBuffsFrame, relativePoint, offsetX, offsetY)
                 end
             end)
+            
+            lib:RegisterCustomCheckbox(targetBuffsFrame, "Hide Buffs",
+                function()
+                    targetBuffsHidden = true
+                end,
+                function()
+                    targetBuffsHidden = false
+                end,
+                "HideBuffs"
+            )
+            
+            lib:RegisterCustomCheckbox(targetBuffsFrame, "Hide Debuffs",
+                function()
+                    targetDebuffsHidden = true
+                end,
+                function()
+                    targetDebuffsHidden = false
+                end,
+                "HideDebuffs"
+            )
         end
         
         local targetFrameWasHidden

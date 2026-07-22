@@ -7,7 +7,6 @@ function addon:initPlayerFrame()
     local db = addon.db.global
     if db.EMEOptions.playerFrame then
         addon:registerSecureFrameHideable(PlayerFrame)
-        lib:RegisterToggleInCombat(PlayerFrame)
         C_Timer.After(4, function()
             addon:continueAfterCombatEnds(function()
                 if lib:IsFrameMarkedHidden(PlayerFrame) then

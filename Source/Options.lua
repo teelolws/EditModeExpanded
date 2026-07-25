@@ -81,6 +81,7 @@ local defaults = {
             chatFrame = false,
             battlefieldMap = false,
             anchorToEnabled = false,
+            reparentEnabled = false,
         },
         QueueStatusButton = {},
         TotemFrame = {},
@@ -320,6 +321,11 @@ local options = {
         anchorToEnabled = {
             name = L["OPTION_ANCHOR_TO_NAME"],
             desc = L["OPTION_ANCHOR_TO_DESC"],
+            type = "toggle",
+        },
+        reparentEnabled = {
+            name = "Reparent Frame",
+            desc = "Allows frames to be reparented to other frames. Use at your own risk. May cause errors if not properly used.",
             type = "toggle",
         },
         playerFrame = {

@@ -53,7 +53,8 @@ function addon:registerFrame(frame, ...)
         libDD:UIDropDownMenu_SetText(dropdown, "Reparent To:")
         
         EventRegistry:RegisterCallback("EDIT_MODE_LAYOUTS_UPDATED", updateFrameParent)
-        updateFrameParent()
+        -- System frames may be loaded in before their profile is loaded
+        C_Timer.After(1, updateFrameParent)
         if frame.EMEResetButton then
             frame.EMEResetButton:HookScript("OnClick", function()
                 local db = getSettingDB()

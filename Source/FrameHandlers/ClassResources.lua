@@ -25,7 +25,7 @@ local function initClassResource(classResourceFrame, localText, db)
     lib:RegisterToggleInCombat(classResourceFrame)
     lib:SetDontResize(classResourceFrame)
     lib:RegisterResizable(classResourceFrame)
-    hooksecurefunc(PlayerFrameBottomManagedFramesContainer, "Layout", function()
+    hooksecurefunc(PlayerBottomManagedFrameContainer, "Layout", function()
         if not shouldShow(classResourceFrame) then return end
         addon.ResetFrame(classResourceFrame)
     end)

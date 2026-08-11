@@ -2,7 +2,7 @@
 -- Internal variables
 --
 
-local MAJOR, MINOR = "EditModeExpanded-1.0", 115
+local MAJOR, MINOR = "EditModeExpanded-1.0", 116
 local lib = LibStub:NewLibrary(MAJOR, MINOR)
 if not lib then return end
 
@@ -1154,11 +1154,12 @@ hooksecurefunc(f, "OnLoad", function()
         
         if InCombatLockdown() then return end
         
-        for _, frame in ipairs(frames) do
-            if systemFrame ~= frame then
-                frame:HighlightSystem()
-            end
-        end
+        -- As of 12.1 can no longer deselect system frames as leads to secret value errors
+        --for _, frame in ipairs(frames) do
+        --    if systemFrame ~= frame then
+        --        frame:HighlightSystem()
+        --    end
+        --end
     end)
     
     hooksecurefuncWrapper(EditModeManagerFrame, "ClearSelectedSystem", function()

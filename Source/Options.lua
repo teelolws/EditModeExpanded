@@ -29,9 +29,7 @@ local defaults = {
             soulShards = true,
             achievementAlert = true, -- alertFrame, using the name acheivement for backward compatibility
             targetOfTarget = true,
-            targetCast = true,
             focusTargetOfTarget = true,
-            focusCast = true,
             compactRaidFrameContainer = false,
             talkingHead = true,
             minimap = true,
@@ -125,9 +123,6 @@ local defaults = {
         ContainerFrameCombinedBags = {},
         MinimapZoneName = {},
         MinimapSeparated = {},
-        TargetDebuffs = {},
-        TargetBuffs = {},
-        FocusBuffs = {},
         GameMenuFrame = {},
         LOC = {},
         PetFrame = {},
@@ -210,19 +205,9 @@ local options = {
                     desc = string.format(L["TOGGLE_SUPPORT_STRING"], SHOW_TARGET_OF_TARGET_TEXT),
                     type = "toggle",
                 },
-                targetCast = {
-                    name = TARGET.." "..HUD_EDIT_MODE_CAST_BAR_LABEL,
-                    desc = string.format(L["TOGGLE_SUPPORT_STRING"], TARGET.." "..HUD_EDIT_MODE_CAST_BAR_LABEL),
-                    type = "toggle",
-                },
                 focusTargetOfTarget = {
                     name = L["Focus ToT"],
                     desc = string.format(L["TOGGLE_SUPPORT_STRING"], L["Focus ToT"]),
-                    type = "toggle",
-                },
-                focusCast = {
-                    name = L["Focus Cast Bar"],
-                    desc = string.format(L["TOGGLE_SUPPORT_STRING"], L["Focus Cast Bar"]),
                     type = "toggle",
                 },
                 targetFrame = {
@@ -230,19 +215,9 @@ local options = {
                     desc = string.format(L["TOGGLE_ADDITIONAL_OPTIONS_SUPPORT_STRING"], TARGET),
                     type = "toggle",
                 },
-                targetFrameBuffs = {
-                    name = TARGET.." "..BUFFOPTIONS_LABEL,
-                    desc = string.format(L["TOGGLE_SUPPORT_STRING"], TARGET.." "..BUFFOPTIONS_LABEL),
-                    type = "toggle",
-                },
                 focusFrame = {
                     name = BINDING_NAME_FOCUSTARGET,
                     desc = string.format(L["TOGGLE_ADDITIONAL_OPTIONS_SUPPORT_STRING"], BINDING_NAME_FOCUSTARGET),
-                    type = "toggle",
-                },
-                focusFrameBuffs = {
-                    name = BINDING_NAME_FOCUSTARGET.." "..BUFFOPTIONS_LABEL,
-                    desc = string.format(L["TOGGLE_SUPPORT_STRING"], BINDING_NAME_FOCUSTARGET.." "..BUFFOPTIONS_LABEL),
                     type = "toggle",
                 },
                 targetFrameResize = {

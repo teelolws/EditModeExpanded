@@ -27,9 +27,7 @@ local defaults = {
             soulShards = true,
             achievementAlert = true, -- alertFrame, using the name acheivement for backward compatibility
             targetOfTarget = true,
-            targetCast = true,
             focusTargetOfTarget = true,
-            focusCast = true,
             compactRaidFrameContainer = false,
             talkingHead = true,
             minimap = true,
@@ -179,19 +177,9 @@ local options = {
                     desc = string.format(L["TOGGLE_SUPPORT_STRING"], SHOW_TARGET_OF_TARGET_TEXT),
                     type = "toggle",
                 },
-                targetCast = {
-                    name = TARGET.." "..HUD_EDIT_MODE_CAST_BAR_LABEL,
-                    desc = string.format(L["TOGGLE_SUPPORT_STRING"], TARGET.." "..HUD_EDIT_MODE_CAST_BAR_LABEL),
-                    type = "toggle",
-                },
                 focusTargetOfTarget = {
                     name = L["Focus ToT"],
                     desc = string.format(L["TOGGLE_SUPPORT_STRING"], L["Focus ToT"]),
-                    type = "toggle",
-                },
-                focusCast = {
-                    name = L["Focus Cast Bar"],
-                    desc = string.format(L["TOGGLE_SUPPORT_STRING"], L["Focus Cast Bar"]),
                     type = "toggle",
                 },
                 targetFrame = {

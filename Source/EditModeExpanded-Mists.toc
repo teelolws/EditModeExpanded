@@ -41,7 +41,6 @@ FrameHandlers\BonusRoll.lua
 FrameHandlers\Buffs.lua
 FrameHandlers\ChatButtons-tbc.lua
 FrameHandlers\ExtraActionButton.lua
-FrameHandlers\FocusCast.lua
 FrameHandlers\FocusFrame.lua
 FrameHandlers\FocusToT.lua
 FrameHandlers\GameMenu.lua
@@ -54,7 +53,6 @@ FrameHandlers\PlayerFrame.lua
 FrameHandlers\Raid.lua
 FrameHandlers\StanceBar.lua
 FrameHandlers\StatusTrackingBar.lua
-FrameHandlers\TargetCast.lua
 FrameHandlers\TargetFrame.lua
 FrameHandlers\TargetOfTarget.lua
 FrameHandlers\Tooltip-tbc.lua

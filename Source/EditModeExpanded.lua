@@ -5,12 +5,18 @@ local L = LibStub("AceLocale-3.0"):GetLocale(addonName)
 EventUtil.RegisterOnceFrameEventAndCallback("PLAYER_ENTERING_WORLD", function()
     addon:registerSecureFrameHideable(BossTargetFrameContainer)
     
-    if addon.db.global.EMEOptions.showCoordinates then 
+    if addon.db.global.EMEOptions.showCoordinates then
         hooksecurefunc(EditModeExpandedSystemSettingsDialog, "AttachToSystemFrame", function(self, frame)
-            self.Title:SetText(frame:GetSystemName().." ("..math.floor(frame:GetLeft())..","..math.floor(frame:GetBottom())..")")
+            local left, bottom = frame:GetLeft(), frame:GetBottom()
+            if not (issecretvalue(left) or issecretvalue(bottom)) then
+                self.Title:SetText(frame:GetSystemName().." ("..math.floor(frame:GetLeft())..","..math.floor(frame:GetBottom())..")")
+            end
         end)
         hooksecurefunc(EditModeExpandedSystemSettingsDialog, "UpdateSettings", function(self, frame)
-            self.Title:SetText(frame:GetSystemName().." ("..math.floor(frame:GetLeft())..","..math.floor(frame:GetBottom())..")")
+            local left, bottom = frame:GetLeft(), frame:GetBottom()
+            if not (issecretvalue(left) or issecretvalue(bottom)) then
+                self.Title:SetText(frame:GetSystemName().." ("..math.floor(frame:GetLeft())..","..math.floor(frame:GetBottom())..")")
+            end
         end)
     end
 
@@ -18,9 +24,7 @@ EventUtil.RegisterOnceFrameEventAndCallback("PLAYER_ENTERING_WORLD", function()
     addon:initTargetFrame()    
     addon:initFocusFrame()
     addon:initTargetOfTarget()
-    addon:initTargetCastBar()
-    addon:initFocusToT()
-    addon:initFocusCastBar()    
+    addon:initFocusToT()    
     addon:initLFG()
     addon:initMinimap()
     addon:initTopCenterContainer()

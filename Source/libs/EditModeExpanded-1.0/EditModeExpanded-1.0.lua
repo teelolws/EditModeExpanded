@@ -2,7 +2,7 @@
 -- Internal variables
 --
 
-local MAJOR, MINOR = "EditModeExpanded-1.0", 117
+local MAJOR, MINOR = "EditModeExpanded-1.0", 118
 local lib = LibStub:NewLibrary(MAJOR, MINOR)
 if not lib then return end
 
@@ -316,6 +316,8 @@ function lib:RegisterFrame(frame, name, db, anchorTo, anchorPoint, clamped)
     	self:Show();
     end
     
+    frame.Selection.UpdateLabelVisibility = nop
+    
     frame.systemNameString = name
     
     frame.Selection:SetSystem(frame)
@@ -375,13 +377,15 @@ function lib:RegisterFrame(frame, name, db, anchorTo, anchorPoint, clamped)
         local profiledb = framesDB[frame.system]
         profiledb.x, profiledb.y = self:GetRect()
         
-        local x, y = getOffsetXY(frame, profiledb.x, profiledb.y)
-        frame:ClearAllPoints()
-        frame:SetPoint(frame.EMEanchorPoint, frame.EMEanchorTo, frame.EMEanchorPoint, x, y)
+        local x, y, isSecret = getOffsetXY(frame, profiledb.x, profiledb.y)
+        if not isSecret then
+            frame:ClearAllPoints()
+            frame:SetPoint(frame.EMEanchorPoint, frame.EMEanchorTo, frame.EMEanchorPoint, x, y)
+        end
         
         EditModeExpandedSystemSettingsDialog:UpdateSettings(frame)
         
-        if frame:IsUserPlaced() then
+        if (not issecretvalue(frame:IsUserPlaced())) and frame:IsUserPlaced() then
             frame:SetUserPlaced(false)
         end
     end)
@@ -477,14 +481,16 @@ function lib:RegisterFrame(frame, name, db, anchorTo, anchorPoint, clamped)
     
         -- Update position to try and keep the system frame in the same position since scale changes how offsets work
         local numPoints = self:GetNumPoints();
-        for i = 1, numPoints do
-            local point, relativeTo, relativePoint, offsetX, offsetY = self:GetPoint(i);
-    
-            -- Undo old scale adjustment so we're working with 1.0 scale offsets
-            -- Then apply the newScale adjustment
-            offsetX = offsetX * oldScale / newScale;
-            offsetY = offsetY * oldScale / newScale;
-            self:SetPoint(point, relativeTo, relativePoint, offsetX, offsetY);
+        if not issecretvalue(numPoints) then
+            for i = 1, numPoints do
+                local point, relativeTo, relativePoint, offsetX, offsetY = self:GetPoint(i);
+        
+                -- Undo old scale adjustment so we're working with 1.0 scale offsets
+                -- Then apply the newScale adjustment
+                offsetX = offsetX * oldScale / newScale;
+                offsetY = offsetY * oldScale / newScale;
+                self:SetPoint(point, relativeTo, relativePoint, offsetX, offsetY);
+            end
         end
     end
     
@@ -1121,7 +1127,7 @@ hooksecurefunc(f, "OnLoad", function()
             wasVisible[frame.system] = frame:IsShown()
             frame:SetShown(framesDB[frame.system].enabled)
             local x, y = frame:GetSize()
-            if (not frame.EMEDontResize) and ((x < 40) or (y < 40)) then
+            if (not (issecretvalue(x) or issecretvalue(y))) and (not frame.EMEDontResize) and ((x < 40) or (y < 40)) then
                 originalSize[frame.system] = {["x"] = x, ["y"] = y}
                 if defaultSize[frame.system] then
                     frame:SetSize(defaultSize[frame.system].x, defaultSize[frame.system].y)
@@ -1969,7 +1975,12 @@ end
 --
 function getOffsetXY(frame, x, y)
     if issecretvalue(x) or issecretvalue(y) then
-        return x, y
+        return x, y, true
+    end
+    
+    local width, height = frame:GetSize()
+    if issecretvalue(width) or issecretvalue(height) then
+        return x, y, true
     end
     
     local scale = frame:GetEffectiveScale()
@@ -1981,35 +1992,27 @@ function getOffsetXY(frame, x, y)
         return x - ((targetX * parentscale) / scale), y - ((targetY * parentscale) / scale)
     elseif anchorPoint == "BOTTOMRIGHT" then
         local targetX, targetY, targetWidth = frame.EMEanchorTo:GetRect()
-        local width = frame:GetSize()
         return (x + width) - (((targetX + targetWidth) * parentscale) / scale), y - ((targetY * parentscale) / scale)
     elseif anchorPoint == "TOPLEFT" then
         local targetX, targetY, _, targetHeight = frame.EMEanchorTo:GetRect()
-        local _, height = frame:GetSize()
         return x - ((targetX * parentscale) / scale), (y + height) - (((targetY + targetHeight) * parentscale) / scale)
     elseif anchorPoint == "TOPRIGHT" then
         local targetX, targetY, targetWidth, targetHeight = frame.EMEanchorTo:GetRect()
-        local width, height = frame:GetSize()
         return (x + width) - (((targetX + targetWidth) * parentscale) / scale), (y + height) - (((targetY + targetHeight) * parentscale) / scale)
     elseif anchorPoint == "CENTER" then
         local targetX, targetY, targetWidth, targetHeight = frame.EMEanchorTo:GetRect()
-        local width, height = frame:GetSize()
         return (x + 0.5 * width) - (((targetX + 0.5 * targetWidth) * parentscale) / scale), (y + 0.5 * height) - (((targetY + 0.5 * targetHeight) * parentscale) / scale)
     elseif anchorPoint == "TOP" then
         local targetX, targetY, targetWidth, targetHeight = frame.EMEanchorTo:GetRect()
-        local width, height = frame:GetSize()
         return (x + 0.5 * width) - (((targetX + 0.5 * targetWidth) * parentscale) / scale), (y + height) - (((targetY + targetHeight) * parentscale) / scale)
     elseif anchorPoint == "BOTTOM" then
         local targetX, targetY, targetWidth = frame.EMEanchorTo:GetRect()
-        local width = frame:GetSize()
         return (x + 0.5 * width) - (((targetX + 0.5 * targetWidth) * parentscale) / scale), y - ((targetY * parentscale) / scale)
     elseif anchorPoint == "LEFT" then
         local targetX, targetY, _, targetHeight = frame.EMEanchorTo:GetRect()
-        local _, height = frame:GetSize()
         return x - ((targetX * parentscale) / scale), (y + 0.5 * height) - (((targetY + 0.5 * targetHeight) * parentscale) / scale)
     elseif anchorPoint == "RIGHT" then
         local targetX, targetY, targetWidth, targetHeight = frame.EMEanchorTo:GetRect()
-        local width, height = frame:GetSize()
         return (x + width) - (((targetX + targetWidth) * parentscale) / scale), (y + 0.5 * height) - (((targetY + 0.5 * targetHeight) * parentscale) / scale)
     end 
 end
@@ -2028,6 +2031,7 @@ function registerFrameMovableWithArrowKeys(frame)
     function frame:MoveWithArrowKey(key)
         if self.isSelected then
             local x, y = self:GetRect();
+            if issecretvalue(x) or issecretvalue(y) then return end
 
             local new_x = x;
             local new_y = y;

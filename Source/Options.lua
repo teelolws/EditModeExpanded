@@ -7,18 +7,6 @@ local L = LibStub("AceLocale-3.0"):GetLocale(addonName)
 
 local defaults = {
     char = {
-        EssentialCooldownViewerSpellIDs = {
-            ["*"] = {},
-        },
-        UtilityCooldownViewerSpellIDs = {
-            ["*"] = {},
-        },
-        BuffIconCooldownViewerSpellIDs = {
-            ["*"] = {},
-        },
-        BuffBarCooldownViewerSpellIDs = {
-            ["*"] = {},
-        },
         AutoLayoutSwitching = {},
     },
     global = {
@@ -80,6 +68,7 @@ local defaults = {
             battlefieldMap = false,
             anchorToEnabled = false,
             reparentEnabled = false,
+            targetCast = true,
         },
         QueueStatusButton = {},
         TotemFrame = {},
@@ -141,6 +130,7 @@ local defaults = {
         ChatFrame1EditBox = {},
         GeneralDockManager = {},
         BattlefieldMapFrame = {},
+        TargetBuffs = {},
     }
 }
 
@@ -205,6 +195,11 @@ local options = {
                     desc = string.format(L["TOGGLE_SUPPORT_STRING"], SHOW_TARGET_OF_TARGET_TEXT),
                     type = "toggle",
                 },
+                targetCast = {
+                    name = TARGET.." "..HUD_EDIT_MODE_CAST_BAR_LABEL,
+                    desc = string.format(L["TOGGLE_SUPPORT_STRING"], TARGET.." "..HUD_EDIT_MODE_CAST_BAR_LABEL),
+                    type = "toggle",
+                },
                 focusTargetOfTarget = {
                     name = L["Focus ToT"],
                     desc = string.format(L["TOGGLE_SUPPORT_STRING"], L["Focus ToT"]),
@@ -213,6 +208,11 @@ local options = {
                 targetFrame = {
                     name = TARGET,
                     desc = string.format(L["TOGGLE_ADDITIONAL_OPTIONS_SUPPORT_STRING"], TARGET),
+                    type = "toggle",
+                },
+                targetFrameBuffs = {
+                    name = TARGET.." "..BUFFOPTIONS_LABEL,
+                    desc = string.format(L["TOGGLE_SUPPORT_STRING"], TARGET.." "..BUFFOPTIONS_LABEL),
                     type = "toggle",
                 },
                 focusFrame = {

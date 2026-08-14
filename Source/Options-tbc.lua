@@ -7,18 +7,6 @@ local L = LibStub("AceLocale-3.0"):GetLocale(addonName)
 
 local defaults = {
     char = {
-        EssentialCooldownViewerSpellIDs = {
-            ["*"] = {},
-        },
-        UtilityCooldownViewerSpellIDs = {
-            ["*"] = {},
-        },
-        BuffIconCooldownViewerSpellIDs = {
-            ["*"] = {},
-        },
-        BuffBarCooldownViewerSpellIDs = {
-            ["*"] = {},
-        },
         AutoLayoutSwitching = {},
     },
     global = {

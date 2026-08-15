@@ -37,35 +37,46 @@ function addon:initTargetFrame()
         addon:registerFrame(fakeFrame, L["TARGET_CAST_BAR"], db.TargetSpellBar, TargetFrame, "TOPLEFT")
         
         local realFrame = TargetFrameSpellBar
-        hooksecurefunc(realFrame, "AdjustPosition", function(self)
-            realFrame:ClearAllPoints()
-            realFrame:SetPoint("TOPLEFT", fakeFrame, "TOPLEFT")
-            if EditModeManagerFrame.editModeActive then
-                realFrame:Show()
-            end
-        end)
-        realFrame:HookScript("OnShow", function(self)
-            realFrame:ClearAllPoints()
-            realFrame:SetPoint("TOPLEFT", fakeFrame, "TOPLEFT")
-        end)
+        
         
         -- TODO: pass fake frame settings down to the real target cast bar
         
         --lib:RegisterResizable(fakeFrame, 10, 500)
         --lib:RegisterHideable(fakeFrame)
         
-        --[[
+        local width, height
         lib:RegisterSlider(fakeFrame, HUD_EDIT_MODE_SETTING_CHAT_FRAME_WIDTH, "Width",
             function(newValue)
+                width = newValue
                 realFrame:SetWidth(newValue)
+                realFrame:Show()
             end,
             10, 300, 1)
         lib:RegisterSlider(fakeFrame, HUD_EDIT_MODE_SETTING_CHAT_FRAME_HEIGHT, "Height",
             function(newValue)
+                height = newValue
                 realFrame:SetHeight(newValue)
+                realFrame:Show()
             end,
             1, 50, 1)
-        --]]
+        
+        hooksecurefunc(realFrame, "AdjustPosition", function(self)
+            realFrame:ClearAllPoints()
+            realFrame:SetPoint("TOPLEFT", fakeFrame, "TOPLEFT")
+            if EditModeManagerFrame.editModeActive then
+                realFrame:Show()
+            end
+            if width then
+                realFrame:SetWidth(width)
+            end
+        end)
+        realFrame:HookScript("OnShow", function(self)
+            realFrame:ClearAllPoints()
+            realFrame:SetPoint("TOPLEFT", fakeFrame, "TOPLEFT")
+            if height then
+                realFrame:SetHeight(height)
+            end
+        end)
     end
     
     if db.EMEOptions.targetFrameBuffs then

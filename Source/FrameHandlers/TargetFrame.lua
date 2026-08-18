@@ -38,11 +38,7 @@ function addon:initTargetFrame()
         
         local realFrame = TargetFrameSpellBar
         
-        
-        -- TODO: pass fake frame settings down to the real target cast bar
-        
-        --lib:RegisterResizable(fakeFrame, 10, 500)
-        --lib:RegisterHideable(fakeFrame)
+        addon:registerSecureFrameHideable(fakeFrame)
         
         local width, height
         lib:RegisterSlider(fakeFrame, HUD_EDIT_MODE_SETTING_CHAT_FRAME_WIDTH, "Width",
@@ -80,8 +76,6 @@ function addon:initTargetFrame()
     end
     
     if db.EMEOptions.targetFrameBuffs then
-            
-        --addon:registerFrame(TargetFrame:GetAuraContainer(), "Target Buffs", db.TargetBuffs)
         local fakeFrame = CreateFrame("Frame", "EMETargetFrameBuffs", TargetFrame)
         fakeFrame:SetPoint("TOPLEFT", TargetFrame, "BOTTOMLEFT", 5, -10)
         fakeFrame:SetSize(100, 70)
@@ -95,5 +89,7 @@ function addon:initTargetFrame()
             realFrame:ClearAllPoints()
             realFrame:SetPoint("TOPLEFT", fakeFrame, "TOPLEFT")
         end)
+        
+        addon:registerSecureFrameHideable(fakeFrame)
     end
 end

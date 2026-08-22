@@ -15,7 +15,7 @@ local defaults = {
             holyPower = true,
             totem = true,
             soulShards = true,
-            achievementAlert = true, -- alertFrame, using the name acheivement for backward compatibility
+            achievementAlert = true, -- alertFrame, using the name acheievement for backward compatibility
             targetOfTarget = true,
             focusTargetOfTarget = true,
             compactRaidFrameContainer = false,
@@ -69,6 +69,7 @@ local defaults = {
             anchorToEnabled = false,
             reparentEnabled = false,
             targetCast = true,
+            focusCast = true,
         },
         QueueStatusButton = {},
         TotemFrame = {},
@@ -78,7 +79,6 @@ local defaults = {
         ToT = {},
         TargetSpellBar = {},
         FocusToT = {},
-        FocusSpellBar = {},
         UIWidgetTopCenterContainerFrame = {},
         UIWidgetBelowMinimapContainerFrame = {},
         ArenaEnemyFramesContainer = {},
@@ -131,6 +131,8 @@ local defaults = {
         GeneralDockManager = {},
         BattlefieldMapFrame = {},
         TargetBuffs = {},
+        FocusSpellBar = {},
+        FocusBuffs = {},
     }
 }
 
@@ -223,6 +225,16 @@ local options = {
                 targetFrameResize = {
                     name = L["Resize Target Frame"],
                     desc = L["RESIZE_TARGET_FRAME_DESCRIPTION"],
+                    type = "toggle",
+                },
+                focusCast = {
+                    name = L["Focus Cast Bar"],
+                    desc = string.format(L["TOGGLE_SUPPORT_STRING"], L["Focus Cast Bar"]),
+                    type = "toggle",
+                },
+                focusFrameBuffs = {
+                    name = BINDING_NAME_FOCUSTARGET.." "..BUFFOPTIONS_LABEL,
+                    desc = string.format(L["TOGGLE_SUPPORT_STRING"], BINDING_NAME_FOCUSTARGET.." "..BUFFOPTIONS_LABEL),
                     type = "toggle",
                 },
             },

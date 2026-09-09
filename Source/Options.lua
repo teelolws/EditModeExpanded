@@ -456,6 +456,11 @@ local options = {
             desc = string.format(L["TOGGLE_SUPPORT_STRING"], BATTLEFIELD_MINIMAP),
             type = "toggle",
         },
+        objectiveTrackerFrame = {
+            name = HUD_EDIT_MODE_OBJECTIVE_TRACKER_LABEL,
+            desc = string.format(L["TOGGLE_SUPPORT_STRING"], HUD_EDIT_MODE_OBJECTIVE_TRACKER_LABEL),
+            type = "toggle",
+        },
     },
 }
 

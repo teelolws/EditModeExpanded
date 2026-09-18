@@ -199,12 +199,12 @@ function lib:RegisterFrame(frame, name, db, anchorTo, anchorPoint, clamped)
     
     -- frame is an existing Edit Mode frame by Blizzard, handle it differently
     if systemID then
-        local name = frame:GetName()
-        if not name then
-            name = frame.systemNameString
+        local internalName = frame:GetName()
+        if not internalName then
+            internalName = frame.systemNameString
         end
-        if existingFrames[name] then return end
-        existingFrames[name] = frame
+        if existingFrames[internalName] then return end
+        existingFrames[internalName] = frame
         
         systemID = nextSystemIDIndex
         nextSystemIDIndex = nextSystemIDIndex + 1
@@ -1145,7 +1145,7 @@ hooksecurefunc(f, "OnLoad", function()
             end
         end
         
-        for frameName, frame in pairs(existingFrames) do
+        for _, frame in pairs(existingFrames) do
             local systemID = getSystemID(frame)
             if framesDB[systemID] and framesDB[systemID].settings and (framesDB[systemID].settings[ENUM_EDITMODEACTIONBARSETTING_HIDEABLE] ~= nil) then
                 if (framesDB[systemID].settings[ENUM_EDITMODEACTIONBARSETTING_HIDEABLE] == 1) then
@@ -1187,7 +1187,7 @@ hooksecurefunc(f, "OnLoad", function()
             end
         end
         
-        for frameName, frame in pairs(existingFrames) do
+        for _, frame in pairs(existingFrames) do
             local systemID = getSystemID(frame)
             if framesDB[systemID] and framesDB[systemID].settings and (framesDB[systemID].settings[ENUM_EDITMODEACTIONBARSETTING_HIDEABLE] ~= nil) then
                 if (framesDB[systemID].settings[ENUM_EDITMODEACTIONBARSETTING_HIDEABLE] == 1) then
@@ -1240,7 +1240,7 @@ hooksecurefunc(f, "OnLoad", function()
         if oldProfileName == newProfileName then return end
 
         for _, allFrames in pairs({frames, existingFrames}) do
-            for name, frame in pairs(allFrames) do
+            for _, frame in pairs(allFrames) do
                 local systemID = frame.EMESystemID or frame.system
                 local db = baseFramesDB[systemID]
                 
@@ -1730,7 +1730,7 @@ function refreshCurrentProfile()
     end
     
     for _, allFrames in pairs({frames, existingFrames}) do
-        for name, frame in pairs(allFrames) do
+        for _, frame in pairs(allFrames) do
             EditModeExpandedSystemSettingsDialog:Hide()
             local systemID = frame.EMESystemID or frame.system
             local db = baseFramesDB[systemID]
@@ -2130,7 +2130,7 @@ do
             enteringCombat = true
             -- entering combat
             for _, allFrames in pairs({frames, existingFrames}) do
-                for name, frame in pairs(allFrames) do
+                for _, frame in pairs(allFrames) do
                     local systemID = getSystemID(frame)
                     local db = framesDB[systemID]
                     if db then
@@ -2162,7 +2162,7 @@ do
             enteringCombat = false
             -- exiting combat
             for _, allFrames in pairs({frames, existingFrames}) do
-                for name, frame in pairs(allFrames) do
+                for _, frame in pairs(allFrames) do
                     local systemID = getSystemID(frame)
                     local db = framesDB[systemID]
                     if db then

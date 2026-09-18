@@ -20,12 +20,12 @@ EventUtil.RegisterOnceFrameEventAndCallback("PLAYER_ENTERING_WORLD", function()
         end)
     end
 
-    addon:initAlertFrame()
+    --addon:initAlertFrame()
     addon:initTargetFrame()    
     addon:initFocusFrame()
     addon:initTargetOfTarget()
     addon:initFocusToT()    
-    addon:initLFG()
+    --addon:initLFG()
     addon:initMinimap()
     addon:initTopCenterContainer()
     addon:initBelowMinimapContainer()    
@@ -48,35 +48,7 @@ EventUtil.RegisterOnceFrameEventAndCallback("PLAYER_ENTERING_WORLD", function()
     addon:initCooldownManager()
     addon:initTotemFrame()
     addon:initDurationBars()
-    addon:initVigorBar()
     addon:initPersonalResourceDisplay()
-        
-    local class = UnitClassBase("player")
-        
-    if class == "PALADIN" then
-        addon:initHolyPower()
-    elseif class == "WARLOCK" then
-        addon:initSoulShards()
-        
-    elseif class == "MONK" then
-        addon:initChiBar()
-            
-    elseif class == "DEATHKNIGHT" then
-        addon:initRunes()
-    
-    elseif class == "MAGE" then
-        addon:initArcaneCharges()
-
-    elseif class == "EVOKER" then
-        addon:initEssences()
-            
-    elseif class == "ROGUE" then
-        addon:initRogueComboPoints()
-        
-    elseif class == "DRUID" then
-        addon:initDruidComboPoints()
-
-    end
 end)
 
 EventUtil.RegisterOnceFrameEventAndCallback("EDIT_MODE_LAYOUTS_UPDATED", function()

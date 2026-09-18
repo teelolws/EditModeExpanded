@@ -1,4 +1,4 @@
-## Interface: 120100
+## Interface: 120100, 50504, 20505
 ## Title: Edit Mode Expanded
 ## Version: @project-version@
 ## Notes: Expands Edit Mode to apply to other frames
@@ -29,57 +29,62 @@ libs\EditModeExpanded-1.0\EditModeExpanded-1.0.xml
 libs\LibUIDropDownMenu\LibUIDropDownMenu.lua
 
 Locales\enus.lua
-Locales\esES.lua
-Locales\ruRU.lua
-Locales\zhCN.lua
-Locales\zhTW.lua
-Locales\koKR.lua
+Locales\esES.lua [AllowLoadTextLocale esES]
+Locales\ruRU.lua [AllowLoadTextLocale ruRU]
+Locales\zhCN.lua [AllowLoadTextLocale zhCN]
+Locales\zhTW.lua [AllowLoadTextLocale zhTW]
+Locales\koKR.lua [AllowLoadTextLocale koKR]
 
-FrameHandlers\ActionBars.lua
-FrameHandlers\AlertFrame.lua
-FrameHandlers\BattlefieldMapFrame.lua
-FrameHandlers\BelowMinimapContainer.lua
-FrameHandlers\BonusRoll.lua
-FrameHandlers\Buffs.lua
-FrameHandlers\ChatButtons.lua
-FrameHandlers\ChatFrame.lua
-FrameHandlers\ClassResources.lua
-FrameHandlers\CooldownManager.lua
-FrameHandlers\DurationBars.lua
-FrameHandlers\ExtraActionButton.lua
-FrameHandlers\FocusFrame.lua
-FrameHandlers\FocusToT.lua
-FrameHandlers\GameMenu.lua
-FrameHandlers\GroupLoot.lua
-FrameHandlers\Housing.lua
-FrameHandlers\LFG.lua
-FrameHandlers\LossOfControl.lua
-FrameHandlers\Menu.lua
-FrameHandlers\Minimap.lua
-FrameHandlers\ObjectiveTracker.lua
-FrameHandlers\PersonalResourceDisplay.lua
-FrameHandlers\Pet.lua
-FrameHandlers\PlayerFrame.lua
-FrameHandlers\Raid.lua
-FrameHandlers\StanceBar.lua
-FrameHandlers\StatusTrackingBar.lua
-FrameHandlers\TalkingHead.lua
-FrameHandlers\TargetFrame.lua
-FrameHandlers\TargetOfTarget.lua
-FrameHandlers\Tooltip.lua
-FrameHandlers\TopCenterContainer.lua
-FrameHandlers\TotemFrame.lua
+FrameHandlers\ActionBars.lua [AllowLoadGameType standard, mists, camelot, tbc]
+FrameHandlers\AlertFrame.lua [AllowLoadGameType standard]
+FrameHandlers\BattlefieldMapFrame.lua [AllowLoadGameType standard, camelot]
+FrameHandlers\BelowMinimapContainer.lua [AllowLoadGameType standard, mists, camelot, tbc]
+FrameHandlers\BonusRoll.lua [AllowLoadGameType standard, mists, camelot, tbc]
+FrameHandlers\Buffs.lua [AllowLoadGameType standard, mists, camelot, tbc]
+FrameHandlers\ChatButtons.lua [AllowLoadGameType standard, camelot]
+FrameHandlers\ChatButtons-tbc.lua [AllowLoadGameType mists, camelot, tbc]
+FrameHandlers\ChatFrame.lua [AllowLoadGameType standard, camelot]
+FrameHandlers\ClassResources.lua [AllowLoadGameType standard]
+FrameHandlers\CooldownManager.lua [AllowLoadGameType standard, camelot]
+FrameHandlers\DurationBars.lua [AllowLoadGameType standard, camelot]
+FrameHandlers\ExtraActionButton.lua [AllowLoadGameType standard, mists, camelot, tbc]
+FrameHandlers\FocusFrame.lua [AllowLoadGameType standard, mists, camelot, tbc]
+FrameHandlers\FocusToT.lua [AllowLoadGameType standard, mists, camelot, tbc]
+FrameHandlers\GameMenu.lua [AllowLoadGameType standard, mists, camelot, tbc]
+FrameHandlers\GroupLoot.lua [AllowLoadGameType standard, mists, camelot, tbc]
+FrameHandlers\Housing.lua [AllowLoadGameType standard, camelot]
+FrameHandlers\LFG.lua [AllowLoadGameType standard]
+FrameHandlers\LossOfControl.lua [AllowLoadGameType standard, camelot]
+FrameHandlers\Menu.lua [AllowLoadGameType standard, mists, camelot, tbc]
+FrameHandlers\Minimap.lua [AllowLoadGameType standard, mists, camelot, tbc]
+FrameHandlers\ObjectiveTracker.lua [AllowLoadGameType standard, mists, camelot, tbc]
+FrameHandlers\PersonalResourceDisplay.lua [AllowLoadGameType standard, camelot]
+FrameHandlers\Pet.lua [AllowLoadGameType standard, mists, camelot, tbc]
+FrameHandlers\PlayerFrame.lua [AllowLoadGameType standard, mists, camelot, tbc]
+FrameHandlers\Raid.lua [AllowLoadGameType standard, mists, camelot, tbc]
+FrameHandlers\StanceBar.lua [AllowLoadGameType standard, mists, camelot, tbc]
+FrameHandlers\StatusTrackingBar.lua [AllowLoadGameType standard, mists, camelot, tbc]
+FrameHandlers\TalkingHead.lua [AllowLoadGameType standard, camelot, tbc]
+FrameHandlers\TargetFrame.lua [AllowLoadGameType standard, mists, camelot, tbc]
+FrameHandlers\TargetOfTarget.lua [AllowLoadGameType standard, mists, camelot, tbc]
+FrameHandlers\Tooltip.lua [AllowLoadGameType standard, camelot]
+FrameHandlers\Tooltip-tbc.lua [AllowLoadGameType mists, tbc]
+FrameHandlers\TopCenterContainer.lua [AllowLoadGameType standard, mists, camelot, tbc]
+FrameHandlers\TotemFrame.lua [AllowLoadGameType standard, camelot]
 
 AutoLayoutChanges.lua
-Options.lua
+Options.lua [AllowLoadGameType standard, camelot]
+Options-tbc.lua [AllowLoadGameType mists, tbc]
 RegisterFrame.lua
 ResetFrame.lua
 HookOnce.lua
 AnchorToDropdown.lua
-MicroMenu.lua
+MicroMenu.lua [AllowLoadGameType standard, camelot]
 RegisteredSystemFrames.lua
 CombatManager.lua
-EditModeExpanded.lua
+EditModeExpanded.lua [AllowLoadGameType standard]
+EditModeExpanded-tbc.lua [AllowLoadGameType mists, tbc]
+EditModeExpanded-camelot.lua [AllowLoadGameType camelot][ExcludeLoadGameType standard, classic, tbc, mists]
 WarningFrame.xml
-Vigor.lua
-Vigor.xml
+Vigor.lua [AllowLoadGameType standard]
+Vigor.xml [AllowLoadGameType standard]

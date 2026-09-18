@@ -2,7 +2,7 @@
 -- Internal variables
 --
 
-local MAJOR, MINOR = "EditModeExpanded-1.0", 118
+local MAJOR, MINOR = "EditModeExpanded-1.0", 119
 local lib = LibStub:NewLibrary(MAJOR, MINOR)
 if not lib then return end
 
@@ -199,8 +199,12 @@ function lib:RegisterFrame(frame, name, db, anchorTo, anchorPoint, clamped)
     
     -- frame is an existing Edit Mode frame by Blizzard, handle it differently
     if systemID then
-        if existingFrames[frame:GetName()] then return end
-        existingFrames[frame:GetName()] = true
+        local name = frame:GetName()
+        if not name then
+            name = frame.systemNameString
+        end
+        if existingFrames[name] then return end
+        existingFrames[name] = frame
         
         systemID = nextSystemIDIndex
         nextSystemIDIndex = nextSystemIDIndex + 1
@@ -1141,8 +1145,7 @@ hooksecurefunc(f, "OnLoad", function()
             end
         end
         
-        for frameName in pairs(existingFrames) do
-            local frame = _G[frameName]
+        for frameName, frame in pairs(existingFrames) do
             local systemID = getSystemID(frame)
             if framesDB[systemID] and framesDB[systemID].settings and (framesDB[systemID].settings[ENUM_EDITMODEACTIONBARSETTING_HIDEABLE] ~= nil) then
                 if (framesDB[systemID].settings[ENUM_EDITMODEACTIONBARSETTING_HIDEABLE] == 1) then
@@ -1184,8 +1187,7 @@ hooksecurefunc(f, "OnLoad", function()
             end
         end
         
-        for frameName in pairs(existingFrames) do
-            local frame = _G[frameName]
+        for frameName, frame in pairs(existingFrames) do
             local systemID = getSystemID(frame)
             if framesDB[systemID] and framesDB[systemID].settings and (framesDB[systemID].settings[ENUM_EDITMODEACTIONBARSETTING_HIDEABLE] ~= nil) then
                 if (framesDB[systemID].settings[ENUM_EDITMODEACTIONBARSETTING_HIDEABLE] == 1) then
@@ -1239,9 +1241,6 @@ hooksecurefunc(f, "OnLoad", function()
 
         for _, allFrames in pairs({frames, existingFrames}) do
             for name, frame in pairs(allFrames) do
-                if type(frame) == "boolean" then
-                    frame = _G[name]
-                end
                 local systemID = frame.EMESystemID or frame.system
                 local db = baseFramesDB[systemID]
                 
@@ -1348,8 +1347,8 @@ hooksecurefunc(f, "OnLoad", function()
             end
         end
         
-        for frame in pairs(existingFrames) do
-            local selection = _G[frame].Selection
+        for _, frame in pairs(existingFrames) do
+            local selection = frame.Selection
             for _, side in pairs(sides) do
                 if selection[side] then
                     selection[side]:SetShown(not isChecked)
@@ -1732,9 +1731,6 @@ function refreshCurrentProfile()
     
     for _, allFrames in pairs({frames, existingFrames}) do
         for name, frame in pairs(allFrames) do
-            if type(frame) == "boolean" then
-                frame = _G[name]
-            end
             EditModeExpandedSystemSettingsDialog:Hide()
             local systemID = frame.EMESystemID or frame.system
             local db = baseFramesDB[systemID]
@@ -2046,7 +2042,7 @@ function registerFrameMovableWithArrowKeys(frame)
                 -- consume the key used to prevent movement / cam turning
                 self.Selection:SetPropagateKeyboardInput(false);
                 
-                if existingFrames[frame:GetName()] then
+                if existingFrames[frame:GetName() or frame.systemNameString] then
                     local layoutInfoCopy = CopyTable(EditModeManagerFrame.layoutInfo)
                     local activeLayout = layoutInfoCopy.layouts[layoutInfoCopy.activeLayout]
                     local a, b, c, d, e = self:GetPoint()
@@ -2135,10 +2131,6 @@ do
             -- entering combat
             for _, allFrames in pairs({frames, existingFrames}) do
                 for name, frame in pairs(allFrames) do
-                    if type(frame) == "boolean" then
-                        frame = _G[name]
-                    end
-                    
                     local systemID = getSystemID(frame)
                     local db = framesDB[systemID]
                     if db then
@@ -2171,9 +2163,6 @@ do
             -- exiting combat
             for _, allFrames in pairs({frames, existingFrames}) do
                 for name, frame in pairs(allFrames) do
-                    if type(frame) == "boolean" then
-                        frame = _G[name]
-                    end
                     local systemID = getSystemID(frame)
                     local db = framesDB[systemID]
                     if db then

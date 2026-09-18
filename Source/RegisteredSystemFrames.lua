@@ -6,8 +6,11 @@ local lib = LibStub:GetLibrary("EditModeExpanded-1.0")
 function addon:initSystemFrames()
     local db = addon.db.global
         
-    for _, frame in ipairs(EditModeManagerFrame.registeredSystemFrames) do
+    for i, frame in ipairs(EditModeManagerFrame.registeredSystemFrames) do
         local name = frame:GetName()
+        if not name then
+            name = frame.systemNameString
+        end
         if not db[name] then db[name] = {} end
         addon:registerFrame(frame, "", db[name])
     end

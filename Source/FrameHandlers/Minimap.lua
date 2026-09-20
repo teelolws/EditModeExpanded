@@ -22,7 +22,7 @@ function addon:initMinimap()
             end
         )
         
-        if ExpansionLandingPageMinimapButton then
+        if ExpansionLandingPage and ExpansionLandingPageMinimapButton then
             ExpansionLandingPageMinimapButton:SetParent(UIParent)
             ExpansionLandingPageMinimapButton:SetFrameStrata("MEDIUM")
             addon:registerFrame(ExpansionLandingPageMinimapButton, L["Expansion Button"], db.ExpansionLandingPageMinimapButton)

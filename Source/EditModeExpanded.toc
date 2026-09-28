@@ -70,6 +70,7 @@ FrameHandlers\TargetOfTarget.lua [AllowLoadGameType standard, mists, camelot, tb
 FrameHandlers\Tooltip.lua [AllowLoadGameType standard, camelot]
 FrameHandlers\Tooltip-tbc.lua [AllowLoadGameType mists, tbc]
 FrameHandlers\TopCenterContainer.lua [AllowLoadGameType standard, mists, camelot, tbc]
+FrameHandlers\TotemBar.lua [AllowLoadGameType camelot]
 FrameHandlers\TotemFrame.lua [AllowLoadGameType standard, camelot]
 
 AutoLayoutChanges.lua

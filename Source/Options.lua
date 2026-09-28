@@ -70,6 +70,7 @@ local defaults = {
             reparentEnabled = false,
             targetCast = true,
             focusCast = true,
+            totemBar = true,
         },
         QueueStatusButton = {},
         TotemFrame = {},
@@ -133,6 +134,7 @@ local defaults = {
         TargetBuffs = {},
         FocusSpellBar = {},
         FocusBuffs = {},
+        MultiCastActionBarFrame = {},
     }
 }
 
@@ -459,6 +461,11 @@ local options = {
         objectiveTrackerFrame = {
             name = HUD_EDIT_MODE_OBJECTIVE_TRACKER_LABEL,
             desc = string.format(L["TOGGLE_SUPPORT_STRING"], HUD_EDIT_MODE_OBJECTIVE_TRACKER_LABEL),
+            type = "toggle",
+        },
+        totemBar = {
+            name = HUD_EDIT_MODE_TOTEM_ACTION_BAR_LABEL,
+            desc = string.format(L["TOGGLE_ADDITIONAL_OPTIONS_SUPPORT_STRING"], HUD_EDIT_MODE_TOTEM_ACTION_BAR_LABEL),
             type = "toggle",
         },
     },

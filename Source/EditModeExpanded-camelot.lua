@@ -49,6 +49,7 @@ EventUtil.RegisterOnceFrameEventAndCallback("PLAYER_ENTERING_WORLD", function()
     addon:initTotemFrame()
     addon:initDurationBars()
     addon:initPersonalResourceDisplay()
+    addon:initTotemBar()
 end)
 
 EventUtil.RegisterOnceFrameEventAndCallback("EDIT_MODE_LAYOUTS_UPDATED", function()

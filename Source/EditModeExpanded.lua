@@ -91,7 +91,7 @@ EventUtil.ContinueOnAddOnLoaded(addonName, function()
     addon:initTalkingHead()
 end)
 
-EventUtil.ContinueOnAddOnLoaded("Blizzard_AuctionHouseUI", function()
+local function loadAuctionMultisell()
     local db = addon.db.global
     
     if db.EMEOptions.auctionMultisell then
@@ -104,6 +104,14 @@ EventUtil.ContinueOnAddOnLoaded("Blizzard_AuctionHouseUI", function()
                 addon.ResetFrame(AuctionHouseMultisellProgressFrame)
             end)
         end)
+    end
+end
+
+EventUtil.ContinueOnAddOnLoaded("Blizzard_AuctionHouseUI", function()
+    if addon.db then
+        loadAuctionMultisell()
+    else
+        RunNextFrame(loadAuctionMultisell)
     end
 end)
 

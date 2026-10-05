@@ -2,7 +2,7 @@
 -- Internal variables
 --
 
-local MAJOR, MINOR = "EditModeExpanded-1.0", 120
+local MAJOR, MINOR = "EditModeExpanded-1.0", 121
 local lib = LibStub:NewLibrary(MAJOR, MINOR)
 if not lib then return end
 
@@ -562,6 +562,9 @@ function lib:RepositionFrame(frame)
                 if frame.EMEOnEventHandler then
                     frame:SetScript("OnEvent", nil)
                 end
+                if frame.EMEOnUpdateHandler then
+                    frame:SetScript("OnUpdate", nil)
+                end
                 return
             end
         end
@@ -653,7 +656,8 @@ end
 -- Call this to add a checkbox to the frames dialog box, allowing the frame to be permanently hidden outside of Edit Mode
 -- param1: an edit mode registered frame, either one already registered by Blizz, or a custom one you have registered with lib:RegisterFrame
 -- onEventHandler: optional function that is called when an event is fired for this frame, while it is shown. This will replace any existing event handlers, so it is useful to disable events on frames while it is hidden, and re-enable them while it is shown.
-function lib:RegisterHideable(frame, onEventHandler)
+-- onUpdateHandler: similar but replaces the OnUpdate event handler instead
+function lib:RegisterHideable(frame, onEventHandler, onUpdateHandler)
     local systemID = getSystemID(frame)
     
     if framesDialogsKeys[systemID][ENUM_EDITMODEACTIONBARSETTING_HIDEABLE] then return end
@@ -666,6 +670,7 @@ function lib:RegisterHideable(frame, onEventHandler)
     })
     
     frame.EMEOnEventHandler = onEventHandler
+    frame.EMEOnUpdateHandler = onUpdateHandler
 end
 
 -- Call this to find out if the user has marked the frame hidden by their lib:RegisterHideable setting
@@ -1130,6 +1135,9 @@ hooksecurefunc(f, "OnLoad", function()
                     if frame.EMEOnEventHandler then
                         frame:SetScript("OnEvent", frame.EMEOnEventHandler)
                     end
+                    if frame.EMEOnUpdateHandler then
+                        frame:SetScript("OnUpdate", frame.EMEOnUpdateHandler)
+                    end
                 end
             end
         end
@@ -1152,6 +1160,9 @@ hooksecurefunc(f, "OnLoad", function()
                     if frame.EMEOnEventHandler then
                         frame:SetScript("OnEvent", nil)
                     end
+                    if frame.EMEOnUpdateHandler then
+                        frame:SetScript("OnUpdate", nil)
+                    end
                 else
                     frame:SetShown(wasVisible[frame.system])
                 end
@@ -1171,6 +1182,9 @@ hooksecurefunc(f, "OnLoad", function()
                     frame:Hide()
                     if frame.EMEOnEventHandler then
                         frame:SetScript("OnEvent", nil)
+                    end
+                    if frame.EMEOnUpdateHandler then
+                        frame:SetScript("OnUpdate", nil)
                     end
                 end
             end
@@ -1483,12 +1497,18 @@ hooksecurefunc(f, "OnLoad", function()
                                     if frame.EMEOnEventHandler then
                                         frame:SetScript("OnEvent", nil)
                                     end
+                                    if frame.EMEOnUpdateHandler then
+                                        frame:SetScript("OnUpdate", nil)
+                                    end
                                     wasVisible[systemID] = false
                                 else
                                     framesDB[systemID].settings[displayInfo.setting] = 0
                                     frame:Show()
                                     if frame.EMEOnEventHandler then
                                         frame:SetScript("OnEvent", frame.EMEOnEventHandler)
+                                    end
+                                    if frame.EMEOnUpdateHandler then
+                                        frame:SetScript("OnUpdate", frame.EMEOnUpdateHandler)
                                     end
                                     wasVisible[systemID] = true
                                 end
@@ -1753,6 +1773,13 @@ function refreshCurrentProfile()
                                 frame:SetScript("OnEvent", frame.EMEOnEventHandler)
                             else
                                 frame:SetScript("OnEvent", nil)
+                            end
+                        end
+                        if frame.EMEOnUpdateHandler then
+                            if frame:IsShown() then
+                                frame:SetScript("OnUpdate", frame.EMEOnUpdateHandler)
+                            else
+                                frame:SetScript("OnUpdate", nil)
                             end
                         end
                     end
@@ -2121,10 +2148,16 @@ do
                                 if frame.EMEOnEventHandler then
                                     frame:SetScript("OnEvent", nil)
                                 end
+                                if frame.EMEOnUpdateHandler then
+                                    frame:SetScript("OnUpdate", nil)
+                                end
                             else
                                 frame:Hide()
                                 if frame.EMEOnEventHandler then
                                     frame:SetScript("OnEvent", frame.EMEOnEventHandler)
+                                end
+                                if frame.EMEOnUpdateHandler then
+                                    frame:SetScript("OnUpdate", frame.EMEOnUpdateHandler)
                                 end
                             end
                         end
@@ -2152,10 +2185,16 @@ do
                                 if frame.EMEOnEventHandler then
                                     frame:SetScript("OnEvent", frame.EMEOnEventHandler)
                                 end
+                                if frame.EMEOnUpdateHandler then
+                                    frame:SetScript("OnUpdate", frame.EMEOnUpdateHandler)
+                                end
                             else
                                 frame:Show()
                                 if frame.EMEOnEventHandler then
                                     frame:SetScript("OnEvent", nil)
+                                end
+                                if frame.EMEOnUpdateHandler then
+                                    frame:SetScript("OnUpdate", nil)
                                 end
                             end
                         end

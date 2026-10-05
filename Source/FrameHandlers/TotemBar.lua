@@ -10,7 +10,7 @@ function addon:initTotemBar()
     if not db.EMEOptions.totemBar then return end
     
     addon:registerFrame(MultiCastActionBarFrame, HUD_EDIT_MODE_TOTEM_ACTION_BAR_LABEL, db.MultiCastActionBarFrame)
-    lib:RegisterHideable(MultiCastActionBarFrame)
+    lib:RegisterHideable(MultiCastActionBarFrame, nil, MultiCastActionBarFrame_OnUpdate)
     lib:RegisterToggleInCombat(MultiCastActionBarFrame)
     lib:RegisterResizable(MultiCastActionBarFrame)
     lib:RegisterHiddenUntilMouseover(MultiCastActionBarFrame, L["HIDE_WHEN_NOT_MOUSEOVER_DESCRIPTION"])

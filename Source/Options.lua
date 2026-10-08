@@ -71,6 +71,7 @@ local defaults = {
             targetCast = true,
             focusCast = true,
             totemBar = true,
+            playerCastBar = true,
         },
         QueueStatusButton = {},
         TotemFrame = {},
@@ -135,6 +136,7 @@ local defaults = {
         FocusSpellBar = {},
         FocusBuffs = {},
         MultiCastActionBarFrame = {},
+        PlayerCastingBarFrame = {},
     }
 }
 
@@ -297,34 +299,14 @@ local options = {
             desc = string.format(L["TOGGLE_ADDITIONAL_OPTIONS_SUPPORT_STRING"], HUD_EDIT_MODE_STANCE_BAR_LABEL),
             type = "toggle",
         },
-        showCoordinates = {
-            name = L["Show Coordinates"],
-            desc = L["SHOW_COORDINATES_DESCRIPTION"],
-            type = "toggle",
-        },
-        allowSetCoordinates = {
-            name = L["OPTION_ALLOW_SET_COORDS_NAME"],
-            desc = L["OPTION_ALLOW_SET_COORDS_DESC"],
-            type = "toggle",
-        },
-        anchorToEnabled = {
-            name = L["OPTION_ANCHOR_TO_NAME"],
-            desc = L["OPTION_ANCHOR_TO_DESC"],
-            type = "toggle",
-        },
-        reparentEnabled = {
-            name = "Reparent Frame",
-            desc = "Allows frames to be reparented to other frames. Use at your own risk. May cause errors if not properly used.",
-            type = "toggle",
-        },
         playerFrame = {
             name = HUD_EDIT_MODE_PLAYER_FRAME_LABEL,
             desc = string.format(L["TOGGLE_ADDITIONAL_OPTIONS_SUPPORT_STRING"], HUD_EDIT_MODE_PLAYER_FRAME_LABEL),
             type = "toggle",
         },
-        playerFrameResize = {
-            name = L["Resize Player Frame"],
-            desc = L["RESIZE_PLAYER_FRAME_DESCRIPTION"],
+        playerCastBar = {
+            name = HUD_EDIT_MODE_CAST_BAR_LABEL,
+            desc = string.format(L["TOGGLE_ADDITIONAL_OPTIONS_SUPPORT_STRING"], HUD_EDIT_MODE_CAST_BAR_LABEL),
             type = "toggle",
         },
         mainStatusTrackingBarContainer = {
@@ -355,6 +337,37 @@ local options = {
                     name = L["LFG Button"],
                     desc = string.format(L["TOGGLE_ADDITIONAL_OPTIONS_SUPPORT_STRING"], L["LFG Button"]),
                     type = "toggle", 
+                },
+            },
+        },
+        extrasGroup = {
+            name = "Extras",
+            type = "group",
+            args = {
+                showCoordinates = {
+                    name = L["Show Coordinates"],
+                    desc = L["SHOW_COORDINATES_DESCRIPTION"],
+                    type = "toggle",
+                },
+                allowSetCoordinates = {
+                    name = L["OPTION_ALLOW_SET_COORDS_NAME"],
+                    desc = L["OPTION_ALLOW_SET_COORDS_DESC"],
+                    type = "toggle",
+                },
+                anchorToEnabled = {
+                    name = L["OPTION_ANCHOR_TO_NAME"],
+                    desc = L["OPTION_ANCHOR_TO_DESC"],
+                    type = "toggle",
+                },
+                reparentEnabled = {
+                    name = "Reparent Frame",
+                    desc = "Allows frames to be reparented to other frames. Use at your own risk. May cause errors if not properly used.",
+                    type = "toggle",
+                },
+                playerFrameResize = {
+                    name = L["Resize Player Frame"],
+                    desc = L["RESIZE_PLAYER_FRAME_DESCRIPTION"],
+                    type = "toggle",
                 },
             },
         },

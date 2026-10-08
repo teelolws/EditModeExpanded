@@ -3,8 +3,7 @@ local lib = LibStub:GetLibrary("EditModeExpanded-1.0")
 local L = LibStub("AceLocale-3.0"):GetLocale(addonName)
 
 function addon:initPlayerCastBar()
-    local db = addon.db.global
-    if not db.EMEOptions.playerCastBar then return end
+    if not addon.db.global.EMEOptions.playerCastBar then return end
         
     local width, height
     lib:RegisterSlider(PlayerCastingBarFrame, HUD_EDIT_MODE_SETTING_CHAT_FRAME_WIDTH, "Width",

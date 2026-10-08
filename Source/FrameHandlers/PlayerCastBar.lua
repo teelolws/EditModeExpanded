@@ -1,6 +1,5 @@
 local addonName, addon = ...
 local lib = LibStub:GetLibrary("EditModeExpanded-1.0")
-local L = LibStub("AceLocale-3.0"):GetLocale(addonName)
 
 function addon:initPlayerCastBar()
     if not addon.db.global.EMEOptions.playerCastBar then return end

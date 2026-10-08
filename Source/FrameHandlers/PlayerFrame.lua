@@ -75,27 +75,59 @@ function addon:initPlayerFrame()
             "HideName"
         )
         
-        if PlayerFrame.PlayerFrameContent then
+        C_Timer.After(4, function()
+            if not PlayerFrame.PlayerFrameContent then return end
+            
+            local isShown, isInitialized
             lib:RegisterCustomCheckbox(PlayerFrame, L["Hide Icons"],
                 function()
+                    isShown = false
+                    isInitialized = true
                     PlayerFrame.PlayerFrameContent.PlayerFrameContentContextual:Hide()
                     PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.StatusTexture:Hide()
+                    if PlayerFrame_ShowPvPIcon then
+                        PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.PvpBackgroundCircle:Hide()
+                        PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.PvpBackgroundIcon:Hide()
+                    end
                 end,
                 function()
+                    isShown = true
+                    if not isInitialized then
+                        isInitialized = true
+                        return
+                    end
                     PlayerFrame.PlayerFrameContent.PlayerFrameContentContextual:Show()
                     PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.StatusTexture:Show()
+                    if PlayerFrame_ShowPvPIcon then
+                        PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.PvpBackgroundCircle:Show()
+                        PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.PvpBackgroundIcon:Show()
+                    end
                 end,
                 "HideIcons"
             )
-        end
-        
-        C_Timer.After(4, function()
+            
+            -- Only exists in Camelot. Retail uses PVPIcon, PrestigeBadge, etc all under PlayerFrameContentContextual.
+            -- Watch this space: PvpBackgroundCircle etc may get moved to under Contextual
+            if PlayerFrame_ShowPvPIcon then
+                hooksecurefunc("PlayerFrame_ShowPvPIcon", function()
+                    PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.PvpBackgroundCircle:SetShown(isShown)
+                    PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.PvpBackgroundIcon:SetShown(isShown)
+                end)
+            end
+
             lib:RegisterCustomCheckbox(PlayerFrame, L["Hide Level"],
                 function()
                     PlayerLevelText:Hide()
+                    -- Only exists in Camelot, Retail puts the level to the top right without a circle
+                    if PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.LevelBackgroundCircle then
+                        PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.LevelBackgroundCircle:Hide()
+                    end
                 end,
                 function()
                     PlayerLevelText:Show()
+                    if PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.LevelBackgroundCircle then
+                        PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.LevelBackgroundCircle:Show()
+                    end
                 end,
                 "HideLevel"
             )

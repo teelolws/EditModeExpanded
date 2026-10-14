@@ -447,7 +447,7 @@ function lib:RegisterFrame(frame, name, db, anchorTo, anchorPoint, clamped)
             profiledb.settings[ENUM_EDITMODEACTIONBARSETTING_HIDEABLE] = 0
             
             local dialogsdb = framesDialogs[frame.system]
-            for i, dialogs in pairs(dialogsdb) do
+            for _, dialogs in pairs(dialogsdb) do
                 if (dialogs.setting == ENUM_EDITMODEACTIONBARSETTING_CUSTOM) and (dialogs.onUnchecked) and profiledb.settings[ENUM_EDITMODEACTIONBARSETTING_CUSTOM] then
                     profiledb.settings[ENUM_EDITMODEACTIONBARSETTING_CUSTOM][dialogs.customCheckBoxID] = nil
                     dialogs.onUnchecked(true)

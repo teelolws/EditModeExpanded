@@ -36,7 +36,7 @@ Locales\zhTW.lua [AllowLoadTextLocale zhTW]
 Locales\koKR.lua [AllowLoadTextLocale koKR]
 
 FrameHandlers\ActionBars.lua [AllowLoadGameType standard, mists, camelot, tbc]
-FrameHandlers\AlertFrame.lua [AllowLoadGameType standard]
+FrameHandlers\AlertFrame.lua [AllowLoadGameType standard, camelot]
 FrameHandlers\BattlefieldMapFrame.lua [AllowLoadGameType standard, camelot]
 FrameHandlers\BelowMinimapContainer.lua [AllowLoadGameType standard, mists, camelot, tbc]
 FrameHandlers\BonusRoll.lua [AllowLoadGameType standard, mists, camelot, tbc]

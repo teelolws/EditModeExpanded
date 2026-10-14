@@ -1,5 +1,10 @@
 local addonName, addon = ...
 
+local DEMO_ACHIEVEMENT_ID = 6
+if WOW_PROJECT_ID == 18 then
+    DEMO_ACHIEVEMENT_ID = 61994
+end
+
 local L = LibStub("AceLocale-3.0"):GetLocale(addonName)
 local lib = LibStub:GetLibrary("EditModeExpanded-1.0")
 
@@ -27,7 +32,7 @@ function addon:initAlertFrame()
     lib:SetDefaultSize(AlertFrame, 20, 20)
     lib:RegisterResizable(AlertFrame)
     AlertFrame.Selection:HookScript("OnMouseDown", function()
-        AchievementAlertSystem:AddAlert(6)
+        AchievementAlertSystem:AddAlert(DEMO_ACHIEVEMENT_ID)
     end)
     AlertFrame:HookScript("OnEvent", function()
         addon.ResetFrame(AlertFrame)

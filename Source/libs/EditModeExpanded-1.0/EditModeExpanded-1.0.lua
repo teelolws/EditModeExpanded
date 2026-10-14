@@ -2,7 +2,7 @@
 -- Internal variables
 --
 
-local MAJOR, MINOR = "EditModeExpanded-1.0", 121
+local MAJOR, MINOR = "EditModeExpanded-1.0", 122
 local lib = LibStub:NewLibrary(MAJOR, MINOR)
 if not lib then return end
 
@@ -445,6 +445,19 @@ function lib:RegisterFrame(frame, name, db, anchorTo, anchorPoint, clamped)
             frame:HighlightSystem()
             
             profiledb.settings[ENUM_EDITMODEACTIONBARSETTING_HIDEABLE] = 0
+            
+            local dialogsdb = framesDialogs[frame.system]
+            for i, dialogs in pairs(dialogsdb) do
+                if (dialogs.setting == ENUM_EDITMODEACTIONBARSETTING_CUSTOM) and (dialogs.onUnchecked) and profiledb.settings[ENUM_EDITMODEACTIONBARSETTING_CUSTOM] then
+                    profiledb.settings[ENUM_EDITMODEACTIONBARSETTING_CUSTOM][dialogs.customCheckBoxID] = nil
+                    dialogs.onUnchecked(true)
+                end
+                
+                if (dialogs.setting == ENUM_EDITMODEACTIONBARSETTING_SLIDER) and (dialogs.onReset) and profiledb.settings[ENUM_EDITMODEACTIONBARSETTING_SLIDER] then
+                    profiledb.settings[ENUM_EDITMODEACTIONBARSETTING_SLIDER][dialogs.internalName] = nil
+                    dialogs.onReset()
+                end
+            end
         end
     end)
     
@@ -922,7 +935,7 @@ function lib:RegisterDropdown(frame, libUIDropDownMenu, internalName)
 end
 
 -- register a custom slider
-function lib:RegisterSlider(frame, name, internalName, onChanged, min, max, step)
+function lib:RegisterSlider(frame, name, internalName, onChanged, min, max, step, onReset)
     local systemID = getSystemID(frame)
     
     if not framesDialogsKeys[systemID][ENUM_EDITMODEACTIONBARSETTING_SLIDER] then framesDialogsKeys[systemID][ENUM_EDITMODEACTIONBARSETTING_SLIDER] = {} end
@@ -938,6 +951,7 @@ function lib:RegisterSlider(frame, name, internalName, onChanged, min, max, step
             maxValue = max,
             stepSize = step,
             internalName = internalName,
+            onReset = onReset,
         }
     )
         

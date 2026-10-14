@@ -212,6 +212,9 @@ function addon:initChatFrame()
         function(newValue)
             t = newValue
         end,
-        0, 3, 0.1)
+        0, 3, 0.1,
+        function()
+            t = .5
+        end)
 end
 

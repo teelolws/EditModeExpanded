@@ -41,20 +41,27 @@ function addon:initTargetFrame()
         addon:registerSecureFrameHideable(fakeFrame)
         
         local width, height
+        local defaultWidth, defaultHeight = realFrame:GetSize()
         lib:RegisterSlider(fakeFrame, HUD_EDIT_MODE_SETTING_CHAT_FRAME_WIDTH, "Width",
             function(newValue)
                 width = newValue
                 realFrame:SetWidth(newValue)
                 realFrame:Show()
             end,
-            10, 300, 1)
+            10, 300, 1,
+            function()
+                realFrame:SetWidth(defaultWidth)
+            end)
         lib:RegisterSlider(fakeFrame, HUD_EDIT_MODE_SETTING_CHAT_FRAME_HEIGHT, "Height",
             function(newValue)
                 height = newValue
                 realFrame:SetHeight(newValue)
                 realFrame:Show()
             end,
-            1, 50, 1)
+            1, 50, 1,
+            function()
+                realFrame:SetHeight(defaultHeight)
+            end)
         
         hooksecurefunc(realFrame, "AdjustPosition", function(self)
             realFrame:ClearAllPoints()

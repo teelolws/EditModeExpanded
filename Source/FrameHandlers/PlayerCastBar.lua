@@ -13,7 +13,7 @@ function addon:initPlayerCastBar()
         end,
         10, 300, 1,
         function()
-            PlayerCastingBarFrame:SetWidth(defaultHeight)
+            PlayerCastingBarFrame:SetWidth(defaultWidth)
         end)
     lib:RegisterSlider(PlayerCastingBarFrame, HUD_EDIT_MODE_SETTING_CHAT_FRAME_HEIGHT, "Height",
         function(newValue)

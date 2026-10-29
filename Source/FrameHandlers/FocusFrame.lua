@@ -26,11 +26,11 @@ function addon:initFocusFrame()
     lib:RegisterResizable(FocusFrame)
     
     if db.EMEOptions.focusCast then
-        local fakeFrame = CreateFrame("Frame", "EMEFocusFrameCastbar", FocusFrame)
+        local fakeFrame = CreateFrame("Frame", "EMEFocusFrameCastbar", UIParent)
         fakeFrame:SetPoint("TOPLEFT", FocusFrame, "BOTTOMLEFT", 5, -40)
         fakeFrame:SetSize(150, 30)
         lib:SetDontResize(fakeFrame)
-        addon:registerFrame(fakeFrame, L["Focus Cast Bar"], db.FocusSpellBar, FocusFrame, "TOPLEFT")
+        addon:registerFrame(fakeFrame, L["Focus Cast Bar"], db.FocusSpellBar)
         
         local realFrame = FocusFrameSpellBar
         
@@ -51,10 +51,10 @@ function addon:initFocusFrame()
     end
     
     if db.EMEOptions.focusFrameBuffs then
-        local fakeFrame = CreateFrame("Frame", "EMEFocusFrameBuffs", FocusFrame)
+        local fakeFrame = CreateFrame("Frame", "EMEFocusFrameBuffs", UIParent)
         fakeFrame:SetPoint("TOPLEFT", FocusFrame, "BOTTOMLEFT", 5, -10)
         fakeFrame:SetSize(100, 70)
-        addon:registerFrame(fakeFrame, "Focus Buffs", db.FocusBuffs, FocusFrame, "TOPLEFT")
+        addon:registerFrame(fakeFrame, "Focus Buffs", db.FocusBuffs)
         
         local realFrame = FocusFrame:GetAuraContainer()
         realFrame:ClearAllPoints()

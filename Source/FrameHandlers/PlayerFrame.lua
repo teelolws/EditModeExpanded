@@ -86,7 +86,6 @@ function addon:initPlayerFrame()
                     PlayerFrame.PlayerFrameContent.PlayerFrameContentContextual:Hide()
                     PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.StatusTexture:Hide()
                     if PlayerFrame_ShowPvPIcon then
-                        PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.PvpBackgroundCircle:Hide()
                         PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.PvpBackgroundIcon:Hide()
                     end
                 end,
@@ -99,7 +98,6 @@ function addon:initPlayerFrame()
                     PlayerFrame.PlayerFrameContent.PlayerFrameContentContextual:Show()
                     PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.StatusTexture:Show()
                     if PlayerFrame_ShowPvPIcon then
-                        PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.PvpBackgroundCircle:Show()
                         PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.PvpBackgroundIcon:Show()
                     end
                 end,

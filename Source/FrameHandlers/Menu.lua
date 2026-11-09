@@ -7,13 +7,8 @@ local libDD = LibStub:GetLibrary("LibUIDropDownMenu-4.0")
 function addon:initMenuBar()
     local globaldb = addon.db.global
     if globaldb.EMEOptions.menu then
-        lib:RegisterHideable(MicroMenuContainer)
-        lib:RegisterToggleInCombat(MicroMenuContainer)
-        C_Timer.After(1, function()
-            if lib:IsFrameMarkedHidden(MicroMenuContainer) then
-                MicroMenuContainer:Hide()
-            end
-        end)
+        addon:registerSecureFrameHideable(MicroMenuContainer)
+
         local dropdown, getSettingDB = lib:RegisterDropdown(MicroMenuContainer, libDD, "PaddingDropdown")
         local dropdownOptions = {-4, -3, -2, -1, 0, 1, 2, 3, 4, 5}
         
@@ -83,24 +78,10 @@ function addon:initMenuBar()
     end
     
     if globaldb.EMEOptions.bags then
-        lib:RegisterHideable(BagsBar)
-        lib:RegisterToggleInCombat(BagsBar)
-        C_Timer.After(1, function()
-            if lib:IsFrameMarkedHidden(BagsBar) then
-                BagsBar:Hide()
-            end
-        end)
+        addon:registerSecureFrameHideable(BagsBar)
         
         addon.hookScriptOnce(ContainerFrame1, "OnShow", function()
             addon:continueAfterCombatEnds(function()
-                
-                -- workaround for bug introduced in 10.2.5
-                -- not sure why its happening, something to do with layout-local.txt
-                -- but trying SetUserPlaced causes an error
-                if ContainerFrame1.Bg then
-                    ContainerFrame1.Bg:SetFrameLevel(0)
-                end
-                
                 addon:registerFrame(ContainerFrame1, BACKPACK_TOOLTIP, globaldb.ContainerFrame1)
                 hooksecurefunc("UpdateContainerFrameAnchors", function()
                     if InCombatLockdown() then return end

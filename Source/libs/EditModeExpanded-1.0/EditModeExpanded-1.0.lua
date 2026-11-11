@@ -2,7 +2,7 @@
 -- Internal variables
 --
 
-local MAJOR, MINOR = "EditModeExpanded-1.0", 122
+local MAJOR, MINOR = "EditModeExpanded-1.0", 123
 local lib = LibStub:NewLibrary(MAJOR, MINOR)
 if not lib then return end
 
@@ -1191,7 +1191,7 @@ hooksecurefunc(f, "OnLoad", function()
         
         for _, frame in pairs(existingFrames) do
             local systemID = getSystemID(frame)
-            if framesDB[systemID] and framesDB[systemID].settings and (framesDB[systemID].settings[ENUM_EDITMODEACTIONBARSETTING_HIDEABLE] ~= nil) then
+            if framesDB[systemID] and framesDB[systemID].settings and framesDialogsKeys[systemID] and framesDialogsKeys[systemID][ENUM_EDITMODEACTIONBARSETTING_HIDEABLE] and (framesDB[systemID].settings[ENUM_EDITMODEACTIONBARSETTING_HIDEABLE] ~= nil) then
                 if (framesDB[systemID].settings[ENUM_EDITMODEACTIONBARSETTING_HIDEABLE] == 1) then
                     frame:Hide()
                     if frame.EMEOnEventHandler then

@@ -9,12 +9,17 @@ function addon:initPersonalResourceDisplay()
     
     addon:registerFrame(PersonalResourceDisplayFrame.HealthBarsContainer, L["Health Bar"], db.PersonalResourceDisplayHealth, PersonalResourceDisplayFrame, "TOPLEFT", false)
     lib:SetDontResize(PersonalResourceDisplayFrame.HealthBarsContainer)
-    PersonalResourceDisplayFrame.HealthBarsContainer:SetSize(200, 15)
     addon:registerFrame(PersonalResourceDisplayFrame.PowerBar, L["Power Bar"], db.PersonalResourceDisplayPower, PersonalResourceDisplayFrame, "TOPLEFT", false)
     lib:SetDontResize(PersonalResourceDisplayFrame.PowerBar)
     if PersonalResourceDisplayFrame.ClassFrameContainer then
-        addon.hookScriptOnce(PersonalResourceDisplayFrame.ClassFrameContainer, "OnShow", function()
+        if PersonalResourceDisplayFrame.ClassFrameContainer:IsShown() then
             addon:registerFrame(PersonalResourceDisplayFrame.ClassFrameContainer, L["Class Powers"], db.PersonalResourceDisplayClass, PersonalResourceDisplayFrame, "TOPLEFT", false)
-        end)
+            lib:SetDontResize(PersonalResourceDisplayFrame.ClassFrameContainer)
+        else
+            addon.hookScriptOnce(PersonalResourceDisplayFrame.ClassFrameContainer, "OnShow", function()
+                addon:registerFrame(PersonalResourceDisplayFrame.ClassFrameContainer, L["Class Powers"], db.PersonalResourceDisplayClass, PersonalResourceDisplayFrame, "TOPLEFT", false)
+                lib:SetDontResize(PersonalResourceDisplayFrame.ClassFrameContainer)
+            end)
+        end
     end
 end

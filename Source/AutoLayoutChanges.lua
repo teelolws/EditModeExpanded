@@ -24,20 +24,50 @@ local categoryCodes = {
     "raid",
 }
 
-local function getSelectedDB(selectedCategory, selectedSize, specid)
-    if selectedCategory == 3 then
-        return addon.db.char.AutoLayoutSwitching[specid.."raid"..selectedSize]
+local function getSelectedDB(selectedCategory, selectedSize, selectedResolution, specid)
+    if selectedResolution == 0 then
+        if selectedCategory == 3 then
+            return addon.db.char.AutoLayoutSwitching[specid.."raid"..selectedSize]
+        else
+            return addon.db.char.AutoLayoutSwitching[specid..categoryCodes[selectedCategory]]
+        end
     else
-        return addon.db.char.AutoLayoutSwitching[specid..categoryCodes[selectedCategory]]
+        if selectedCategory == 3 then
+            return addon.db.char.AutoLayoutSwitching[specid.."res"..selectedResolution.."raid"..selectedSize]
+        else
+            return addon.db.char.AutoLayoutSwitching[specid.."res"..selectedResolution..categoryCodes[selectedCategory]]
+        end
     end
 end
 
-local function setSelectedDB(selectedCategory, selectedSize, specid, value)
-    if selectedCategory == 3 then
-        addon.db.char.AutoLayoutSwitching[specid.."raid"..selectedSize] = value
+local function setSelectedDB(selectedCategory, selectedSize, selectedResolution, specid, value)
+    if selectedResolution == 0 then
+        if selectedCategory == 3 then
+            addon.db.char.AutoLayoutSwitching[specid.."raid"..selectedSize] = value
+        else
+            addon.db.char.AutoLayoutSwitching[specid..categoryCodes[selectedCategory]] = value
+        end
     else
-        addon.db.char.AutoLayoutSwitching[specid..categoryCodes[selectedCategory]] = value
+        if selectedCategory == 3 then
+            addon.db.char.AutoLayoutSwitching[specid.."res"..selectedResolution.."raid"..selectedSize] = value
+        else
+            addon.db.char.AutoLayoutSwitching[specid.."res"..selectedResolution..categoryCodes[selectedCategory]] = value
+        end
     end
+end
+
+local function getResolution()
+    local x, y = GetCurrentScaledResolution()
+    if issecretvalue(x) then return end
+    if not x then return end
+    return x.."x"..y
+end
+
+local function getResolutions()
+    return {
+        [0] = ALL,
+        [getResolution()] = getResolution(),
+    }
 end
 
 function addon.GetLayoutChangeOptions()
@@ -75,6 +105,7 @@ function addon.GetLayoutChangeOptions()
         }
         local selectedCategory = 1
         local selectedSize = 1
+        local selectedResolution = 0
         
         options["row"..specIndex].args["spec"..specIndex.."category"] = {
             name = function()
@@ -132,6 +163,28 @@ function addon.GetLayoutChangeOptions()
         }
         order = order + 1
         
+        options["row"..specIndex].args["spec"..specIndex.."resolution"] = {
+            name = RESOLUTION,
+            type = "select",
+            values = getResolutions,
+            hidden = function()
+                local specid = C_SpecializationInfo.GetSpecializationInfo(specIndex)
+                if specid and (specid ~= 0) then
+                    return false
+                end
+                return true
+            end,
+            order = order,
+            set = function(_, value)
+                selectedResolution = value
+            end,
+            get = function()
+                return selectedResolution
+            end,
+            width = 0.6,
+        }
+        order = order + 1
+        
         options["row"..specIndex].args["spec"..specIndex.."layout"] = {
             name = HUD_EDIT_MODE_LAYOUT,
             type = "select",
@@ -146,11 +199,11 @@ function addon.GetLayoutChangeOptions()
             order = order,
             set = function(_, value)
                 local specid = C_SpecializationInfo.GetSpecializationInfo(specIndex)
-                setSelectedDB(selectedCategory, selectedSize, specid, value)
+                setSelectedDB(selectedCategory, selectedSize, selectedResolution, specid, value)
             end,
             get = function()
                 local specid = C_SpecializationInfo.GetSpecializationInfo(specIndex)
-                return getSelectedDB(selectedCategory, selectedSize, specid)
+                return getSelectedDB(selectedCategory, selectedSize, selectedResolution, specid)
             end,
             width = 0.6,
         }
@@ -161,7 +214,7 @@ function addon.GetLayoutChangeOptions()
             type = "execute",
             func = function()
                 local specid = C_SpecializationInfo.GetSpecializationInfo(specIndex)
-                setSelectedDB(selectedCategory, selectedSize, specid)
+                setSelectedDB(selectedCategory, selectedSize, selectedResolution, specid)
             end,
             image = "interface/auctionframe/auctionhouse.blp",
             order = order,
@@ -187,15 +240,18 @@ local function getCurrentSetting(categoryIndex)
     local specid = C_SpecializationInfo.GetSpecializationInfo(specIndex)
     local categoryCode = categoryCodes[categoryIndex]
     local raidSize = GetNumGroupMembers()
+    local resolution = getResolution()
     
-    if categoryIndex ==  3 then
+    if categoryIndex == 3 then
         for i = raidSize, 1, -1 do
-            local db = addon.db.char.AutoLayoutSwitching[specid..categoryCode..i]
+            local db = addon.db.char.AutoLayoutSwitching[specid.."res"..resolution..categoryCode..i]
+            if db then return db end
+            db = addon.db.char.AutoLayoutSwitching[specid..categoryCode..i]
             if db then return db end
         end
-        return nil
+        return
     end
-    return addon.db.char.AutoLayoutSwitching[specid..categoryCode]
+    return addon.db.char.AutoLayoutSwitching[specid.."res"..resolution..categoryCode] or addon.db.char.AutoLayoutSwitching[specid..categoryCode]
 end
 
 local function updateSetting(categoryIndex)
@@ -232,3 +288,4 @@ EventRegistry:RegisterFrameEventAndCallback("GROUP_ROSTER_UPDATE", updateLayoutC
 EventRegistry:RegisterFrameEventAndCallback("PLAYER_REGEN_ENABLED", updateLayoutChoice)
 EventRegistry:RegisterFrameEventAndCallback("TRAIT_CONFIG_UPDATED", updateLayoutChoiceDelayed)
 EventRegistry:RegisterFrameEventAndCallback("ACTIVE_TALENT_GROUP_CHANGED", updateLayoutChoiceDelayed)
+EventRegistry:RegisterFrameEventAndCallback("DISPLAY_SIZE_CHANGED", updateLayoutChoice)

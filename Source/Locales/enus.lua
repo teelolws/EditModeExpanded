@@ -60,7 +60,7 @@ L["Raid (5)"] = true
 L["Raid (10)"] = true
 L["Raid (25)"] = true
 L["Raid (40)"] = true
-L["AUTO_LAYOUT_CHANGE_DESCRIPTION"] = "Allows you to automatically change Edit Mode Layouts based on your group size"
+L["AUTO_LAYOUT_CHANGE_DESCRIPTION"] = "Allows you to automatically change Edit Mode Layouts based on your group size, spec, and resolution"
 L["HIDE_WHEN_NOT_MOUSEOVER_DESCRIPTION"] = "Hide until mouseover"
 L["Vigor Bar"] = true
 L["Resize Target Frame"] = true
@@ -90,5 +90,5 @@ L["Power Bar"] = true
 L["Class Powers"] = true
 
 -- Auto Layout changes
-L["AUTO_LAYOUT_CHANGES_SPECNAME_GROUP_TYPE"] = "%s - "..GROUP..TYPE
+L["AUTO_LAYOUT_CHANGES_SPECNAME_GROUP_TYPE"] = "%s - "..GROUP.." "..TYPE
 L["AUTO_LAYOUT_CHANGES_RAID_SIZE_OPTION_DESC"] = "You do not need to set a profile for every size, the next-smallest size will be used if nothing is set!"

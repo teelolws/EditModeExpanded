@@ -92,3 +92,4 @@ L["Class Powers"] = true
 -- Auto Layout changes
 L["AUTO_LAYOUT_CHANGES_SPECNAME_GROUP_TYPE"] = "%s - "..GROUP.." "..TYPE
 L["AUTO_LAYOUT_CHANGES_RAID_SIZE_OPTION_DESC"] = "You do not need to set a profile for every size, the next-smallest size will be used if nothing is set!"
+L["AUTO_LAYOUT_CHANGE_RESOLUTION_DESCRIPTION"] = "Automatically change your Edit Mode profile based on screen resolution, if no specific profile is set for your spec above."

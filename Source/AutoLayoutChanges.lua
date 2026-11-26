@@ -102,7 +102,9 @@ function addon.GetLayoutChangeOptions()
                 end
                 return true
             end,
+            order = order,
         }
+        order = order + 1
         local selectedCategory = 1
         local selectedSize = 1
         local selectedResolution = 0
@@ -124,7 +126,6 @@ function addon.GetLayoutChangeOptions()
                 end
                 return true
             end,
-            order = order,
             set = function(_, value)
                 selectedCategory = value
             end,
@@ -132,8 +133,8 @@ function addon.GetLayoutChangeOptions()
                 return selectedCategory
             end,
             width = 0.8,
+            order = 1,
         }
-        order = order + 1
         
         options["row"..specIndex].args["spec"..specIndex.."size"] = {
             name = HUD_EDIT_MODE_SETTING_UNIT_FRAME_RAID_SIZE,
@@ -159,9 +160,8 @@ function addon.GetLayoutChangeOptions()
                 end
                 return true
             end,
-            order = order,
+            order = 2,
         }
-        order = order + 1
         
         options["row"..specIndex].args["spec"..specIndex.."resolution"] = {
             name = RESOLUTION,
@@ -174,7 +174,7 @@ function addon.GetLayoutChangeOptions()
                 end
                 return true
             end,
-            order = order,
+            order = 3,
             set = function(_, value)
                 selectedResolution = value
             end,
@@ -183,7 +183,6 @@ function addon.GetLayoutChangeOptions()
             end,
             width = 0.6,
         }
-        order = order + 1
         
         options["row"..specIndex].args["spec"..specIndex.."layout"] = {
             name = HUD_EDIT_MODE_LAYOUT,
@@ -196,7 +195,7 @@ function addon.GetLayoutChangeOptions()
                 end
                 return true
             end,
-            order = order,
+            order = 4,
             set = function(_, value)
                 local specid = C_SpecializationInfo.GetSpecializationInfo(specIndex)
                 setSelectedDB(selectedCategory, selectedSize, selectedResolution, specid, value)
@@ -207,7 +206,6 @@ function addon.GetLayoutChangeOptions()
             end,
             width = 0.6,
         }
-        order = order + 1
         
         options["row"..specIndex].args["spec"..specIndex.."redx"] = {
             name = "",
@@ -217,7 +215,7 @@ function addon.GetLayoutChangeOptions()
                 setSelectedDB(selectedCategory, selectedSize, selectedResolution, specid)
             end,
             image = "interface/auctionframe/auctionhouse.blp",
-            order = order,
+            order = 5,
             width = 0.2,
             imageCoords = {963/1024, 1009/1024, 1/1024, 47/1024},
             imageWidth = 23,
@@ -230,8 +228,75 @@ function addon.GetLayoutChangeOptions()
                 return true
             end,
         }
-        order = order + 1
     end
+    
+    options.resolutionDescription = {
+        name = L["AUTO_LAYOUT_CHANGE_RESOLUTION_DESCRIPTION"],
+        type = "description",
+        fontSize = "medium",
+        order = order,
+    }
+    order = order + 1
+    
+    local selectedResolution = getResolution()
+    options.resolutionGenericCategory = {
+        name = RESOLUTION,
+        type = "select",
+        values = function()
+            local db = addon.db.char.AutoLayoutSwitching
+            local result = {
+                [getResolution()] = getResolution()
+            }
+            if db then
+                for key, value in pairs(db) do
+                    local resolution = string.match(key, "^res(.+)")
+                    if resolution and (resolution ~= getResolution()) then
+                        result[resolution] = resolution
+                    end
+                end
+            end
+            return result
+        end,
+        order = order,
+        set = function(_, value)
+            selectedResolution = value
+        end,
+        get = function()
+            return selectedResolution
+        end,
+        width = 1,
+    }
+    order = order + 1
+    
+    options.resolutionGenericValue = {
+        name = HUD_EDIT_MODE_LAYOUT,
+        type = "select",
+        values = getLayouts,
+        order = order,
+        set = function(_, value)
+            addon.db.char.AutoLayoutSwitching["res"..selectedResolution] = value
+        end,
+        get = function()
+            return addon.db.char.AutoLayoutSwitching["res"..selectedResolution]
+        end,
+        width = 1,
+    }
+    order = order + 1
+    
+    options.resolutionGenericRedX = {
+        name = "",
+        type = "execute",
+        func = function()
+            addon.db.char.AutoLayoutSwitching["res"..selectedResolution] = nil
+        end,
+        image = "interface/auctionframe/auctionhouse.blp",
+        order = order,
+        width = 0.2,
+        imageCoords = {963/1024, 1009/1024, 1/1024, 47/1024},
+        imageWidth = 23,
+        imageHeight = 23,
+    }
+    
     return options
 end
 
@@ -249,9 +314,9 @@ local function getCurrentSetting(categoryIndex)
             db = addon.db.char.AutoLayoutSwitching[specid..categoryCode..i]
             if db then return db end
         end
-        return
+        return addon.db.char.AutoLayoutSwitching["res"..resolution]
     end
-    return addon.db.char.AutoLayoutSwitching[specid.."res"..resolution..categoryCode] or addon.db.char.AutoLayoutSwitching[specid..categoryCode]
+    return addon.db.char.AutoLayoutSwitching[specid.."res"..resolution..categoryCode] or addon.db.char.AutoLayoutSwitching[specid..categoryCode] or addon.db.char.AutoLayoutSwitching["res"..resolution]
 end
 
 local function updateSetting(categoryIndex)

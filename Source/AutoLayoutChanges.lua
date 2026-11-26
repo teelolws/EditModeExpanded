@@ -248,7 +248,7 @@ function addon.GetLayoutChangeOptions()
                 [getResolution()] = getResolution()
             }
             if db then
-                for key, value in pairs(db) do
+                for key in pairs(db) do
                     local resolution = string.match(key, "^res(.+)")
                     if resolution and (resolution ~= getResolution()) then
                         result[resolution] = resolution
